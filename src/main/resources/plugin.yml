@@ -1,0 +1,11 @@
+name: Looty
+version: @version@
+main: com.derongan.minecraft.looty.LootyPlugin
+api-version: '1.13'
+commands:
+  looty:
+    description: Main looty command
+    usage: /looty <command> <options>
+  looties:
+    description: List items
+    usage: /looties

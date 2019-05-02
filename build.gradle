@@ -1,0 +1,52 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id 'java'
+}
+
+group = pluginGroup
+version = pluginVersion
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    compile 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
+    compile "com.google.auto.value:auto-value-annotations:1.6.3"
+    compile 'com.google.dagger:dagger:2.+'
+    compile "com.badlogicgames.ashley:ashley:1.7.3"
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+    compileOnly 'org.jetbrains:annotations:17.0.0' //TODO why For some reason dagger wants this
+    compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.25.1'
+    testCompile "com.google.truth:truth:0.34" //TODO we want to use a more up to date version but spigot is a poop
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.+'
+    annotationProcessor "com.google.auto.value:auto-value:1.6.3"
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+}
+
+task copyJar(type: Copy) {
+    from shadowJar // here it automatically reads jar file produced from jar task
+    into '/srv/craftbukkit/plugins/'
+}
+
+build.dependsOn copyJar
