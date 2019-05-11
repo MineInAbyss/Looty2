@@ -6,6 +6,6 @@ import java.util.Set;
 
 
 @FunctionalInterface
-public interface TargetFilter {
+public interface EntityTargetFilter {
     Set<Entity> getTargets();
 }

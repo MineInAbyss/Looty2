@@ -24,7 +24,7 @@ public class SphereFilterTest {
         Collection<Entity> allEntities = ImmutableList.of(inside1, inside2, outside1, outside2);
         when(world.getNearbyEntities(any(), anyDouble(), anyDouble(), anyDouble())).thenReturn(allEntities);
         Location target = new Location(world, 5, 5, 5);
-        SphereFilter sphereFilter = new SphereFilter(target, 5);
+        SphereEntityFilter sphereFilter = new SphereEntityFilter(target, 5);
 
         Collection<Entity> actual = sphereFilter.getTargets();
 

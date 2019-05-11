@@ -8,7 +8,7 @@ import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
-public class BeamFilter implements TargetFilter {
+public class BeamEntityFilter implements EntityTargetFilter {
     private final Location startPoint;
     private final Location targetLocation;
     private final int radius;
@@ -17,7 +17,7 @@ public class BeamFilter implements TargetFilter {
     private final Vector unitDirectional;
     private final Vector fullDirectional;
 
-    public BeamFilter(Location startPoint, Location targetLocation, int radius, int length) {
+    public BeamEntityFilter(Location startPoint, Location targetLocation, int radius, int length) {
         this.startPoint = startPoint;
         this.targetLocation = targetLocation;
         this.radius = radius;

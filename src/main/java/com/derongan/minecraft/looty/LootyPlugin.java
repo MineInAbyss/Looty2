@@ -2,7 +2,7 @@ package com.derongan.minecraft.looty;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-class LootyPlugin extends JavaPlugin {
+public class LootyPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         LootyComponent lootyComponent = DaggerLootyComponent.builder()

@@ -12,5 +12,5 @@ public class Families {
             Points.class,
             Beam.class,
             Filter.class
-    ).all(TargetInfo.class).get();
+    ).all(TargetInfo.TARGET_INFO_CLASS).get();
 }

@@ -8,7 +8,6 @@ import com.derongan.minecraft.looty.registration.ItemIdentifier;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegistrar;
 import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -75,12 +74,9 @@ class SkillListener implements Listener {
             if (rayTraceResult != null && rayTraceResult.getHitEntity() != null) {
                 TargetInfo.Builder targetInfoBuilder = TargetInfo.builder()
                         .setEntityTargetHistory(TargetHistory.<org.bukkit.entity.Entity>builder()
-                                .setCurrentTarget(rayTraceResult.getHitEntity())
-                                .setInitialTargetOrSource(player)
-                                .setLastTargetOrSource(player)
-                                .build())
-                        .setLocationTargetHistory(TargetHistory.<Location>builder().build());
-
+                                .addTarget(rayTraceResult.getHitEntity())
+                                .setInitiator(player)
+                                .build());
                 skillToUse.ifPresent(skill -> {
                     event.setCancelled(true);
 

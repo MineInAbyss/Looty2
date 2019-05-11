@@ -2,14 +2,24 @@ package com.derongan.minecraft.looty.component.internal;
 
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
 
 import java.util.Optional;
 
 @AutoValue
 public abstract class TargetHistory<E> {
-    public abstract Optional<E> getCurrentTarget();
-    public abstract Optional<E> getInitialTargetOrSource();
-    public abstract Optional<E> getLastTargetOrSource();
+    public abstract ImmutableList<E> getTargetHistory();
+
+    public Optional<E> getCurrentTarget() {
+        if (getTargetHistory().size() > 0) {
+            return Optional.ofNullable(getTargetHistory().get(getTargetHistory().size() - 1));
+        }
+        return Optional.empty();
+    }
+
+    public abstract Optional<E> getInitiator();
+
+    public abstract Builder<E> toBuilder();
 
     public static <E> Builder<E> builder() {
         return new AutoValue_TargetHistory.Builder<>();
@@ -18,11 +28,14 @@ public abstract class TargetHistory<E> {
 
     @AutoValue.Builder
     public abstract static class Builder<E> {
-        public abstract Builder<E> setCurrentTarget(E newCurrentTarget);
+        abstract ImmutableList.Builder<E> targetHistoryBuilder();
 
-        public abstract Builder<E> setInitialTargetOrSource(E newInitialTargetOrSource);
+        public Builder<E> addTarget(E nextTarget) {
+            targetHistoryBuilder().add(nextTarget);
+            return this;
+        }
 
-        public abstract Builder<E> setLastTargetOrSource(E newLastTargetOrSource);
+        public abstract Builder<E> setInitiator(E newOrigin);
 
         public abstract TargetHistory<E> build();
     }
