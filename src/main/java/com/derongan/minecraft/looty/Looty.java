@@ -42,7 +42,9 @@ class Looty {
                 .addComponent(() -> Radius.create(3))
                 .addComponent(() -> Particle.create(org.bukkit.Particle.HEART, Particle.ParticleStyle.CIRCUMFRENCE));
 
-        Skill skill = Skill.builder().addActionBuilder(actionEntityBuilder).build();
+        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder().addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.INITIATOR));
+
+        Skill skill = Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
 
         ItemType itemType = ItemType.builder()
                 .setDurability((short) 1)

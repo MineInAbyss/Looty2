@@ -53,9 +53,11 @@ public class ParticleSystem extends IteratingSystem {
             case INITIATOR:
                 targetInfo.getInitiator()
                         .ifPresent(initiator -> spawnLocations.add(initiator.getLocation()));
+                break;
             case TARGET:
                 targets.getTargets()
                         .forEach(target -> spawnLocations.add(target.getLocation()));
+                break;
             case CIRCUMFRENCE:
                 if (radiusComponentMapper.has(entity)) {
                     int radius = radiusComponentMapper.get(entity).getRadius();
@@ -78,6 +80,7 @@ public class ParticleSystem extends IteratingSystem {
                         }
                     });
                 }
+                break;
         }
 
         spawnLocations.forEach(sl -> spawnParticleAtLocation(particle.getParticle(), sl));
@@ -86,6 +89,6 @@ public class ParticleSystem extends IteratingSystem {
 
     private void spawnParticleAtLocation(org.bukkit.Particle particle, Location location) {
         World world = location.getWorld();
-        world.spawnParticle(particle, location, 1);
+        world.spawnParticle(particle, location, 1, 0, 0, 0, .01);
     }
 }
