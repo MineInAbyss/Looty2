@@ -35,17 +35,25 @@ public class TargetingSystem extends IteratingSystem {
             targets = targetsComponentMapper.get(entity);
         }
 
-        if (radiusComponentMapper.has(entity) && targetInfo.getTarget().isPresent()) {
+        if (radiusComponentMapper.has(entity) && targetInfo.getEntityTargetHistory().getCurrentTarget().isPresent()) {
             int radius = radiusComponentMapper.get(entity).getRadius();
 
-            if (beamComponentMapper.has(entity) && targetInfo.getTarget().isPresent() && targetInfo.getInitiator()
+            if (beamComponentMapper.has(entity) && targetInfo.getEntityTargetHistory()
+                    .getCurrentTarget()
+                    .isPresent() && targetInfo.getEntityTargetHistory().getLastTargetOrSource()
                     .isPresent()) {
-                new BeamFilter(targetInfo.getInitiator().get().getLocation(), targetInfo.getTarget()
+                new BeamFilter(targetInfo.getEntityTargetHistory()
+                        .getLastTargetOrSource()
+                        .get()
+                        .getLocation(), targetInfo.getEntityTargetHistory().getCurrentTarget()
                         .get()
                         .getLocation(), radius, beamComponentMapper.get(entity).getLength()).getTargets()
                         .forEach(targets::addTarget);
             } else {
-                new SphereFilter(targetInfo.getTarget().get().getLocation(), radius).getTargets()
+                new SphereFilter(targetInfo.getEntityTargetHistory()
+                        .getCurrentTarget()
+                        .get()
+                        .getLocation(), radius).getTargets()
                         .forEach(targets::addTarget);
             }
         }

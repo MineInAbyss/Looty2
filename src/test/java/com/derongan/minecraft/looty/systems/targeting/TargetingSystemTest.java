@@ -29,7 +29,7 @@ public class TargetingSystemTest {
     public void testAddTargets() {
         Radius radius = Radius.create(5);
         org.bukkit.entity.Entity spigotEntity = EntityMockingUtils.mockEntity(0, 0, 0);
-        TargetInfo targetInfo = TargetInfo.builder().setTarget(spigotEntity).build();
+        TargetInfo targetInfo = TargetInfo.builder().setEntityTarget(spigotEntity).build();
         Entity entity = new Entity();
         entity.add(radius);
         entity.add(targetInfo);
