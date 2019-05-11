@@ -2,7 +2,6 @@ package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.derongan.minecraft.looty.component.internal.TargetHistory;
 import com.derongan.minecraft.looty.component.internal.TargetInfo;
 import com.derongan.minecraft.looty.registration.ItemIdentifier;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
@@ -71,22 +70,25 @@ class SkillListener implements Listener {
                             .getDirection(), 5, FluidCollisionMode.NEVER, true, .1, (entity -> entity != player));
 
 
-            if (rayTraceResult != null && rayTraceResult.getHitEntity() != null) {
-                TargetInfo.Builder targetInfoBuilder = TargetInfo.builder()
-                        .setEntityTargetHistory(TargetHistory.<org.bukkit.entity.Entity>builder()
-                                .addTarget(rayTraceResult.getHitEntity())
-                                .setInitiator(player)
-                                .build());
-                skillToUse.ifPresent(skill -> {
-                    event.setCancelled(true);
+            TargetInfo.Builder targetInfoBuilder = TargetInfo.builder()
+                    .setInitiator(player)
+                    .setOrigin(player)
+                    .setTargetLocation(rayTraceResult.getHitPosition().toLocation(player.getWorld()));
 
-                    skill.getActionEntityBuilders().forEach(actionBuilder -> {
-                        Entity entity = actionBuilder.build();
-                        entity.add(targetInfoBuilder.build());
-                        engine.addEntity(entity);
-                    });
-                });
+
+            if (rayTraceResult.getHitEntity() != null) {
+                targetInfoBuilder.setTargetEntity(rayTraceResult.getHitEntity());
             }
+
+            skillToUse.ifPresent(skill -> {
+                event.setCancelled(true);
+
+                skill.getActionEntityBuilders().forEach(actionBuilder -> {
+                    Entity entity = actionBuilder.build();
+                    entity.add(targetInfoBuilder.build());
+                    engine.addEntity(entity);
+                });
+            });
         }
     }
 }
