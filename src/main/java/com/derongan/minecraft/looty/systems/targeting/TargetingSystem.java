@@ -12,7 +12,7 @@ import com.derongan.minecraft.looty.component.target.Radius;
 import javax.inject.Inject;
 
 public class TargetingSystem extends IteratingSystem {
-    private final ComponentMapper<TargetInfo> targetInfoComponentMapper = ComponentMapper.getFor(TargetInfo.class);
+    private final ComponentMapper targetInfoComponentMapper = ComponentMapper.getFor(TargetInfo.TARGET_INFO_CLASS);
     private final ComponentMapper<Radius> radiusComponentMapper = ComponentMapper.getFor(Radius.class);
     private final ComponentMapper<Beam> beamComponentMapper = ComponentMapper.getFor(Beam.class);
     private final ComponentMapper<Targets> targetsComponentMapper = ComponentMapper.getFor(Targets.class);
@@ -24,7 +24,7 @@ public class TargetingSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        TargetInfo targetInfo = targetInfoComponentMapper.get(entity);
+        TargetInfo targetInfo = (TargetInfo) targetInfoComponentMapper.get(entity);
 
         Targets targets;
 
@@ -35,17 +35,23 @@ public class TargetingSystem extends IteratingSystem {
             targets = targetsComponentMapper.get(entity);
         }
 
-        if (radiusComponentMapper.has(entity) && targetInfo.getTarget().isPresent()) {
+        if (radiusComponentMapper.has(entity) && targetInfo.getEntityTargetHistory().getCurrentTarget().isPresent()) {
             int radius = radiusComponentMapper.get(entity).getRadius();
 
-            if (beamComponentMapper.has(entity) && targetInfo.getTarget().isPresent() && targetInfo.getInitiator()
+            if (beamComponentMapper.has(entity) && targetInfo.getEntityTargetHistory().getCurrentTarget()
                     .isPresent()) {
-                new BeamFilter(targetInfo.getInitiator().get().getLocation(), targetInfo.getTarget()
+                new BeamEntityFilter(targetInfo.getEntityTargetHistory()
+                        .getCurrentTarget()
+                        .get()
+                        .getLocation(), targetInfo.getEntityTargetHistory().getCurrentTarget()
                         .get()
                         .getLocation(), radius, beamComponentMapper.get(entity).getLength()).getTargets()
                         .forEach(targets::addTarget);
             } else {
-                new SphereFilter(targetInfo.getTarget().get().getLocation(), radius).getTargets()
+                new SphereEntityFilter(targetInfo.getEntityTargetHistory()
+                        .getCurrentTarget()
+                        .get()
+                        .getLocation(), radius).getTargets()
                         .forEach(targets::addTarget);
             }
         }

@@ -3,6 +3,7 @@ package com.derongan.minecraft.looty.systems.targeting;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.derongan.minecraft.looty.EntityMockingUtils;
+import com.derongan.minecraft.looty.component.internal.TargetHistory;
 import com.derongan.minecraft.looty.component.internal.TargetInfo;
 import com.derongan.minecraft.looty.component.internal.Targets;
 import com.derongan.minecraft.looty.component.target.Radius;
@@ -29,7 +30,9 @@ public class TargetingSystemTest {
     public void testAddTargets() {
         Radius radius = Radius.create(5);
         org.bukkit.entity.Entity spigotEntity = EntityMockingUtils.mockEntity(0, 0, 0);
-        TargetInfo targetInfo = TargetInfo.builder().setTarget(spigotEntity).build();
+        TargetInfo targetInfo = TargetInfo.builder()
+                .setEntityTargetHistory(TargetHistory.<org.bukkit.entity.Entity>builder().addTarget(spigotEntity)
+                        .build()).build();
         Entity entity = new Entity();
         entity.add(radius);
         entity.add(targetInfo);

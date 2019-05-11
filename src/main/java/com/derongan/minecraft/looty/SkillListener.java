@@ -2,6 +2,7 @@ package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.derongan.minecraft.looty.component.internal.TargetHistory;
 import com.derongan.minecraft.looty.component.internal.TargetInfo;
 import com.derongan.minecraft.looty.registration.ItemIdentifier;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
@@ -72,10 +73,10 @@ class SkillListener implements Listener {
 
             if (rayTraceResult != null && rayTraceResult.getHitEntity() != null) {
                 TargetInfo.Builder targetInfoBuilder = TargetInfo.builder()
-                        .setInitiator(player)
-                        .setOriginalInitiator(player)
-                        .setTarget(rayTraceResult.getHitEntity());
-
+                        .setEntityTargetHistory(TargetHistory.<org.bukkit.entity.Entity>builder()
+                                .addTarget(rayTraceResult.getHitEntity())
+                                .setInitiator(player)
+                                .build());
                 skillToUse.ifPresent(skill -> {
                     event.setCancelled(true);
 
