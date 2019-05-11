@@ -40,7 +40,7 @@ class Looty {
 
         ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
                 .addComponent(() -> Radius.create(3))
-                .addComponent(() -> Particle.create(org.bukkit.Particle.BUBBLE_COLUMN_UP, Particle.ParticleStyle.INITIATOR));
+                .addComponent(() -> Particle.create(org.bukkit.Particle.HEART, Particle.ParticleStyle.CIRCUMFRENCE));
 
         Skill skill = Skill.builder().addActionBuilder(actionEntityBuilder).build();
 

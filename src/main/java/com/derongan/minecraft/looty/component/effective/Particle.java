@@ -6,7 +6,8 @@ public class Particle implements Component {
     public enum ParticleStyle {
         INITIATOR,
         ORIGIN,
-        TARGET
+        TARGET,
+        CIRCUMFRENCE
     }
 
     private org.bukkit.Particle particle;
