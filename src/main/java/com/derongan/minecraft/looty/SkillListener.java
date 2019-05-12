@@ -72,12 +72,17 @@ class SkillListener implements Listener {
 
             TargetInfo.Builder targetInfoBuilder = TargetInfo.builder()
                     .setInitiator(player)
-                    .setOrigin(player)
-                    .setTargetLocation(rayTraceResult.getHitPosition().toLocation(player.getWorld()));
+                    .setOrigin(player);
 
-
-            if (rayTraceResult.getHitEntity() != null) {
-                targetInfoBuilder.setTargetEntity(rayTraceResult.getHitEntity());
+            if (rayTraceResult != null) {
+                if (rayTraceResult.getHitEntity() != null) {
+                    targetInfoBuilder.setTargetEntity(rayTraceResult.getHitEntity());
+                }
+                targetInfoBuilder.setTargetLocation(rayTraceResult.getHitPosition().toLocation(player.getWorld()));
+            } else {
+                targetInfoBuilder.setTargetLocation(player.getEyeLocation()
+                        .clone()
+                        .add(player.getEyeLocation().getDirection().clone().normalize().multiply(5)));
             }
 
             skillToUse.ifPresent(skill -> {

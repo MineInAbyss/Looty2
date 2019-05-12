@@ -7,7 +7,8 @@ public class Particle implements Component {
         INITIATOR,
         ORIGIN,
         TARGET,
-        CIRCUMFRENCE
+        OUTLINE,
+        SPIRAL
     }
 
     private org.bukkit.Particle particle;

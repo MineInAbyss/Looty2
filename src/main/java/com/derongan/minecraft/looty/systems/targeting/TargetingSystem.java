@@ -10,8 +10,11 @@ import com.derongan.minecraft.looty.component.internal.Targets;
 import com.derongan.minecraft.looty.component.target.Beam;
 import com.derongan.minecraft.looty.component.target.Radius;
 import com.derongan.minecraft.looty.component.target.Sticky;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 public class TargetingSystem extends IteratingSystem {
     private final ComponentMapper targetInfoComponentMapper = ComponentMapper.getFor(TargetInfo.TARGET_INFO_CLASS);
@@ -19,10 +22,12 @@ public class TargetingSystem extends IteratingSystem {
     private final ComponentMapper<Beam> beamComponentMapper = ComponentMapper.getFor(Beam.class);
     private final ComponentMapper<Targets> targetsComponentMapper = ComponentMapper.getFor(Targets.class);
     private final ComponentMapper<Sticky> stickyComponentMapper = ComponentMapper.getFor(Sticky.class);
+    private final Logger logger;
 
     @Inject
-    TargetingSystem() {
+    TargetingSystem(Logger logger) {
         super(Families.TARGETING_FAMILY);
+        this.logger = logger;
     }
 
     @Override
@@ -57,12 +62,16 @@ public class TargetingSystem extends IteratingSystem {
     }
 
     private void addTargetsForOrigin(Origins.Origin origin, Entity entity, TargetInfo targetInfo, Targets targets) {
-        int radius = radiusComponentMapper.get(entity).getRadius();
+        double radius = radiusComponentMapper.get(entity).getRadius();
 
         if (beamComponentMapper.has(entity) && targetInfo.getInitiator().isPresent()) {
-            new BeamEntityFilter(targetInfo.getInitiator()
-                    .get()
-                    .getLocation(), origin.getLocation(), radius, beamComponentMapper.get(entity)
+            logger.info("Attempting to fire beam");
+            org.bukkit.entity.Entity initiator = targetInfo.getInitiator().get();
+            Location initiatorLocation = initiator instanceof Player ? ((Player) initiator).getEyeLocation() : initiator
+                    .getLocation()
+                    .clone()
+                    .add(0, initiator.getHeight() * .9, 0);
+            new BeamEntityFilter(initiatorLocation, origin.getLocation(), radius, beamComponentMapper.get(entity)
                     .getLength()).getTargets()
                     .forEach(targets::addTarget);
         } else {

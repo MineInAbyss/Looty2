@@ -9,9 +9,9 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 public class SphereEntityFilter implements EntityTargetFilter {
     private final Location target;
-    private final int radius;
+    private final double radius;
 
-    public SphereEntityFilter(Location target, int radius) {
+    public SphereEntityFilter(Location target, double radius) {
         this.target = target;
         this.radius = radius;
     }

@@ -8,9 +8,11 @@ import com.derongan.minecraft.looty.component.effective.Particle;
 import com.derongan.minecraft.looty.component.internal.Origins;
 import com.derongan.minecraft.looty.component.internal.TargetInfo;
 import com.derongan.minecraft.looty.component.internal.Targets;
+import com.derongan.minecraft.looty.component.target.Beam;
 import com.derongan.minecraft.looty.component.target.Radius;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
@@ -25,6 +27,7 @@ public class ParticleSystem extends IteratingSystem {
     private ComponentMapper targetInfoComponentMapper = ComponentMapper.getFor(TargetInfo.TARGET_INFO_CLASS);
     private ComponentMapper<Targets> targetsComponentMapper = ComponentMapper.getFor(Targets.class);
     private ComponentMapper<Radius> radiusComponentMapper = ComponentMapper.getFor(Radius.class);
+    private ComponentMapper<Beam> beamComponentMapper = ComponentMapper.getFor(Beam.class);
 
     private final Logger logger;
 
@@ -41,8 +44,6 @@ public class ParticleSystem extends IteratingSystem {
         TargetInfo targetInfo = (TargetInfo) targetInfoComponentMapper.get(entity);
         Targets targets = targetsComponentMapper.get(entity);
 
-        logger.info("Spawning particle");
-
         List<Location> spawnLocations = new ArrayList<>();
 
         switch (particle.getStyle()) {
@@ -58,9 +59,9 @@ public class ParticleSystem extends IteratingSystem {
                 targets.getTargets()
                         .forEach(target -> spawnLocations.add(target.getLocation()));
                 break;
-            case CIRCUMFRENCE:
+            case OUTLINE:
                 if (radiusComponentMapper.has(entity)) {
-                    int radius = radiusComponentMapper.get(entity).getRadius();
+                    double radius = radiusComponentMapper.get(entity).getRadius();
 
                     double tau = 2.0 * Math.PI;
 
@@ -70,17 +71,39 @@ public class ParticleSystem extends IteratingSystem {
 
                         World world = origin.getLocation().getWorld();
 
-                        int numParticles = (int) Math.pow(10, Math.log(radius));
+                        int numParticles = (int) Math.pow(10, Math.log(radius + 1));
 
                         for (int i = 0; i < numParticles; i++) {
                             double angle = (((double) i) / numParticles) * tau;
                             Vector vector = clockArm.clone().rotateAroundY(angle);
-                            logger.info("Spawning particle at angle %d" + angle);
                             spawnLocations.add(center.clone().add(vector).toLocation(world));
                         }
                     });
                 }
                 break;
+            case SPIRAL:
+                double radius = radiusComponentMapper.get(entity).getRadius();
+                int length = beamComponentMapper.has(entity) ? beamComponentMapper.get(entity).getLength() : 4;
+                Vector direction = new Vector(0, 1, 0);
+
+                org.bukkit.entity.Entity initiator = ((TargetInfo) targetInfoComponentMapper.get(entity)).getInitiator()
+                        .get();
+
+                Location initiatorLocation = initiator instanceof Player ? ((Player) initiator).getEyeLocation() : initiator
+                        .getLocation()
+                        .clone()
+                        .add(0, initiator.getHeight() * .9, 0);
+
+                for (Origins.Origin targetOrigin : origins.getTargetOrigins()) {
+                    if (beamComponentMapper.has(entity)) {
+                        direction = targetOrigin.getLocation()
+                                .toVector()
+                                .clone()
+                                .subtract(initiatorLocation.toVector());
+                    }
+
+                    addParticlesInBeam(spawnLocations, initiatorLocation, direction, radius, length, true);
+                }
         }
 
         spawnLocations.forEach(sl -> spawnParticleAtLocation(particle.getParticle(), sl));
@@ -89,6 +112,43 @@ public class ParticleSystem extends IteratingSystem {
 
     private void spawnParticleAtLocation(org.bukkit.Particle particle, Location location) {
         World world = location.getWorld();
-        world.spawnParticle(particle, location, 1, 0, 0, 0, .01);
+        world.spawnParticle(particle, location, 1, 0, 0, 0, .001);
+    }
+
+    private void addParticlesInBeam(List<Location> locations, Location initiatorLocation, Vector axis, double radius, int length, boolean spiral) {
+        int numParticles = (int) Math.pow(10, Math.log(radius + 1));
+        if (spiral) {
+            numParticles = 1;
+        }
+
+        Vector clockArm;
+
+        if (axis.getX() == 0 && axis.getY() == 0) {
+            if (axis.getZ() == 0) {
+                logger.warning("Tried to spawn particle on beam of 0 length");
+                return;
+            } else {
+                clockArm = axis.clone().crossProduct(new Vector(0, 1, 0)).normalize();
+            }
+        } else {
+            clockArm = axis.clone().crossProduct(new Vector(1, 0, 0)).normalize();
+        }
+
+        clockArm.multiply(radius);
+
+        for (double i = 0; i < length + 1; i += .05) {
+            Vector centralPoint = axis.clone().multiply(i).add(initiatorLocation.toVector());
+
+            for (int j = 0; j < numParticles; j++) {
+                double angle = ((double) j / numParticles) * Math.PI * 2;
+
+                if (spiral) {
+                    angle = i * Math.PI * 2;
+                }
+
+                Vector vector = clockArm.clone().rotateAroundAxis(axis, angle);
+                locations.add(centralPoint.clone().add(vector).toLocation(initiatorLocation.getWorld()));
+            }
+        }
     }
 }

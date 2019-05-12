@@ -11,13 +11,13 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 public class BeamEntityFilter implements EntityTargetFilter {
     private final Location startPoint;
     private final Location targetLocation;
-    private final int radius;
+    private final double radius;
     private final int length;
 
     private final Vector unitDirectional;
     private final Vector fullDirectional;
 
-    public BeamEntityFilter(Location startPoint, Location targetLocation, int radius, int length) {
+    public BeamEntityFilter(Location startPoint, Location targetLocation, double radius, int length) {
         this.startPoint = startPoint;
         this.targetLocation = targetLocation;
         this.radius = radius;

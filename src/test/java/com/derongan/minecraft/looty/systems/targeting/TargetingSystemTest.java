@@ -1,15 +1,7 @@
 package com.derongan.minecraft.looty.systems.targeting;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.derongan.minecraft.looty.EntityMockingUtils;
-import com.derongan.minecraft.looty.component.internal.Origins;
-import com.derongan.minecraft.looty.component.internal.TargetHistory;
-import com.derongan.minecraft.looty.component.internal.Targets;
-import com.derongan.minecraft.looty.component.target.Radius;
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
-import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.*;
@@ -20,7 +12,7 @@ public class TargetingSystemTest {
 
     @Before
     public void setUp() {
-        targetingSystem = spy(new TargetingSystem());
+        targetingSystem = spy(new TargetingSystem(null));
         engine = new Engine();
         engine.addSystem(targetingSystem);
     }
