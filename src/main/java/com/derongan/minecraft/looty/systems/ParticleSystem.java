@@ -46,6 +46,8 @@ public class ParticleSystem extends IteratingSystem {
 
         List<Location> spawnLocations = new ArrayList<>();
 
+        boolean doubleIt = false;
+
         switch (particle.getStyle()) {
             case ORIGIN:
                 origins.getTargetOrigins()
@@ -81,6 +83,8 @@ public class ParticleSystem extends IteratingSystem {
                     });
                 }
                 break;
+            case DOUBLE_SPIRAL:
+                doubleIt = true;
             case SPIRAL:
                 double radius = radiusComponentMapper.get(entity).getRadius();
                 int length = beamComponentMapper.has(entity) ? beamComponentMapper.get(entity).getLength() : 4;
@@ -102,7 +106,7 @@ public class ParticleSystem extends IteratingSystem {
                                 .subtract(initiatorLocation.toVector());
                     }
 
-                    addParticlesInBeam(spawnLocations, initiatorLocation, direction, radius, length, true);
+                    addParticlesInBeam(spawnLocations, initiatorLocation, direction, radius, length, true, doubleIt);
                 }
         }
 
@@ -112,10 +116,11 @@ public class ParticleSystem extends IteratingSystem {
 
     private void spawnParticleAtLocation(org.bukkit.Particle particle, Location location) {
         World world = location.getWorld();
-        world.spawnParticle(particle, location, 1, 0, 0, 0, .001);
+        world.spawnParticle(particle, location, 1, 0, 0, 0, .001, null, true);
     }
 
-    private void addParticlesInBeam(List<Location> locations, Location initiatorLocation, Vector axis, double radius, int length, boolean spiral) {
+    private void addParticlesInBeam(List<Location> locations, Location initiatorLocation, Vector axis, double radius, int length, boolean spiral, boolean doubleIt) {
+        axis = axis.clone().normalize();
         int numParticles = (int) Math.pow(10, Math.log(radius + 1));
         if (spiral) {
             numParticles = 1;
@@ -136,18 +141,25 @@ public class ParticleSystem extends IteratingSystem {
 
         clockArm.multiply(radius);
 
-        for (double i = 0; i < length + 1; i += .05) {
+        //TODO include end
+        for (double i = 0; i < length; i += .05) {
             Vector centralPoint = axis.clone().multiply(i).add(initiatorLocation.toVector());
 
             for (int j = 0; j < numParticles; j++) {
                 double angle = ((double) j / numParticles) * Math.PI * 2;
 
                 if (spiral) {
-                    angle = i * Math.PI * 2;
+                    angle = i * Math.PI;
                 }
 
                 Vector vector = clockArm.clone().rotateAroundAxis(axis, angle);
                 locations.add(centralPoint.clone().add(vector).toLocation(initiatorLocation.getWorld()));
+
+                if(doubleIt){
+                    angle = i * Math.PI + Math.PI;
+                    vector = clockArm.clone().rotateAroundAxis(axis, angle);
+                    locations.add(centralPoint.clone().add(vector).toLocation(initiatorLocation.getWorld()));
+                }
             }
         }
     }

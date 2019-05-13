@@ -8,7 +8,8 @@ public class Particle implements Component {
         ORIGIN,
         TARGET,
         OUTLINE,
-        SPIRAL
+        SPIRAL,
+        DOUBLE_SPIRAL
     }
 
     private org.bukkit.Particle particle;

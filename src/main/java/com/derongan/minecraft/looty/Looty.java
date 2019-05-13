@@ -1,6 +1,8 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
+import com.derongan.minecraft.looty.component.effective.Damage;
+import com.derongan.minecraft.looty.component.effective.Ignite;
 import com.derongan.minecraft.looty.component.effective.Particle;
 import com.derongan.minecraft.looty.component.target.Beam;
 import com.derongan.minecraft.looty.component.target.Radius;
@@ -40,11 +42,15 @@ class Looty {
         SkillTrigger skillTrigger = SkillTrigger.builder().setHand(Hand.RIGHT).build();
 
         ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Radius.create(.5))
-                .addComponent(()-> Beam.create(20))
-                .addComponent(() -> Particle.create(org.bukkit.Particle.DRAGON_BREATH, Particle.ParticleStyle.SPIRAL));
+                .addComponent(() -> Radius.create(1))
+                .addComponent(() -> Beam.create(32))
+                .addComponent(() -> Damage.create(45))
+                .addComponent(() -> Particle.create(org.bukkit.Particle.DRAGON_BREATH, Particle.ParticleStyle.DOUBLE_SPIRAL));
 
-        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder().addComponent(() -> Particle.create(org.bukkit.Particle.HEART, Particle.ParticleStyle.INITIATOR));
+        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder()
+                .addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.TARGET))
+                .addComponent(() -> Beam.create(32))
+                .addComponent(() -> Radius.create(1));
 
         Skill skill = Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
 

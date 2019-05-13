@@ -2,8 +2,10 @@ package com.derongan.minecraft.looty.systems.targeting;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
@@ -23,29 +25,51 @@ public class BeamEntityFilter implements EntityTargetFilter {
         this.radius = radius;
         this.length = length;
 
-        this.unitDirectional = this.targetLocation.toVector().subtract(targetLocation.toVector()).normalize();
+        this.unitDirectional = this.targetLocation.toVector().subtract(startPoint.toVector()).normalize();
         this.fullDirectional = unitDirectional.clone().multiply(length);
     }
 
     // TODO this should probably be more careful about what entities we bother sorting.
     @Override
     public Set<Entity> getTargets() {
-        return startPoint.getWorld()
-                .getNearbyEntities(startPoint, length, length, length)
+        Collection<Entity> nearbyEntities = startPoint.getWorld()
+                .getNearbyEntities(startPoint, length, length, length);
+
+//        nearbyEntities.forEach(e -> {
+//            e.setCustomName("In Cube");
+//            e.setCustomNameVisible(true);
+//
+//            Bukkit.getScheduler().scheduleSyncDelayedTask(LootyPlugin.getPlugin(LootyPlugin.class), () -> {
+//                e.setCustomNameVisible(false);
+//                e.setCustomName("");
+//            }, 200);
+//        });
+
+
+        return nearbyEntities
                 .stream()
+                .filter(e -> !(e instanceof Player))
                 .filter(this::shouldTarget)
                 .collect(toImmutableSet());
     }
 
     private boolean shouldTarget(Entity entity) {
-        Vector targetToStart = entity.getLocation().toVector().subtract(startPoint.toVector());
-        Vector targetToEnd = entity.getLocation().toVector().subtract(targetLocation.toVector());
+        Vector entityVectorAdjustedForHeight = entity.getLocation()
+                .toVector()
+                .add(new Vector(0, entity.getHeight() / 2.0, 0));
+        Vector startToEntity = entityVectorAdjustedForHeight.clone().subtract(startPoint.toVector());
+        Vector endToEntity = entityVectorAdjustedForHeight.clone().subtract(startPoint.toVector().add(fullDirectional));
 
+//        System.out.println(String.format("Start Location: %s\nEntity Location: %s", startPoint.toVector(), entityVectorAdjustedForHeight));
 
-        return targetToStart.dot(fullDirectional) >= 0 &&
-                targetToEnd.dot(fullDirectional) <= 0 &&
-                targetToStart.getCrossProduct(fullDirectional)
-                        .lengthSquared() < radius * radius * unitDirectional.lengthSquared();
+        System.out.println(startToEntity.getCrossProduct(fullDirectional).lengthSquared());
+        System.out.println(fullDirectional.getCrossProduct(startToEntity).lengthSquared());
+//        System.out.println(radius);
+
+        return startToEntity.dot(fullDirectional) >= 0 &&
+                endToEntity.dot(fullDirectional) <= 0 &&
+                startToEntity.getCrossProduct(fullDirectional)
+                        .lengthSquared() < radius * radius * fullDirectional.lengthSquared();
 
     }
 }
