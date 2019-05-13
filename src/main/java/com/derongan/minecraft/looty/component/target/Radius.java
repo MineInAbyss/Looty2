@@ -3,17 +3,17 @@ package com.derongan.minecraft.looty.component.target;
 import com.derongan.minecraft.looty.component.Component;
 
 public class Radius implements Component {
-    private final int radius;
+    private final double radius;
 
-    private Radius(int radius) {
+    private Radius(double radius) {
         this.radius = radius;
     }
 
-    public int getRadius() {
+    public double getRadius() {
         return radius;
     }
 
-    public static Radius create(int radius) {
+    public static Radius create(double radius) {
         return new Radius(radius);
     }
 }
