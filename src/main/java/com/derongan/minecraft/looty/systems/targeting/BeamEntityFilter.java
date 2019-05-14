@@ -60,12 +60,6 @@ public class BeamEntityFilter implements EntityTargetFilter {
         Vector startToEntity = entityVectorAdjustedForHeight.clone().subtract(startPoint.toVector());
         Vector endToEntity = entityVectorAdjustedForHeight.clone().subtract(startPoint.toVector().add(fullDirectional));
 
-//        System.out.println(String.format("Start Location: %s\nEntity Location: %s", startPoint.toVector(), entityVectorAdjustedForHeight));
-
-        System.out.println(startToEntity.getCrossProduct(fullDirectional).lengthSquared());
-        System.out.println(fullDirectional.getCrossProduct(startToEntity).lengthSquared());
-//        System.out.println(radius);
-
         return startToEntity.dot(fullDirectional) >= 0 &&
                 endToEntity.dot(fullDirectional) <= 0 &&
                 startToEntity.getCrossProduct(fullDirectional)
