@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.derongan.minecraft.looty.component.effective.Damage;
 import com.derongan.minecraft.looty.component.effective.Ignite;
 import com.derongan.minecraft.looty.component.effective.Particle;
+import com.derongan.minecraft.looty.component.effective.Sound;
 import com.derongan.minecraft.looty.component.target.Beam;
 import com.derongan.minecraft.looty.component.target.Radius;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
@@ -40,25 +41,17 @@ class Looty {
 
     void onEnable() {
         SkillTrigger skillTrigger = SkillTrigger.builder().setHand(Hand.RIGHT).build();
-
-        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Radius.create(1))
-                .addComponent(() -> Beam.create(32))
-                .addComponent(() -> Damage.create(45))
-                .addComponent(() -> Particle.create(org.bukkit.Particle.DRAGON_BREATH, Particle.ParticleStyle.DOUBLE_SPIRAL));
-
-        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.TARGET))
-                .addComponent(() -> Beam.create(32))
-                .addComponent(() -> Radius.create(1));
-
-        Skill skill = Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
+        SkillTrigger skillTrigger2 = SkillTrigger.builder()
+                .setHand(Hand.RIGHT)
+                .addModifier(InputModifier.SNEAKING)
+                .build();
 
         ItemType itemType = ItemType.builder()
                 .setDurability((short) 1)
                 .setMaterial(Material.DIAMOND_AXE)
                 .setName("Test Axe")
-                .addSkillWithTrigger(skillTrigger, skill)
+                .addSkillWithTrigger(skillTrigger, getRaygun())
+                .addSkillWithTrigger(skillTrigger2, getSmoker())
                 .build();
 
         itemRegistrar.register(itemType);
@@ -70,5 +63,39 @@ class Looty {
 
 
         logger.info("Loaded Looty");
+    }
+
+    private static Skill getRaygun() {
+        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
+                .addComponent(() -> Radius.create(.25))
+                .addComponent(() -> Beam.create(32))
+                .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_ENDER_DRAGON_SHOOT, Sound.SoundLocation.ORIGIN, 2))
+                .addComponent(() -> Particle.create(org.bukkit.Particle.DRAGON_BREATH, Particle.ParticleStyle.DOUBLE_SPIRAL));
+
+        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder()
+                .addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.TARGET))
+                .addComponent(() -> Beam.create(32))
+                .addComponent(() -> Damage.create(1))
+                .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, Sound.SoundLocation.TARGET, 2))
+                .addComponent(() -> Radius.create(1));
+
+        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
+    }
+
+    private static Skill getSmoker() {
+        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
+                .addComponent(() -> Radius.create(.25))
+                .addComponent(() -> Beam.create(32))
+                .addComponent(() -> Sound.create(org.bukkit.Sound.BLOCK_FIRE_AMBIENT, Sound.SoundLocation.ORIGIN, 2))
+                .addComponent(() -> Particle.create(org.bukkit.Particle.SMOKE_NORMAL, Particle.ParticleStyle.DOUBLE_SPIRAL));
+
+        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder()
+                .addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.TARGET))
+                .addComponent(() -> Beam.create(32))
+                .addComponent(() -> Ignite.create(45))
+                .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, Sound.SoundLocation.TARGET, 2))
+                .addComponent(() -> Radius.create(1));
+
+        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
     }
 }

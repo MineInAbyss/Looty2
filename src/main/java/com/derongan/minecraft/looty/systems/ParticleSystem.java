@@ -119,6 +119,7 @@ public class ParticleSystem extends IteratingSystem {
         world.spawnParticle(particle, location, 1, 0, 0, 0, .001, null, true);
     }
 
+    // TODO improve logic for outline vs spiral
     private void addParticlesInBeam(List<Location> locations, Location initiatorLocation, Vector axis, double radius, int length, boolean spiral, boolean doubleIt) {
         axis = axis.clone().normalize();
         int numParticles = (int) Math.pow(10, Math.log(radius + 1));
@@ -142,7 +143,7 @@ public class ParticleSystem extends IteratingSystem {
         clockArm.multiply(radius);
 
         //TODO include end
-        for (double i = 0; i < length; i += .05) {
+        for (double i = 0; i < length; i += .1) {
             Vector centralPoint = axis.clone().multiply(i).add(initiatorLocation.toVector());
 
             for (int j = 0; j < numParticles; j++) {
