@@ -1,10 +1,7 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
-import com.derongan.minecraft.looty.component.effective.Damage;
-import com.derongan.minecraft.looty.component.effective.Ignite;
-import com.derongan.minecraft.looty.component.effective.Particle;
-import com.derongan.minecraft.looty.component.effective.Sound;
+import com.derongan.minecraft.looty.component.effective.*;
 import com.derongan.minecraft.looty.component.target.Beam;
 import com.derongan.minecraft.looty.component.target.Radius;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
@@ -45,6 +42,10 @@ class Looty {
                 .setHand(Hand.RIGHT)
                 .addModifier(InputModifier.SNEAKING)
                 .build();
+        SkillTrigger skillTrigger3 = SkillTrigger.builder()
+                .setHand(Hand.RIGHT)
+                .addModifier(InputModifier.SPRINTING)
+                .build();
 
         ItemType itemType = ItemType.builder()
                 .setDurability((short) 1)
@@ -52,6 +53,7 @@ class Looty {
                 .setName("Test Axe")
                 .addSkillWithTrigger(skillTrigger, getRaygun())
                 .addSkillWithTrigger(skillTrigger2, getSmoker())
+                .addSkillWithTrigger(skillTrigger3, getZappy())
                 .build();
 
         itemRegistrar.register(itemType);
@@ -65,9 +67,26 @@ class Looty {
         logger.info("Loaded Looty");
     }
 
+
+    private static Skill getZappy() {
+        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
+                .addComponent(() -> Radius.create(5))
+                .addComponent(() -> Lightning.create())
+                .addComponent(() -> Beam.create(64))
+                .addComponent(()->Particle.create(org.bukkit.Particle.LAVA, Particle.ParticleStyle.TARGET));
+
+        ActionEntityBuilder actionEntityBuilder2 = new ActionEntityBuilder()
+                .addComponent(() -> Radius.create(2))
+                .addComponent(() -> Beam.create(64))
+                .addComponent(()->Particle.create(org.bukkit.Particle.CRIT, Particle.ParticleStyle.SPIRAL));
+
+        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(actionEntityBuilder2).build();
+    }
+
+
     private static Skill getRaygun() {
         ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Radius.create(.25))
+                .addComponent(() -> Radius.create(.1))
                 .addComponent(() -> Beam.create(32))
                 .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_ENDER_DRAGON_SHOOT, Sound.SoundLocation.ORIGIN, 2))
                 .addComponent(() -> Particle.create(org.bukkit.Particle.DRAGON_BREATH, Particle.ParticleStyle.DOUBLE_SPIRAL));
@@ -75,9 +94,10 @@ class Looty {
         ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder()
                 .addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.TARGET))
                 .addComponent(() -> Beam.create(32))
-                .addComponent(() -> Damage.create(1))
+//                .addComponent(() -> Damage.create(1))
                 .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, Sound.SoundLocation.TARGET, 2))
-                .addComponent(() -> Radius.create(1));
+                .addComponent(() -> Radius.create(2))
+                .addComponent(()-> new VelocityImparting(1, VelocityImparting.Reference.TARGET, VelocityImparting.Reference.AWAY, VelocityImparting.Target.TARGET));
 
         return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
     }

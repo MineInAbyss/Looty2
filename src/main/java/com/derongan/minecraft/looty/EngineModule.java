@@ -15,12 +15,14 @@ class EngineModule {
     // TODO there must be a better way of injecting these
     @Provides
     @Singleton
-    Engine provideEngine(TargetingSystem targetingSystem, DamageSystem damageSystem, IgniteSystem igniteSystem, ParticleSystem particleSystem, SoundSystem soundSystem, CleanupSystem cleanupSystem) {
+    Engine provideEngine(TargetingSystem targetingSystem, VelocityImpartingSystem velocityImpartingSystem, DamageSystem damageSystem, IgniteSystem igniteSystem, LightningSystem lightningSystem, ParticleSystem particleSystem, SoundSystem soundSystem, CleanupSystem cleanupSystem) {
         Engine engine = new Engine();
 
         engine.addSystem(targetingSystem);
+        engine.addSystem(velocityImpartingSystem);
         engine.addSystem(damageSystem);
         engine.addSystem(igniteSystem);
+        engine.addSystem(lightningSystem);
         engine.addSystem(particleSystem);
         engine.addSystem(soundSystem);
         engine.addSystem(cleanupSystem);
