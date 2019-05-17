@@ -1,8 +1,8 @@
 package com.derongan.minecraft.looty.registration;
 
-import com.derongan.minecraft.looty.ItemType;
-import com.derongan.minecraft.looty.Skill;
-import com.derongan.minecraft.looty.SkillTrigger;
+import com.derongan.minecraft.looty.Item.ItemType;
+import com.derongan.minecraft.looty.skill.Skill;
+import com.derongan.minecraft.looty.skill.SkillTrigger;
 import com.google.common.collect.ImmutableSet;
 
 import javax.inject.Inject;

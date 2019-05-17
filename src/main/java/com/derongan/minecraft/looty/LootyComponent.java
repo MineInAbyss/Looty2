@@ -1,5 +1,6 @@
 package com.derongan.minecraft.looty;
 
+import com.derongan.minecraft.looty.skill.EngineModule;
 import dagger.Component;
 
 import javax.inject.Singleton;

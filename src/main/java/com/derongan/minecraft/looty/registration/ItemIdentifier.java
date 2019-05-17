@@ -1,6 +1,6 @@
 package com.derongan.minecraft.looty.registration;
 
-import com.derongan.minecraft.looty.ItemType;
+import com.derongan.minecraft.looty.Item.ItemType;
 import com.google.auto.value.AutoValue;
 import org.bukkit.Material;
 

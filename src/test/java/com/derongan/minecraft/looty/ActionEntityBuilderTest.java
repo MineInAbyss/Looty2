@@ -1,8 +1,9 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Entity;
-import com.derongan.minecraft.looty.component.effective.Damage;
-import com.derongan.minecraft.looty.component.effective.Ignite;
+import com.derongan.minecraft.looty.skill.ActionEntityBuilder;
+import com.derongan.minecraft.looty.skill.component.effective.Damage;
+import com.derongan.minecraft.looty.skill.component.effective.Ignite;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;

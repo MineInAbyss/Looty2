@@ -1,9 +1,12 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
-import com.derongan.minecraft.looty.component.effective.*;
-import com.derongan.minecraft.looty.component.target.Beam;
-import com.derongan.minecraft.looty.component.target.Radius;
+import com.derongan.minecraft.looty.Item.ItemSkillListener;
+import com.derongan.minecraft.looty.Item.ItemType;
+import com.derongan.minecraft.looty.skill.*;
+import com.derongan.minecraft.looty.skill.component.effective.*;
+import com.derongan.minecraft.looty.skill.component.target.Beam;
+import com.derongan.minecraft.looty.skill.component.target.Radius;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegistrar;
 import org.bukkit.Material;
@@ -15,7 +18,7 @@ import java.util.logging.Logger;
 
 @Singleton
 class Looty {
-    private final SkillListener skillListener;
+    private final ItemSkillListener itemSkillListener;
     private final PlayerSkillRegistrar playerSkillRegistrar;
     private final ItemRegistrar itemRegistrar;
     private final LootyCommandExecutor lootyCommandExecutor;
@@ -25,7 +28,7 @@ class Looty {
     private final Logger logger;
 
     @Inject
-    Looty(SkillListener skillListener,
+    Looty(ItemSkillListener itemSkillListener,
           PlayerSkillRegistrar playerSkillRegistrar,
           ItemRegistrar itemRegistrar,
           LootyCommandExecutor lootyCommandExecutor,
@@ -33,7 +36,7 @@ class Looty {
           Server server,
           Engine engine,
           Logger logger) {
-        this.skillListener = skillListener;
+        this.itemSkillListener = itemSkillListener;
         this.playerSkillRegistrar = playerSkillRegistrar;
         this.itemRegistrar = itemRegistrar;
         this.lootyCommandExecutor = lootyCommandExecutor;
@@ -66,7 +69,7 @@ class Looty {
         itemRegistrar.register(itemType);
 
         server.getScheduler().scheduleSyncRepeatingTask(lootyPlugin, () -> engine.update(1), 1, 1);
-        server.getPluginManager().registerEvents(skillListener, lootyPlugin);
+        server.getPluginManager().registerEvents(itemSkillListener, lootyPlugin);
         lootyPlugin.getCommand("looty").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("looties").setExecutor(lootyCommandExecutor);
 
