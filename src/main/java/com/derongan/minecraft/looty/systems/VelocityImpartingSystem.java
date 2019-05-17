@@ -60,21 +60,23 @@ public class VelocityImpartingSystem extends IteratingSystem {
             Vector directionVector = to.toVector().subtract(from.toVector()).normalize();
             Vector pushVector = directionVector.multiply(strength);
 
-            if (!pushee.isOnGround()) {
-                pushee.setVelocity(pushee.getVelocity().add(pushVector));
-            } else {
-                pushee.setVelocity(pushee.getVelocity().add(pushVector.multiply(new Vector(1, -1, 1))));
-            }
+            pushee.setVelocity(pushee.getVelocity().add(pushVector));
         });
     }
 
-    private Location parseLocationFromReference(VelocityImparting.Reference reference, Entity entity, Location targetLoc) {
+    private Location parseLocationFromReference(VelocityImparting.Reference reference,
+                                                Entity entity,
+                                                Location targetLoc) {
         TargetInfo targetInfo = (TargetInfo) targetInfoComponentMapper.get(entity);
         Origins origins = (Origins) originsComponentMapper.get(entity);
 
         switch (reference) {
             case TARGET:
                 return targetLoc;
+            case SKY:
+                return targetLoc.clone().add(new Vector(0, 1, 0));
+            case GROUND:
+                return targetLoc.clone().add(new Vector(0, -1, 0));
             case AWAY:
                 if (beamComponentMapper.has(entity)) {
                     Vector start = targetInfo.getInitiator().get().getLocation().toVector();
@@ -91,19 +93,5 @@ public class VelocityImpartingSystem extends IteratingSystem {
             default:
                 return targetInfo.getInitiator().get().getLocation();
         }
-    }
-
-    private Location averageLocation(Collection<Location> locations) {
-        if (locations.size() < 1) {
-            return null;
-        }
-        World world = locations.stream().findAny().get().getWorld();
-
-        return locations.stream()
-                .map(Location::toVector)
-                .map(vec -> vec.multiply(1.0 / locations.size()))
-                .reduce((a, b) -> a.clone().add(b))
-                .orElse(new Vector(0, 0, 0))
-                .toLocation(world);
     }
 }

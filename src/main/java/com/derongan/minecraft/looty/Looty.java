@@ -25,7 +25,14 @@ class Looty {
     private final Logger logger;
 
     @Inject
-    Looty(SkillListener skillListener, PlayerSkillRegistrar playerSkillRegistrar, ItemRegistrar itemRegistrar, LootyCommandExecutor lootyCommandExecutor, LootyPlugin lootyPlugin, Server server, Engine engine, Logger logger) {
+    Looty(SkillListener skillListener,
+          PlayerSkillRegistrar playerSkillRegistrar,
+          ItemRegistrar itemRegistrar,
+          LootyCommandExecutor lootyCommandExecutor,
+          LootyPlugin lootyPlugin,
+          Server server,
+          Engine engine,
+          Logger logger) {
         this.skillListener = skillListener;
         this.playerSkillRegistrar = playerSkillRegistrar;
         this.itemRegistrar = itemRegistrar;
@@ -51,7 +58,7 @@ class Looty {
                 .setDurability((short) 1)
                 .setMaterial(Material.DIAMOND_AXE)
                 .setName("Test Axe")
-                .addSkillWithTrigger(skillTrigger, getRaygun())
+                .addSkillWithTrigger(skillTrigger, getIcer())
                 .addSkillWithTrigger(skillTrigger2, getSmoker())
                 .addSkillWithTrigger(skillTrigger3, getZappy())
                 .build();
@@ -73,12 +80,12 @@ class Looty {
                 .addComponent(() -> Radius.create(5))
                 .addComponent(() -> Lightning.create())
                 .addComponent(() -> Beam.create(64))
-                .addComponent(()->Particle.create(org.bukkit.Particle.LAVA, Particle.ParticleStyle.TARGET));
+                .addComponent(() -> Particle.create(org.bukkit.Particle.LAVA, Particle.ParticleStyle.TARGET));
 
         ActionEntityBuilder actionEntityBuilder2 = new ActionEntityBuilder()
                 .addComponent(() -> Radius.create(2))
                 .addComponent(() -> Beam.create(64))
-                .addComponent(()->Particle.create(org.bukkit.Particle.CRIT, Particle.ParticleStyle.SPIRAL));
+                .addComponent(() -> Particle.create(org.bukkit.Particle.CRIT, Particle.ParticleStyle.SPIRAL));
 
         return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(actionEntityBuilder2).build();
     }
@@ -97,7 +104,7 @@ class Looty {
 //                .addComponent(() -> Damage.create(1))
                 .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, Sound.SoundLocation.TARGET, 2))
                 .addComponent(() -> Radius.create(2))
-                .addComponent(()-> new VelocityImparting(1, VelocityImparting.Reference.TARGET, VelocityImparting.Reference.AWAY, VelocityImparting.Target.TARGET));
+                .addComponent(() -> new VelocityImparting(1, VelocityImparting.Reference.TARGET, VelocityImparting.Reference.AWAY, VelocityImparting.Target.TARGET));
 
         return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
     }
@@ -117,5 +124,18 @@ class Looty {
                 .addComponent(() -> Radius.create(1));
 
         return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
+    }
+
+    private static Skill getIcer() {
+        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
+                .addComponent(() -> Block.create(Material.PACKED_ICE, 150))
+                .addComponent(()->Radius.create(1))
+                .addComponent(()->Particle.create(org.bukkit.Particle.SNOW_SHOVEL, Particle.ParticleStyle.OUTLINE))
+                .addComponent(() -> new VelocityImparting(.75, VelocityImparting.Reference.GROUND, VelocityImparting.Reference.SKY, VelocityImparting.Target.TARGET));
+
+        ActionEntityBuilder actionEntityBuilder2 = new ActionEntityBuilder()
+                .addComponent(()->Radius.create(2))
+                .addComponent(()->Particle.create(org.bukkit.Particle.SNOW_SHOVEL, Particle.ParticleStyle.OUTLINE));
+        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(actionEntityBuilder2).build();
     }
 }
