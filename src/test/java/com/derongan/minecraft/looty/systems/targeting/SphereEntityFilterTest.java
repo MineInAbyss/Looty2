@@ -12,7 +12,7 @@ import java.util.Collection;
 import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.*;
 
-public class SphereFilterTest {
+public class SphereEntityFilterTest {
 
     @Test
     public void testSphereFilter() {
