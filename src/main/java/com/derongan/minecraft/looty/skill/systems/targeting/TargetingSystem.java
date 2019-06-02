@@ -1,82 +1,138 @@
 package com.derongan.minecraft.looty.skill.systems.targeting;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.derongan.minecraft.looty.DynamicLocation;
+import com.derongan.minecraft.looty.OffsetDynamicLocation;
+import com.derongan.minecraft.looty.skill.DirectionType;
+import com.derongan.minecraft.looty.skill.LocationReferenceType;
 import com.derongan.minecraft.looty.skill.component.Families;
-import com.derongan.minecraft.looty.skill.component.internal.Origins;
-import com.derongan.minecraft.looty.skill.component.internal.TargetInfo;
-import com.derongan.minecraft.looty.skill.component.internal.Targets;
-import com.derongan.minecraft.looty.skill.component.target.Beam;
-import com.derongan.minecraft.looty.skill.component.target.Radius;
-import com.derongan.minecraft.looty.skill.component.target.Sticky;
+import com.derongan.minecraft.looty.skill.component.target.*;
+import com.derongan.minecraft.looty.skill.systems.AbstractIteratingSystem;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
-public class TargetingSystem extends IteratingSystem {
-    private final ComponentMapper targetInfoComponentMapper = ComponentMapper.getFor(TargetInfo.TARGET_INFO_CLASS);
-    private final ComponentMapper<Radius> radiusComponentMapper = ComponentMapper.getFor(Radius.class);
-    private final ComponentMapper<Beam> beamComponentMapper = ComponentMapper.getFor(Beam.class);
-    private final ComponentMapper<Targets> targetsComponentMapper = ComponentMapper.getFor(Targets.class);
-    private final ComponentMapper<Sticky> stickyComponentMapper = ComponentMapper.getFor(Sticky.class);
+public class TargetingSystem extends AbstractIteratingSystem {
     private final Logger logger;
 
     @Inject
     TargetingSystem(Logger logger) {
-        super(Families.TARGETING_FAMILY);
+        super(Families.ALL_ENTITIES);
         this.logger = logger;
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        TargetInfo targetInfo = (TargetInfo) targetInfoComponentMapper.get(entity);
-
-        Targets targets;
-
-        if (!targetsComponentMapper.has(entity)) {
-            targets = new Targets();
-            entity.add(targets);
-        } else {
-            targets = targetsComponentMapper.get(entity);
-        }
-
-        Origins.Builder originsBuilder = Origins.builder();
-
-        if (stickyComponentMapper.has(entity) && targetInfo.getTargetEntity().isPresent()) {
-            originsBuilder.addEntityTarget(targetInfo.getTargetEntity().get());
-        } else {
-            originsBuilder.addLocationTarget(targetInfo.getTargetLocation());
-        }
-
-        Origins origins = originsBuilder.build();
-        entity.add(origins);
-
-        if (radiusComponentMapper.has(entity)) {
-            origins.getTargetOrigins().forEach(origin -> addTargetsForOrigin(origin, entity, targetInfo, targets));
-        } else {
-            targetInfo.getTargetEntity().ifPresent(targets::addTarget);
+        setupOriginAndTarget(entity);
+        if (speedComponentMapper.has(entity)) {
+            advanceSection(entity);
         }
     }
 
-    private void addTargetsForOrigin(Origins.Origin origin, Entity entity, TargetInfo targetInfo, Targets targets) {
-        double radius = radiusComponentMapper.get(entity).getRadius();
+    private void advanceSection(Entity entity) {
+        Location targetLocation = targetComponentMapper.get(entity).dynamicLocation.getLocation();
+        Location originLocation = originComponentMapper.get(entity).dynamicLocation.getLocation();
 
-        if (beamComponentMapper.has(entity) && targetInfo.getInitiator().isPresent()) {
-            logger.info("Attempting to fire beam");
-            org.bukkit.entity.Entity initiator = targetInfo.getInitiator().get();
-            Location initiatorLocation = initiator instanceof Player ? ((Player) initiator).getEyeLocation() : initiator
-                    .getLocation()
-                    .clone()
-                    .add(0, initiator.getHeight() * .9, 0);
-            new BeamEntityFilter(initiatorLocation, origin.getLocation(), radius, beamComponentMapper.get(entity)
-                    .getLength()).getTargets()
-                    .forEach(targets::addTarget);
+        Head head = headComponentMapper.get(entity);
+        Tail tail = tailComponentMapper.get(entity);
+        if (head == null || tail == null) {
+            if (head == null) {
+                head = new Head();
+                head.location = originLocation.clone();
+                entity.add(head);
+
+            }
+            if (tail == null) {
+                tail = new Tail();
+                tail.location = originLocation.clone();
+                entity.add(tail);
+            }
+        }
+
+        if (speedComponentMapper.has(entity)) {
+            Speed speed = speedComponentMapper.get(entity);
+
+            Vector direction = targetLocation.toVector().subtract(originLocation.toVector()).normalize();
+
+            Vector headStep = direction.clone().multiply(speed.headSpeed);
+            Vector tailStep = direction.clone().multiply(speed.tailSpeed);
+
+            head.location.add(headStep);
+
+            if (speed.tailWait == 0) {
+                tail.location.add(tailStep);
+            } else {
+                speed.tailWait--;
+            }
+
         } else {
-            new SphereEntityFilter(origin.getLocation(), radius).getTargets()
-                    .forEach(targets::addTarget);
+            head.location = targetLocation;
+            tail.location = originLocation;
+        }
+    }
+
+
+    private void setupOriginAndTarget(Entity entity) {
+        ActionAttributes actionAttributes = actionAttributesComponentMapper.get(entity);
+        if (targetChooserComponentMapper.has(entity) && !targetComponentMapper.has(entity)) {
+            Target target = new Target();
+            TargetChooser targetChooser = targetChooserComponentMapper.get(entity);
+            target.dynamicLocation = getOffsetLocation(actionAttributes, targetChooser);
+            entity.add(target);
+        }
+
+        if (originChooserComponentMapper.has(entity) && !originComponentMapper.has(entity)) {
+            Origin origin = new Origin();
+            OriginChooser originChooser = originChooserComponentMapper.get(entity);
+            origin.dynamicLocation = getOffsetLocation(actionAttributes, originChooser);
+            entity.add(origin);
+        } else {
+            Origin origin = new Origin();
+            origin.dynamicLocation = actionAttributes.initiatorLocation;
+            entity.add(origin);
+        }
+    }
+
+    private DynamicLocation getOffsetLocation(ActionAttributes actionAttributes, Offsetable offsetableChooser) {
+        DynamicLocation referenceDynamicLocation = getReferenceLocation(actionAttributes, offsetableChooser.getLocationReferenceType());
+        Vector referenceDirection = getReferenceDirection(offsetableChooser.getDirectionType(), actionAttributes.referenceHeading)
+                .normalize();
+
+        return new OffsetDynamicLocation(referenceDynamicLocation, referenceDirection.clone()
+                .multiply(offsetableChooser.getMagnitude()));
+    }
+
+    private DynamicLocation getReferenceLocation(ActionAttributes actionAttributes,
+                                                 LocationReferenceType locationReferenceType) {
+        switch (locationReferenceType) {
+            case INITIATOR:
+                return actionAttributes.initiatorLocation;
+            case IMPACT:
+                return actionAttributes.impactLocation;
+            default:
+                throw new IllegalStateException("LocationReferenceType must be INITIATOR or IMPACT");
+        }
+    }
+
+    private Vector getReferenceDirection(DirectionType directionType, Vector referenceHeading) {
+        switch (directionType) {
+            case UP:
+                return new Vector(0, 1, 0);
+            case DOWN:
+                return new Vector(0, -1, 0);
+            case RIGHT:
+                return referenceHeading.clone().setY(0).rotateAroundY(Math.PI / 2.0).multiply(-1);
+            case LEFT:
+                return referenceHeading.clone().setY(0).rotateAroundY(Math.PI / 2.0);
+            case FORWARD:
+                return referenceHeading.clone().setY(0);
+            case BACKWARD:
+                return referenceHeading.clone().setY(0).multiply(-1);
+            case HEADING:
+            default:
+                return referenceHeading.clone();
         }
     }
 }

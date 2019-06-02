@@ -5,6 +5,6 @@ import com.derongan.minecraft.looty.skill.component.Component;
 import com.derongan.minecraft.looty.skill.component.InternalComponent;
 
 @InternalComponent
-public class Origin implements Component {
+public class Target implements Component {
     public DynamicLocation dynamicLocation;
 }

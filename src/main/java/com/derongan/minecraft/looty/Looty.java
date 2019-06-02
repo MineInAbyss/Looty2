@@ -3,12 +3,11 @@ package com.derongan.minecraft.looty;
 import com.badlogic.ashley.core.Engine;
 import com.derongan.minecraft.looty.Item.ItemSkillListener;
 import com.derongan.minecraft.looty.Item.ItemType;
-import com.derongan.minecraft.looty.skill.*;
-import com.derongan.minecraft.looty.skill.component.effective.*;
-import com.derongan.minecraft.looty.skill.component.target.Beam;
-import com.derongan.minecraft.looty.skill.component.target.Radius;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegistrar;
+import com.derongan.minecraft.looty.skill.*;
+import com.derongan.minecraft.looty.skill.component.effective.Particle;
+import com.derongan.minecraft.looty.skill.component.target.*;
 import org.bukkit.Material;
 import org.bukkit.Server;
 
@@ -61,9 +60,8 @@ class Looty {
                 .setDurability((short) 1)
                 .setMaterial(Material.DIAMOND_AXE)
                 .setName("Test Axe")
-                .addSkillWithTrigger(skillTrigger, getIcer())
-                .addSkillWithTrigger(skillTrigger2, getSmoker())
-                .addSkillWithTrigger(skillTrigger3, getZappy())
+                .addSkillWithTrigger(skillTrigger, getSkill())
+                .addSkillWithTrigger(skillTrigger2, getSkill2())
                 .build();
 
         itemRegistrar.register(itemType);
@@ -77,68 +75,79 @@ class Looty {
         logger.info("Loaded Looty");
     }
 
+    private Skill getSkill() {
+        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder();
 
-    private static Skill getZappy() {
-        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Radius.create(5))
-                .addComponent(() -> Lightning.create())
-                .addComponent(() -> Beam.create(64))
-                .addComponent(() -> Particle.create(org.bukkit.Particle.LAVA, Particle.ParticleStyle.TARGET));
+        actionEntityBuilder
+                .addComponent(() -> {
+                    OriginChooser originChooser = new OriginChooser();
+                    originChooser.directionType = DirectionType.HEADING;
+                    originChooser.locationReferenceType = LocationReferenceType.INITIATOR;
+                    originChooser.magnitude = 1.0;
 
-        ActionEntityBuilder actionEntityBuilder2 = new ActionEntityBuilder()
-                .addComponent(() -> Radius.create(2))
-                .addComponent(() -> Beam.create(64))
-                .addComponent(() -> Particle.create(org.bukkit.Particle.CRIT, Particle.ParticleStyle.SPIRAL));
+                    return originChooser;
+                })
+                .addComponent(() -> Particle.create(org.bukkit.Particle.DRAGON_BREATH, Particle.ParticleStyle.OUTLINE))
+                .addComponent(() -> {
+                    Radius radius = new Radius();
+                    radius.radius = 1;
 
-        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(actionEntityBuilder2).build();
+                    return radius;
+                })
+                .addComponent(() -> {
+                    Linger linger = new Linger();
+
+                    linger.duration = 15 * 100;
+                    return linger;
+                });
+
+        return Skill.builder().addActionBuilder(actionEntityBuilder).build();
     }
 
+    private Skill getSkill2() {
+        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder();
 
-    private static Skill getRaygun() {
-        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Radius.create(.1))
-                .addComponent(() -> Beam.create(32))
-                .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_ENDER_DRAGON_SHOOT, Sound.SoundLocation.ORIGIN, 2))
-                .addComponent(() -> Particle.create(org.bukkit.Particle.DRAGON_BREATH, Particle.ParticleStyle.DOUBLE_SPIRAL));
+        actionEntityBuilder
+                .addComponent(() -> {
+                    OriginChooser originChooser = new OriginChooser();
+                    originChooser.directionType = DirectionType.HEADING;
+                    originChooser.locationReferenceType = LocationReferenceType.INITIATOR;
+                    originChooser.magnitude = 1.0;
 
-        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.TARGET))
-                .addComponent(() -> Beam.create(32))
-//                .addComponent(() -> Damage.create(1))
-                .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, Sound.SoundLocation.TARGET, 2))
-                .addComponent(() -> Radius.create(2))
-                .addComponent(() -> new VelocityImparting(1, VelocityImparting.Reference.TARGET, VelocityImparting.Reference.AWAY, VelocityImparting.Target.TARGET));
+                    return originChooser;
+                })
+                .addComponent(() -> {
+                    TargetChooser targetChooser = new TargetChooser();
+                    targetChooser.directionType = DirectionType.HEADING;
+                    targetChooser.locationReferenceType = LocationReferenceType.INITIATOR;
+                    targetChooser.magnitude = 100.0;
 
-        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
-    }
+                    return targetChooser;
+                })
+                .addComponent(() -> Particle.create(org.bukkit.Particle.SMOKE_NORMAL, Particle.ParticleStyle.PATH))
+                .addComponent(() -> {
+                    Radius radius = new Radius();
+                    radius.radius = 1;
 
-    private static Skill getSmoker() {
-        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Radius.create(.25))
-                .addComponent(() -> Beam.create(32))
-                .addComponent(() -> Sound.create(org.bukkit.Sound.BLOCK_FIRE_AMBIENT, Sound.SoundLocation.ORIGIN, 2))
-                .addComponent(() -> Particle.create(org.bukkit.Particle.SMOKE_NORMAL, Particle.ParticleStyle.DOUBLE_SPIRAL));
+                    return radius;
+                })
+                .addComponent(() -> {
+                    Speed speed = new Speed();
 
-        ActionEntityBuilder firePlayerBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Particle.create(org.bukkit.Particle.FLAME, Particle.ParticleStyle.TARGET))
-                .addComponent(() -> Beam.create(32))
-                .addComponent(() -> Ignite.create(45))
-                .addComponent(() -> Sound.create(org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, Sound.SoundLocation.TARGET, 2))
-                .addComponent(() -> Radius.create(1));
+                    speed.headSpeed = 10;
+                    speed.tailSpeed = 10;
 
-        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(firePlayerBuilder).build();
-    }
+                    speed.tailWait = 15;
 
-    private static Skill getIcer() {
-        ActionEntityBuilder actionEntityBuilder = new ActionEntityBuilder()
-                .addComponent(() -> Block.create(Material.PACKED_ICE, 150))
-                .addComponent(()->Radius.create(1))
-                .addComponent(()->Particle.create(org.bukkit.Particle.SNOW_SHOVEL, Particle.ParticleStyle.OUTLINE))
-                .addComponent(() -> new VelocityImparting(.75, VelocityImparting.Reference.GROUND, VelocityImparting.Reference.SKY, VelocityImparting.Target.TARGET));
+                    return speed;
+                })
+                .addComponent(() -> {
+                    Linger linger = new Linger();
 
-        ActionEntityBuilder actionEntityBuilder2 = new ActionEntityBuilder()
-                .addComponent(()->Radius.create(2))
-                .addComponent(()->Particle.create(org.bukkit.Particle.SNOW_SHOVEL, Particle.ParticleStyle.OUTLINE));
-        return Skill.builder().addActionBuilder(actionEntityBuilder).addActionBuilder(actionEntityBuilder2).build();
+                    linger.duration = 15 * 10;
+                    return linger;
+                });
+
+        return Skill.builder().addActionBuilder(actionEntityBuilder).build();
     }
 }

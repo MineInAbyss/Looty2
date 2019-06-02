@@ -2,6 +2,7 @@ package com.derongan.minecraft.looty.Item;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.derongan.minecraft.looty.DynamicLocationImpl;
 import com.derongan.minecraft.looty.registration.ItemIdentifier;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegistrar;
@@ -9,8 +10,9 @@ import com.derongan.minecraft.looty.skill.Hand;
 import com.derongan.minecraft.looty.skill.InputModifier;
 import com.derongan.minecraft.looty.skill.Skill;
 import com.derongan.minecraft.looty.skill.SkillTrigger;
-import com.derongan.minecraft.looty.skill.component.internal.TargetInfo;
+import com.derongan.minecraft.looty.skill.component.target.ActionAttributes;
 import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +22,7 @@ import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -71,25 +74,21 @@ public class ItemSkillListener implements Listener {
                 skillToUse = playerSkillRegistrar.getSkill(player, skillTriggerBuilder.build());
             }
 
-            RayTraceResult rayTraceResult = player
-                    .getWorld()
-                    .rayTrace(player.getEyeLocation(), player.getEyeLocation()
-                            .getDirection(), 5, FluidCollisionMode.NEVER, true, .1, (entity -> entity != player));
+            ActionAttributes actionAttributes = new ActionAttributes();
 
+            actionAttributes.initiatorLocation = new DynamicLocationImpl(player.getEyeLocation(), player);
+            actionAttributes.referenceHeading = player.getEyeLocation().getDirection();
 
-            TargetInfo.Builder targetInfoBuilder = TargetInfo.builder()
-                    .setInitiator(player)
-                    .setOrigin(player);
+            RayTraceResult rayTraceResult = getRayTraceResultOrDefault(player);
 
-            if (rayTraceResult != null) {
-                if (rayTraceResult.getHitEntity() != null) {
-                    targetInfoBuilder.setTargetEntity(rayTraceResult.getHitEntity());
-                }
-                targetInfoBuilder.setTargetLocation(rayTraceResult.getHitPosition().toLocation(player.getWorld()));
+            Vector hitPosition = rayTraceResult.getHitPosition();
+            Location hitLocation = hitPosition.toLocation(player.getWorld());
+            if (rayTraceResult.getHitEntity() != null) {
+                org.bukkit.entity.Entity hitEntity = rayTraceResult.getHitEntity();
+
+                actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation, hitEntity);
             } else {
-                targetInfoBuilder.setTargetLocation(player.getEyeLocation()
-                        .clone()
-                        .add(player.getEyeLocation().getDirection().clone().normalize().multiply(5)));
+                actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation);
             }
 
             skillToUse.ifPresent(skill -> {
@@ -97,10 +96,27 @@ public class ItemSkillListener implements Listener {
 
                 skill.getActionEntityBuilders().forEach(actionBuilder -> {
                     Entity entity = actionBuilder.build();
-                    entity.add(targetInfoBuilder.build());
+                    entity.add(actionAttributes);
                     engine.addEntity(entity);
                 });
             });
         }
+    }
+
+    private RayTraceResult getRayTraceResultOrDefault(Player player) {
+        RayTraceResult rayTraceResult = player
+                .getWorld()
+                .rayTrace(player.getEyeLocation(), player.getEyeLocation()
+                        .getDirection(), 5, FluidCollisionMode.NEVER, true, .1, (entity -> entity != player));
+
+
+        if (rayTraceResult == null) {
+            Location hitLocation = player.getEyeLocation()
+                    .clone()
+                    .add(player.getEyeLocation().getDirection().clone().normalize().multiply(5));
+            rayTraceResult = new RayTraceResult(hitLocation.toVector());
+        }
+
+        return rayTraceResult;
     }
 }

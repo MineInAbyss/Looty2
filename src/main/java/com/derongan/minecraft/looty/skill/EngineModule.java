@@ -4,6 +4,7 @@ package com.derongan.minecraft.looty.skill;
 import com.badlogic.ashley.core.Engine;
 import com.derongan.minecraft.looty.skill.systems.*;
 import com.derongan.minecraft.looty.skill.systems.block.BlockCreationSystem;
+import com.derongan.minecraft.looty.skill.systems.particle.ParticleSystem;
 import com.derongan.minecraft.looty.skill.systems.targeting.TargetingSystem;
 import dagger.Module;
 import dagger.Provides;

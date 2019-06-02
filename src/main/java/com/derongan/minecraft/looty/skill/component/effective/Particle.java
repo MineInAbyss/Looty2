@@ -7,6 +7,7 @@ public class Particle implements Component {
         INITIATOR,
         ORIGIN,
         TARGET,
+        PATH,
         OUTLINE,
         SPIRAL,
         DOUBLE_SPIRAL
