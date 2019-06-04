@@ -10,7 +10,8 @@ public class Particle implements Component {
         PATH,
         OUTLINE,
         SPIRAL,
-        DOUBLE_SPIRAL
+        DOUBLE_SPIRAL,
+        RANDOM;
     }
 
     private org.bukkit.Particle particle;

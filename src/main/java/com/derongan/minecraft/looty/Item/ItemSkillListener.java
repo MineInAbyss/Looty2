@@ -11,14 +11,15 @@ import com.derongan.minecraft.looty.skill.InputModifier;
 import com.derongan.minecraft.looty.skill.Skill;
 import com.derongan.minecraft.looty.skill.SkillTrigger;
 import com.derongan.minecraft.looty.skill.component.target.ActionAttributes;
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.RayTraceResult;
@@ -27,6 +28,7 @@ import org.bukkit.util.Vector;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Singleton
@@ -47,9 +49,15 @@ public class ItemSkillListener implements Listener {
         this.logger = logger;
     }
 
+    private static Set<Action> leftActions = ImmutableSet.of(Action.LEFT_CLICK_AIR, Action.LEFT_CLICK_BLOCK);
+    private static Set<Action> rightActions = ImmutableSet.of(Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK);
+    private static Set<Action> actions = ImmutableSet.<Action>builder().addAll(leftActions)
+            .addAll(rightActions)
+            .build();
+
     @EventHandler
-    public void onPlayerAnimationEvent(PlayerAnimationEvent event) {
-        if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        if (actions.contains(event.getAction())) {
             SkillTrigger.Builder skillTriggerBuilder = SkillTrigger.builder();
             Player player = event.getPlayer();
             if (player.isSneaking()) {
@@ -59,7 +67,11 @@ public class ItemSkillListener implements Listener {
                 skillTriggerBuilder.addModifier(InputModifier.SPRINTING);
             }
 
-            skillTriggerBuilder.setHand(Hand.RIGHT);
+            if (leftActions.contains(event.getAction())) {
+                skillTriggerBuilder.setHand(Hand.LEFT);
+            } else {
+                skillTriggerBuilder.setHand(Hand.RIGHT);
+            }
 
             Material material = player.getInventory().getItemInMainHand().getType();
             ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
@@ -77,6 +89,7 @@ public class ItemSkillListener implements Listener {
             ActionAttributes actionAttributes = new ActionAttributes();
 
             actionAttributes.initiatorLocation = new DynamicLocationImpl(player.getEyeLocation(), player);
+            actionAttributes.initiatorEntity = player;
             actionAttributes.referenceHeading = player.getEyeLocation().getDirection();
 
             RayTraceResult rayTraceResult = getRayTraceResultOrDefault(player);
@@ -85,7 +98,7 @@ public class ItemSkillListener implements Listener {
             Location hitLocation = hitPosition.toLocation(player.getWorld());
             if (rayTraceResult.getHitEntity() != null) {
                 org.bukkit.entity.Entity hitEntity = rayTraceResult.getHitEntity();
-
+                actionAttributes.impactEntity = hitEntity;
                 actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation, hitEntity);
             } else {
                 actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation);

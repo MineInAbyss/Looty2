@@ -25,6 +25,8 @@ public class SphereEntityFilter implements EntityTargetFilter {
                 .collect(toImmutableSet());
     }
 
+
+    //TODO https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
     private boolean shouldTarget(Entity entity) {
         return entity.getLocation().toVector().isInSphere(target.toVector(), radius);
     }

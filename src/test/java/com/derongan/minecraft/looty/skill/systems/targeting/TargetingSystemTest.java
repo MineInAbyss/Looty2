@@ -7,14 +7,14 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.*;
 
 public class TargetingSystemTest {
-    private TargetingSystem targetingSystem;
+    private MovementTargetingSystem movementTargetingSystem;
     private Engine engine;
 
     @Before
     public void setUp() {
-        targetingSystem = spy(new TargetingSystem(null));
+        movementTargetingSystem = spy(new MovementTargetingSystem(null));
         engine = new Engine();
-        engine.addSystem(targetingSystem);
+        engine.addSystem(movementTargetingSystem);
     }
 
     // TODO right now these tests are crap. But its useful to have something.
@@ -34,7 +34,7 @@ public class TargetingSystemTest {
 //
 //        engine.update(1);
 //
-//        verify(targetingSystem).processEntity(entity, 1);
+//        verify(movementTargetingSystem).processEntity(entity, 1);
 //        assertThat(entity.getComponent(Targets.class).getTargets()).containsExactly(spigotEntity);
 //    }
 

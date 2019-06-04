@@ -13,12 +13,14 @@ import org.bukkit.util.Vector;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public class ParticleSystem extends AbstractIteratingSystem {
 
+    Random random = new Random();
+
     private ComponentMapper<Particle> particleComponentMapper = ComponentMapper.getFor(Particle.class);
-    private ComponentMapper<Radius> radiusComponentMapper = ComponentMapper.getFor(Radius.class);
 
     private final Logger logger;
 
@@ -45,10 +47,37 @@ public class ParticleSystem extends AbstractIteratingSystem {
                 getPointsInLine(entity, particleLocations);
                 break;
             case OUTLINE:
-                if (radiusComponentMapper.has(entity)) {
+                if (radiusComponentMapper.has(entity) && hasPath(entity)) {
                     getPointsInOutline(entity, particleLocations);
-                } else {
+                } else if (hasPath(entity)) {
                     getPointsInLine(entity, particleLocations);
+                } else if (radiusComponentMapper.has(entity)) {
+                    Location head = headComponentMapper.get(entity).location;
+
+                    double radius = radiusComponentMapper.get(entity).radius;
+
+                    for (double phi = 0; phi < Math.PI / 2.0; phi += Math.PI / 15.0) {
+                        double y = radius * Math.cos(phi);
+                        for (double theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 30) {
+                            double x = radius * Math.cos(theta) * Math.sin(phi);
+                            double z = radius * Math.sin(theta) * Math.sin(phi);
+
+                            particleLocations.add(head.clone().add(x, y, z));
+                            particleLocations.add(head.clone().subtract(x, y, z));
+                        }
+                    }
+                }
+                break;
+            case RANDOM:
+                Radius radius = radiusComponentMapper.get(entity);
+                int count = particle.getParticle() == org.bukkit.Particle.LAVA || particle.getParticle() == org.bukkit.Particle.DRIP_LAVA ? 3 : 20;
+                for (int i = 0; i < count; i++) {
+                    Location head = headComponentMapper.get(entity).location;
+
+
+                    Vector randomVec = Vector.getRandom().subtract(Vector.getRandom()).multiply(radius.radius);
+
+                    particleLocations.add(head.clone().add(randomVec));
                 }
                 break;
         }

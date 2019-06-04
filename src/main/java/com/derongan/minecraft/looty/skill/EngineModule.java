@@ -5,7 +5,9 @@ import com.badlogic.ashley.core.Engine;
 import com.derongan.minecraft.looty.skill.systems.*;
 import com.derongan.minecraft.looty.skill.systems.block.BlockCreationSystem;
 import com.derongan.minecraft.looty.skill.systems.particle.ParticleSystem;
-import com.derongan.minecraft.looty.skill.systems.targeting.TargetingSystem;
+import com.derongan.minecraft.looty.skill.systems.targeting.EntityTargetingSystem;
+import com.derongan.minecraft.looty.skill.systems.targeting.MovementTargetingSystem;
+import com.derongan.minecraft.looty.skill.systems.targeting.ReferenceLocationTargetingSystem;
 import dagger.Module;
 import dagger.Provides;
 
@@ -18,7 +20,9 @@ class EngineModule {
     // TODO there must be a better way of injecting these
     @Provides
     @Singleton
-    Engine provideEngine(TargetingSystem targetingSystem,
+    Engine provideEngine(ReferenceLocationTargetingSystem referenceLocationTargetingSystem,
+                         MovementTargetingSystem movementTargetingSystem,
+                         EntityTargetingSystem entityTargetingSystem,
                          VelocityImpartingSystem velocityImpartingSystem,
                          DamageSystem damageSystem,
                          IgniteSystem igniteSystem,
@@ -26,10 +30,13 @@ class EngineModule {
                          LightningSystem lightningSystem,
                          ParticleSystem particleSystem,
                          SoundSystem soundSystem,
+                         TimingSystem timingSystem,
                          CleanupSystem cleanupSystem) {
         Engine engine = new Engine();
 
-        engine.addSystem(targetingSystem);
+        engine.addSystem(referenceLocationTargetingSystem);
+        engine.addSystem(movementTargetingSystem);
+        engine.addSystem(entityTargetingSystem);
         engine.addSystem(velocityImpartingSystem);
         engine.addSystem(damageSystem);
         engine.addSystem(igniteSystem);
@@ -37,6 +44,7 @@ class EngineModule {
         engine.addSystem(lightningSystem);
         engine.addSystem(particleSystem);
         engine.addSystem(soundSystem);
+        engine.addSystem(timingSystem);
         engine.addSystem(cleanupSystem);
 
         return engine;
