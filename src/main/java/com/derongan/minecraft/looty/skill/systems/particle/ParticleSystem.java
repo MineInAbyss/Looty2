@@ -5,7 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.effective.Particle;
 import com.derongan.minecraft.looty.skill.component.target.Radius;
-import com.derongan.minecraft.looty.skill.systems.AbstractIteratingSystem;
+import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
@@ -13,13 +13,9 @@ import org.bukkit.util.Vector;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 
-public class ParticleSystem extends AbstractIteratingSystem {
-
-    Random random = new Random();
-
+public class ParticleSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Particle> particleComponentMapper = ComponentMapper.getFor(Particle.class);
 
     private final Logger logger;
@@ -31,7 +27,7 @@ public class ParticleSystem extends AbstractIteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    protected void processFilteredEntity(Entity entity, float deltaTime) {
         Particle particle = particleComponentMapper.get(entity);
 
         List<Location> particleLocations = new ArrayList<>();

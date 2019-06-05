@@ -6,7 +6,9 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.derongan.minecraft.looty.skill.component.target.*;
 
-public abstract class AbstractIteratingSystem extends IteratingSystem {
+import static com.derongan.minecraft.looty.skill.component.Families.IGNORABLE;
+
+public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem {
     protected ComponentMapper<OriginChooser> originChooserComponentMapper = ComponentMapper.getFor(OriginChooser.class);
     protected ComponentMapper<TargetChooser> targetChooserComponentMapper = ComponentMapper.getFor(TargetChooser.class);
     protected ComponentMapper<ActionAttributes> actionAttributesComponentMapper = ComponentMapper.getFor(ActionAttributes.class);
@@ -17,12 +19,27 @@ public abstract class AbstractIteratingSystem extends IteratingSystem {
     protected ComponentMapper<Movement> movementComponentMapper = ComponentMapper.getFor(Movement.class);
     protected ComponentMapper<EntityTargets> entityTargetsComponentMapper = ComponentMapper.getFor(EntityTargets.class);
     protected ComponentMapper<Radius> radiusComponentMapper = ComponentMapper.getFor(Radius.class);
+    protected ComponentMapper<Grounded> groundedComponentMapper = ComponentMapper.getFor(Grounded.class);
 
 
-    public AbstractIteratingSystem(Family family) {
+    public AbstractDelayAwareIteratingSystem(Family family) {
         super(family);
     }
 
+    public AbstractDelayAwareIteratingSystem(Family family, int priority) {
+        super(family, priority);
+    }
+
+    @Override
+    final protected void processEntity(Entity entity, float deltaTime) {
+        if (!IGNORABLE.matches(entity)) {
+            processFilteredEntity(entity, deltaTime);
+        }
+    }
+
+    protected abstract void processFilteredEntity(Entity entity, float deltaTime);
+
+    // TODO move out to a proper subclass
     protected boolean hasPath(Entity entity) {
         return headComponentMapper.has(entity) && tailComponentMapper.has(entity);
     }

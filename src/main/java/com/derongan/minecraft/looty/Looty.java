@@ -1,11 +1,13 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
+import com.derongan.minecraft.looty.Item.ItemRarity;
 import com.derongan.minecraft.looty.Item.ItemSkillListener;
 import com.derongan.minecraft.looty.Item.ItemType;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegistrar;
 import com.derongan.minecraft.looty.skill.*;
+import com.derongan.minecraft.looty.skill.component.Delay;
 import com.derongan.minecraft.looty.skill.component.effective.Damage;
 import com.derongan.minecraft.looty.skill.component.effective.Ignite;
 import com.derongan.minecraft.looty.skill.component.effective.Lightning;
@@ -51,7 +53,7 @@ class Looty {
     void onEnable() {
 
 
-        itemRegistrar.register(weatherVane());
+        itemRegistrar.register(rainStick());
 
         server.getScheduler().scheduleSyncRepeatingTask(lootyPlugin, () -> engine.update(1), 1, 1);
         server.getPluginManager().registerEvents(itemSkillListener, lootyPlugin);
@@ -62,7 +64,7 @@ class Looty {
         logger.info("Loaded Looty");
     }
 
-    private ItemType weatherVane() {
+    private ItemType rainStick() {
         SkillTrigger normalTrigger = SkillTrigger.builder().setHand(Hand.RIGHT).build();
         SkillTrigger leftTrigger = SkillTrigger.builder()
                 .setHand(Hand.LEFT)
@@ -72,15 +74,14 @@ class Looty {
                 .addModifier(InputModifier.SNEAKING)
                 .build();
 
-        ItemType weatherVaneType = ItemType.builder()
+        return ItemType.builder()
                 .setDurability((short) 1)
-                .setMaterial(Material.DIAMOND_AXE)
-                .setName("Test Axe")
+                .setMaterial(Material.BLAZE_ROD)
+                .setName("Rain Stick")
+                .setItemRarity(ItemRarity.SECOND_GRADE)
                 .addSkillWithTrigger(normalTrigger, getLavaRain())
                 .addSkillWithTrigger(leftTrigger, getWaterRain())
                 .build();
-
-        return weatherVaneType;
     }
 
     private Skill getWaterRain() {
@@ -101,6 +102,7 @@ class Looty {
                     radius.radius = 2.0;
                     return radius;
                 })
+                .addComponent(Grounded::new)
                 .addComponent(() -> {
                     Linger linger = new Linger();
                     linger.duration = 15 * 20;
@@ -123,6 +125,7 @@ class Looty {
                     radius.radius = 3.0;
                     return radius;
                 })
+                .addComponent(Grounded::new)
                 .addComponent(() -> {
                     Linger linger = new Linger();
                     linger.duration = 15 * 20;
@@ -145,11 +148,17 @@ class Looty {
                     radius.radius = 2.0;
                     return radius;
                 })
+                .addComponent(() -> {
+                    Delay delay = new Delay();
+                    delay.delay = 15*5;
+                    return delay;
+                })
                 .addComponent(Lightning::new)
+                .addComponent(Grounded::new)
                 .addComponent(() -> Ignite.create(0))
                 .addComponent(() -> {
                     Linger linger = new Linger();
-                    linger.duration = 15 * 20;
+                    linger.duration = 15 * 15;
                     return linger;
                 });
 
@@ -172,6 +181,7 @@ class Looty {
 
                     return originChooser;
                 })
+                .addComponent(Grounded::new)
                 .addComponent(() -> Particle.create(org.bukkit.Particle.DRIP_LAVA, Particle.ParticleStyle.RANDOM))
                 .addComponent(() -> {
                     Radius radius = new Radius();
@@ -194,6 +204,7 @@ class Looty {
 
                     return originChooser;
                 })
+                .addComponent(Grounded::new)
                 .addComponent(() -> Particle.create(org.bukkit.Particle.CLOUD, Particle.ParticleStyle.RANDOM))
                 .addComponent(() -> {
                     Radius radius = new Radius();
@@ -216,6 +227,12 @@ class Looty {
 
                     return originChooser;
                 })
+                .addComponent(Grounded::new)
+                .addComponent(()->{
+                    Delay delay = new Delay();
+                    delay.delay = 15*5;
+                    return delay;
+                })
                 .addComponent(() -> Particle.create(org.bukkit.Particle.LAVA, Particle.ParticleStyle.RANDOM))
                 .addComponent(() -> {
                     Radius radius = new Radius();
@@ -225,7 +242,7 @@ class Looty {
                 .addComponent(() -> Ignite.create(10))
                 .addComponent(() -> {
                     Linger linger = new Linger();
-                    linger.duration = 15 * 20;
+                    linger.duration = 15 * 15;
                     return linger;
                 });
 

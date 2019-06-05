@@ -3,7 +3,7 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.target.*;
-import com.derongan.minecraft.looty.skill.systems.AbstractIteratingSystem;
+import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 /**
  * Targeting system that is in charge of creating and moving the target locations
  */
-public class MovementTargetingSystem extends AbstractIteratingSystem {
+public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
     private final Logger logger;
 
     @Inject
@@ -23,7 +23,7 @@ public class MovementTargetingSystem extends AbstractIteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    protected void processFilteredEntity(Entity entity, float deltaTime) {
         boolean hasOrigin = originComponentMapper.has(entity);
         boolean hasTarget = targetComponentMapper.has(entity);
 

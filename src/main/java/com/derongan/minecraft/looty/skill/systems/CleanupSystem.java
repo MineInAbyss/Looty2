@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  * Cleans up old entities. Only entities that have a {@link Families.REMOVABLE} component are removed
  * component will be removed.
  */
-public class CleanupSystem extends AbstractIteratingSystem {
+public class CleanupSystem extends AbstractDelayAwareIteratingSystem {
     private final Logger logger;
 
     @Inject
@@ -20,7 +20,7 @@ public class CleanupSystem extends AbstractIteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float v) {
+    protected void processFilteredEntity(Entity entity, float v) {
         logger.info("Removing entity");
         getEngine().removeEntity(entity);
     }

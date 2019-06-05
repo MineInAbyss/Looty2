@@ -31,6 +31,7 @@ class EngineModule {
                          ParticleSystem particleSystem,
                          SoundSystem soundSystem,
                          TimingSystem timingSystem,
+                         DelaySystem delaySystem,
                          CleanupSystem cleanupSystem) {
         Engine engine = new Engine();
 
@@ -45,6 +46,7 @@ class EngineModule {
         engine.addSystem(particleSystem);
         engine.addSystem(soundSystem);
         engine.addSystem(timingSystem);
+        engine.addSystem(delaySystem);
         engine.addSystem(cleanupSystem);
 
         return engine;

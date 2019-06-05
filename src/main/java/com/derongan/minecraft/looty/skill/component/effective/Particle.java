@@ -33,5 +33,4 @@ public class Particle implements Component {
     public static Particle create(org.bukkit.Particle particle, ParticleStyle style) {
         return new Particle(particle, style);
     }
-
 }

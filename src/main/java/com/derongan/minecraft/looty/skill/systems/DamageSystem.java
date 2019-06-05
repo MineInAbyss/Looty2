@@ -9,7 +9,7 @@ import org.bukkit.entity.Damageable;
 
 import javax.inject.Inject;
 
-public class DamageSystem extends AbstractIteratingSystem {
+public class DamageSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Damage> damageComponentMapper = ComponentMapper.getFor(Damage.class);
 
     @Inject
@@ -18,7 +18,7 @@ public class DamageSystem extends AbstractIteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    protected void processFilteredEntity(Entity entity, float deltaTime) {
         double damage = damageComponentMapper.get(entity).getDamage();
         entityTargetsComponentMapper.get(entity).affectedEntities.forEach(ent -> {
             if (ent instanceof Damageable) {

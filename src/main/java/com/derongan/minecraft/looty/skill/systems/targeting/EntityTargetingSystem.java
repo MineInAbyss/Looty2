@@ -3,12 +3,12 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.target.EntityTargets;
-import com.derongan.minecraft.looty.skill.systems.AbstractIteratingSystem;
+import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import com.google.common.collect.ImmutableSet;
 
 import javax.inject.Inject;
 
-public class EntityTargetingSystem extends AbstractIteratingSystem {
+public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
     @Inject
     public EntityTargetingSystem() {
@@ -16,7 +16,7 @@ public class EntityTargetingSystem extends AbstractIteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    protected void processFilteredEntity(Entity entity, float deltaTime) {
         if (!entityTargetsComponentMapper.has(entity)) {
             EntityTargets entityTargets = new EntityTargets();
             entity.add(entityTargets);

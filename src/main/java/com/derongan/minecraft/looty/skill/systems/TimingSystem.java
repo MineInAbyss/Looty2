@@ -10,7 +10,7 @@ import javax.inject.Inject;
 /**
  * System responsible for decrementing timers and setting entities as removed if the timer has expired
  */
-public class TimingSystem extends AbstractIteratingSystem {
+public class TimingSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Linger> lingerComponentMapper = ComponentMapper.getFor(Linger.class);
 
     @Inject
@@ -19,7 +19,7 @@ public class TimingSystem extends AbstractIteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float v) {
+    protected void processFilteredEntity(Entity entity, float v) {
         Linger linger = lingerComponentMapper.get(entity);
 
         if (linger.duration > 0) {

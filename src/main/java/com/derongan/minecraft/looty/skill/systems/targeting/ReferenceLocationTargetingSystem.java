@@ -3,11 +3,12 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.DynamicLocation;
+import com.derongan.minecraft.looty.GroundingDynamicLocation;
 import com.derongan.minecraft.looty.OffsetDynamicLocation;
 import com.derongan.minecraft.looty.skill.DirectionType;
 import com.derongan.minecraft.looty.skill.LocationReferenceType;
 import com.derongan.minecraft.looty.skill.component.target.*;
-import com.derongan.minecraft.looty.skill.systems.AbstractIteratingSystem;
+import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
@@ -15,36 +16,37 @@ import javax.inject.Inject;
 /**
  * Targeting system that is in charge of preparing reference points.
  */
-public class ReferenceLocationTargetingSystem extends AbstractIteratingSystem {
+public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratingSystem {
     @Inject
     public ReferenceLocationTargetingSystem() {
         super(Family.one(TargetChooser.class, OriginChooser.class).exclude(Target.class, Origin.class).get());
     }
 
     @Override
-    protected void processEntity(Entity entity, float v) {
+    protected void processFilteredEntity(Entity entity, float v) {
         ActionAttributes actionAttributes = actionAttributesComponentMapper.get(entity);
+        boolean grounded = groundedComponentMapper.has(entity);
 
         if (originChooserComponentMapper.has(entity)) {
-            setupOrigin(entity, actionAttributes);
+            setupOrigin(entity, actionAttributes, grounded);
         }
 
         if (targetChooserComponentMapper.has(entity)) {
-            setupTarget(entity, actionAttributes);
+            setupTarget(entity, actionAttributes, grounded);
         }
     }
 
-    private void setupOrigin(Entity entity, ActionAttributes actionAttributes) {
+    private void setupOrigin(Entity entity, ActionAttributes actionAttributes, boolean grounded) {
         OriginChooser originChooser = originChooserComponentMapper.get(entity);
         Origin origin = new Origin();
-        origin.dynamicLocation = getOffsetLocation(actionAttributes, originChooser);
+        origin.dynamicLocation = getOffsetLocation(actionAttributes, originChooser, grounded);
         entity.add(origin);
     }
 
-    private void setupTarget(Entity entity, ActionAttributes actionAttributes) {
+    private void setupTarget(Entity entity, ActionAttributes actionAttributes, boolean grounded) {
         TargetChooser targetChooser = targetChooserComponentMapper.get(entity);
         Target target = new Target();
-        target.dynamicLocation = getOffsetLocation(actionAttributes, targetChooser);
+        target.dynamicLocation = getOffsetLocation(actionAttributes, targetChooser, grounded);
         entity.add(target);
     }
 
@@ -80,10 +82,16 @@ public class ReferenceLocationTargetingSystem extends AbstractIteratingSystem {
         }
     }
 
-    private DynamicLocation getOffsetLocation(ActionAttributes actionAttributes, Offsetable offsetableChooser) {
+    private DynamicLocation getOffsetLocation(ActionAttributes actionAttributes,
+                                              Offsetable offsetableChooser,
+                                              boolean grounded) {
         DynamicLocation referenceDynamicLocation = getReferenceLocation(actionAttributes, offsetableChooser.getLocationReferenceType());
         Vector referenceDirection = getReferenceDirection(offsetableChooser.getDirectionType(), actionAttributes.referenceHeading)
                 .normalize();
+
+        if(grounded){
+            referenceDynamicLocation = new GroundingDynamicLocation(referenceDynamicLocation);
+        }
 
         return new OffsetDynamicLocation(referenceDynamicLocation, referenceDirection.clone()
                 .multiply(offsetableChooser.getMagnitude()));
