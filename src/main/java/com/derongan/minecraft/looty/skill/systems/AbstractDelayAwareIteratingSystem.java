@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.derongan.minecraft.looty.skill.component.EntityTargetLimit;
 import com.derongan.minecraft.looty.skill.component.target.*;
 
 import static com.derongan.minecraft.looty.skill.component.Families.IGNORABLE;
@@ -20,6 +21,7 @@ public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem 
     protected ComponentMapper<EntityTargets> entityTargetsComponentMapper = ComponentMapper.getFor(EntityTargets.class);
     protected ComponentMapper<Radius> radiusComponentMapper = ComponentMapper.getFor(Radius.class);
     protected ComponentMapper<Grounded> groundedComponentMapper = ComponentMapper.getFor(Grounded.class);
+    protected ComponentMapper<EntityTargetLimit> entityTargetLimitComponentMapper = ComponentMapper.getFor(EntityTargetLimit.class);
 
 
     public AbstractDelayAwareIteratingSystem(Family family) {

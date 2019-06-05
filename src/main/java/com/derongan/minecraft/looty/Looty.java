@@ -8,6 +8,7 @@ import com.derongan.minecraft.looty.registration.ItemRegistrar;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegistrar;
 import com.derongan.minecraft.looty.skill.*;
 import com.derongan.minecraft.looty.skill.component.Delay;
+import com.derongan.minecraft.looty.skill.component.EntityTargetLimit;
 import com.derongan.minecraft.looty.skill.component.effective.Damage;
 import com.derongan.minecraft.looty.skill.component.effective.Ignite;
 import com.derongan.minecraft.looty.skill.component.effective.Lightning;
@@ -152,6 +153,10 @@ class Looty {
                     Delay delay = new Delay();
                     delay.delay = 15*5;
                     return delay;
+                }).addComponent(() -> {
+                    EntityTargetLimit limit = new EntityTargetLimit();
+                    limit.limit = 1;
+                    return limit;
                 })
                 .addComponent(Lightning::new)
                 .addComponent(Grounded::new)

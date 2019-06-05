@@ -7,6 +7,7 @@ import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSys
 import com.google.common.collect.ImmutableSet;
 
 import javax.inject.Inject;
+import java.util.stream.Collectors;
 
 public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
@@ -42,6 +43,12 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
                     .get(entity).location, radius);
 
             entityTargets.affectedEntities = beamEntityFilter.getTargets();
+        }
+
+        if (entityTargetLimitComponentMapper.has(entity)) {
+            entityTargets.affectedEntities = entityTargets.affectedEntities.stream()
+                    .limit(entityTargetLimitComponentMapper.get(entity).limit)
+                    .collect(Collectors.toSet());
         }
     }
 }
