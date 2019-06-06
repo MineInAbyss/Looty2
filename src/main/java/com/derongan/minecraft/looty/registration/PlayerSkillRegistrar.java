@@ -1,7 +1,7 @@
 package com.derongan.minecraft.looty.registration;
 
-import com.derongan.minecraft.looty.Skill;
-import com.derongan.minecraft.looty.SkillTrigger;
+import com.derongan.minecraft.looty.skill.Skill;
+import com.derongan.minecraft.looty.skill.SkillTrigger;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;

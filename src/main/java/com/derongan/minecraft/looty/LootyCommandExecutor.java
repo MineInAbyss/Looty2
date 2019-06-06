@@ -1,19 +1,21 @@
 package com.derongan.minecraft.looty;
 
+import com.derongan.minecraft.looty.Item.ItemRarity;
+import com.derongan.minecraft.looty.Item.ItemType;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.stream.Collectors;
 
-class LootyCommandExecutor implements CommandExecutor {
+class LootyCommandExecutor implements TabExecutor {
     private final ItemRegistrar itemRegistrar;
 
     @Inject
@@ -22,7 +24,10 @@ class LootyCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender,
+                             @NotNull Command command,
+                             @NotNull String label,
+                             @NotNull String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
@@ -40,7 +45,9 @@ class LootyCommandExecutor implements CommandExecutor {
 
             if (command.getName().equals("looties")) {
                 player.sendMessage("Items: " + itemRegistrar.getAllTypes().stream()
-                        .map(itemType -> itemType.getItemRarity().orElse(ItemRarity.TOOL).getColor() + itemType.getName())
+                        .map(itemType -> itemType.getItemRarity()
+                                .orElse(ItemRarity.TOOL)
+                                .getColor() + itemType.getName())
                         .map(s -> s.replace(" ", "_"))
                         .collect(Collectors.joining(", ")));
                 return true;
@@ -65,5 +72,21 @@ class LootyCommandExecutor implements CommandExecutor {
         item.setItemMeta(meta);
 
         return item;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
+                                                @NotNull Command command,
+                                                @NotNull String alias,
+                                                @NotNull String[] args) {
+        if (command.getName().equals("looty")) {
+            return itemRegistrar.getAllTypes()
+                    .stream()
+                    .map(ItemType::getName)
+                    .map(name -> name.replace(" ", "_"))
+                    .collect(Collectors.toList());
+        }
+
+        return null;
     }
 }
