@@ -3,8 +3,8 @@ package com.derongan.minecraft.looty.skill.systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.derongan.minecraft.looty.skill.component.Linger;
 import com.derongan.minecraft.looty.skill.component.proto.DurationInfo;
-import com.derongan.minecraft.looty.skill.component.target.Linger;
 
 import javax.inject.Inject;
 

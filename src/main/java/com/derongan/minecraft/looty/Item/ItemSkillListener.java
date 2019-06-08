@@ -10,7 +10,7 @@ import com.derongan.minecraft.looty.skill.Hand;
 import com.derongan.minecraft.looty.skill.InputModifier;
 import com.derongan.minecraft.looty.skill.Skill;
 import com.derongan.minecraft.looty.skill.SkillTrigger;
-import com.derongan.minecraft.looty.skill.component.target.ActionAttributes;
+import com.derongan.minecraft.looty.skill.component.ActionAttributes;
 import com.google.common.collect.ImmutableSet;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;

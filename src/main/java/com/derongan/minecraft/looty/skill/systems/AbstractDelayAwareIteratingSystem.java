@@ -4,8 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.derongan.minecraft.looty.skill.component.EntityTargetLimit;
-import com.derongan.minecraft.looty.skill.component.target.*;
+import com.derongan.minecraft.looty.skill.component.*;
 
 import static com.derongan.minecraft.looty.skill.component.Families.IGNORABLE;
 

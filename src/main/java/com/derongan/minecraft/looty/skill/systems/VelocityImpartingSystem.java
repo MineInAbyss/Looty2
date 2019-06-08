@@ -3,7 +3,7 @@ package com.derongan.minecraft.looty.skill.systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.derongan.minecraft.looty.skill.component.effective.VelocityImparting;
+import com.derongan.minecraft.looty.skill.component.VelocityImparting;
 
 import javax.inject.Inject;
 

@@ -2,8 +2,8 @@ package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Entity;
 import com.derongan.minecraft.looty.skill.ActionEntityBuilder;
-import com.derongan.minecraft.looty.skill.component.effective.Damage;
-import com.derongan.minecraft.looty.skill.component.effective.Ignite;
+import com.derongan.minecraft.looty.skill.component.Damage;
+import com.derongan.minecraft.looty.skill.component.Ignite;
 import com.derongan.minecraft.looty.skill.component.proto.DamageInfo;
 import com.derongan.minecraft.looty.skill.component.proto.IgniteInfo;
 import org.bukkit.util.Vector;

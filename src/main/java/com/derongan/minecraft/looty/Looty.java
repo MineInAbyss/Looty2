@@ -7,16 +7,9 @@ import com.derongan.minecraft.looty.Item.ItemType;
 import com.derongan.minecraft.looty.registration.ItemRegistrar;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegistrar;
 import com.derongan.minecraft.looty.skill.*;
-import com.derongan.minecraft.looty.skill.component.Delay;
-import com.derongan.minecraft.looty.skill.component.EntityTargetLimit;
-import com.derongan.minecraft.looty.skill.component.effective.Ignite;
-import com.derongan.minecraft.looty.skill.component.effective.Lightning;
-import com.derongan.minecraft.looty.skill.component.effective.Particle;
+import com.derongan.minecraft.looty.skill.component.*;
 import com.derongan.minecraft.looty.skill.component.proto.*;
-import com.derongan.minecraft.looty.skill.component.target.Grounded;
-import com.derongan.minecraft.looty.skill.component.target.Linger;
-import com.derongan.minecraft.looty.skill.component.target.OriginChooser;
-import com.derongan.minecraft.looty.skill.component.target.Radius;
+import com.google.common.annotations.VisibleForTesting;
 import org.bukkit.Material;
 import org.bukkit.Server;
 
@@ -88,15 +81,16 @@ class Looty {
                 .build();
     }
 
-    private Skill getWaterRain() {
+    @VisibleForTesting
+    Skill getWaterRain() {
         ActionEntityBuilder rainActionEntityBuilder = new ActionEntityBuilder();
 
         rainActionEntityBuilder
                 .addComponent(() ->
-                        new OriginChooser(OffsetInfo.newBuilder()
-                                .setDirectionType(OffsetInfo.DirectionType.UP)
-                                .setLocationReferenceType(OffsetInfo.LocationReferenceType.IMPACT)
-                                .setMagnitude(28)
+                        new OriginChooser(OriginChooserInfo.newBuilder().setOffset(Offset.newBuilder()
+                                .setDirectionType(DirectionType.UP)
+                                .setLocationReferenceType(LocationReferenceType.IMPACT)
+                                .setMagnitude(28))
                                 .build())
                 )
 
@@ -104,34 +98,34 @@ class Looty {
                         .setParticleName(org.bukkit.Particle.DRIP_WATER.name())
                         .setFillStyle(ParticleInfo.FillStyle.RANDOM)
                         .build())).addComponent(() -> new Radius(RadiusInfo.newBuilder().setRadius(2).build()))
-                .addComponent(Grounded::new)
+                .addComponent(() -> new Grounded(GroundedInfo.getDefaultInstance()))
                 .addComponent(() -> new Linger(DurationInfo.newBuilder().setNumberOfTicks(15 * 20).build()));
 
 
         ActionEntityBuilder cloudActionEntityBuilder = new ActionEntityBuilder();
         cloudActionEntityBuilder
                 .addComponent(() ->
-                        new OriginChooser(OffsetInfo.newBuilder()
-                                .setDirectionType(OffsetInfo.DirectionType.UP)
-                                .setLocationReferenceType(OffsetInfo.LocationReferenceType.IMPACT)
-                                .setMagnitude(28)
+                        new OriginChooser(OriginChooserInfo.newBuilder().setOffset(Offset.newBuilder()
+                                .setDirectionType(DirectionType.UP)
+                                .setLocationReferenceType(LocationReferenceType.IMPACT)
+                                .setMagnitude(28))
                                 .build())
                 )
                 .addComponent(() -> new Particle(ParticleInfo.newBuilder()
                         .setParticleName(org.bukkit.Particle.CLOUD.name())
                         .setFillStyle(ParticleInfo.FillStyle.RANDOM)
                         .build())).addComponent(() -> new Radius(RadiusInfo.newBuilder().setRadius(3).build()))
-                .addComponent(Grounded::new)
+                .addComponent(() -> new Grounded(GroundedInfo.getDefaultInstance()))
                 .addComponent(() -> new Linger(DurationInfo.newBuilder().setNumberOfTicks(15 * 20).build()));
 
 
         ActionEntityBuilder splashActionEntityBuilder = new ActionEntityBuilder();
         splashActionEntityBuilder
                 .addComponent(() ->
-                        new OriginChooser(OffsetInfo.newBuilder()
-                                .setDirectionType(OffsetInfo.DirectionType.UP)
-                                .setLocationReferenceType(OffsetInfo.LocationReferenceType.IMPACT)
-                                .setMagnitude(0)
+                        new OriginChooser(OriginChooserInfo.newBuilder().setOffset(Offset.newBuilder()
+                                .setDirectionType(DirectionType.UP)
+                                .setLocationReferenceType(LocationReferenceType.IMPACT)
+                                .setMagnitude(0))
                                 .build())
                 )
 
@@ -141,13 +135,9 @@ class Looty {
                         .build()))
                 .addComponent(() -> new Radius(RadiusInfo.newBuilder().setRadius(2).build()))
                 .addComponent(() -> new Delay(DurationInfo.newBuilder().setNumberOfTicks(15 * 5).build()))
-                .addComponent(() -> {
-                    EntityTargetLimit limit = new EntityTargetLimit();
-                    limit.limit = 1;
-                    return limit;
-                })
-                .addComponent(Lightning::new)
-                .addComponent(Grounded::new)
+                .addComponent(() -> new EntityTargetLimit(EntityTargetLimitInfo.newBuilder().setLimit(1).build()))
+                .addComponent(() -> new Lightning(LightningInfo.getDefaultInstance()))
+                .addComponent(() -> new Grounded(GroundedInfo.getDefaultInstance()))
                 .addComponent(() -> new Ignite(IgniteInfo.newBuilder().setStrength(0).build()))
                 .addComponent(() -> new Linger(DurationInfo.newBuilder().setNumberOfTicks(15 * 15).build()));
 
@@ -163,13 +153,13 @@ class Looty {
 
         rainActionEntityBuilder
                 .addComponent(() ->
-                        new OriginChooser(OffsetInfo.newBuilder()
-                                .setDirectionType(OffsetInfo.DirectionType.UP)
-                                .setLocationReferenceType(OffsetInfo.LocationReferenceType.IMPACT)
-                                .setMagnitude(28)
+                        new OriginChooser(OriginChooserInfo.newBuilder().setOffset(Offset.newBuilder()
+                                .setDirectionType(DirectionType.UP)
+                                .setLocationReferenceType(LocationReferenceType.IMPACT)
+                                .setMagnitude(28))
                                 .build())
                 )
-                .addComponent(Grounded::new)
+                .addComponent(() -> new Grounded(GroundedInfo.getDefaultInstance()))
                 .addComponent(() -> new Particle(ParticleInfo.newBuilder()
                         .setFillStyle(ParticleInfo.FillStyle.RANDOM)
                         .setParticleName(org.bukkit.Particle.DRIP_LAVA.name())
@@ -180,13 +170,13 @@ class Looty {
         ActionEntityBuilder cloudActionEntityBuilder = new ActionEntityBuilder();
         cloudActionEntityBuilder
                 .addComponent(() ->
-                        new OriginChooser(OffsetInfo.newBuilder()
-                                .setDirectionType(OffsetInfo.DirectionType.UP)
-                                .setLocationReferenceType(OffsetInfo.LocationReferenceType.IMPACT)
-                                .setMagnitude(28)
+                        new OriginChooser(OriginChooserInfo.newBuilder().setOffset(Offset.newBuilder()
+                                .setDirectionType(DirectionType.UP)
+                                .setLocationReferenceType(LocationReferenceType.IMPACT)
+                                .setMagnitude(28))
                                 .build())
                 )
-                .addComponent(Grounded::new)
+                .addComponent(() -> new Grounded(GroundedInfo.getDefaultInstance()))
                 .addComponent(() -> new Particle(ParticleInfo.newBuilder()
                         .setParticleName(org.bukkit.Particle.CLOUD.name())
                         .setFillStyle(ParticleInfo.FillStyle.RANDOM)
@@ -198,13 +188,13 @@ class Looty {
         ActionEntityBuilder splashActionEntityBuilder = new ActionEntityBuilder();
         splashActionEntityBuilder
                 .addComponent(() ->
-                        new OriginChooser(OffsetInfo.newBuilder()
-                                .setDirectionType(OffsetInfo.DirectionType.UP)
-                                .setLocationReferenceType(OffsetInfo.LocationReferenceType.IMPACT)
-                                .setMagnitude(0)
+                        new OriginChooser(OriginChooserInfo.newBuilder().setOffset(Offset.newBuilder()
+                                .setDirectionType(DirectionType.UP)
+                                .setLocationReferenceType(LocationReferenceType.IMPACT)
+                                .setMagnitude(0))
                                 .build())
                 )
-                .addComponent(Grounded::new)
+                .addComponent(() -> new Grounded(GroundedInfo.getDefaultInstance()))
                 .addComponent(() -> new Delay(DurationInfo.newBuilder().setNumberOfTicks(15 * 5).build()))
                 .addComponent(() -> new Particle(ParticleInfo.newBuilder()
                         .setParticleName(org.bukkit.Particle.LAVA.name())

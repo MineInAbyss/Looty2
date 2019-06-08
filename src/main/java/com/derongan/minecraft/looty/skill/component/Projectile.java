@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.skill.component.effective;
+package com.derongan.minecraft.looty.skill.component;
 
 import com.derongan.minecraft.looty.skill.ActionEntityBuilder;
 import org.bukkit.Material;

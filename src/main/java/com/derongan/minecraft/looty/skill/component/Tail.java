@@ -1,6 +1,5 @@
-package com.derongan.minecraft.looty.skill.component.target;
+package com.derongan.minecraft.looty.skill.component;
 
-import com.derongan.minecraft.looty.skill.component.InternalComponent;
 import org.bukkit.Location;
 
 /**

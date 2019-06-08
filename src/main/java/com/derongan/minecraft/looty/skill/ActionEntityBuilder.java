@@ -28,4 +28,8 @@ public class ActionEntityBuilder {
         componentBuilders.add(componentCreator);
         return this;
     }
+
+    public List<ComponentCreator> getComponentBuilders() {
+        return componentBuilders;
+    }
 }

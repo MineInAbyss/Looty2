@@ -1,5 +1,9 @@
 package com.derongan.minecraft.looty.skill.component;
 
-public class EntityTargetLimit implements com.badlogic.ashley.core.Component {
-    public int limit;
+import com.derongan.minecraft.looty.skill.component.proto.EntityTargetLimitInfo;
+
+public class EntityTargetLimit extends Component<EntityTargetLimitInfo> {
+    public EntityTargetLimit(EntityTargetLimitInfo info) {
+        super(info);
+    }
 }
