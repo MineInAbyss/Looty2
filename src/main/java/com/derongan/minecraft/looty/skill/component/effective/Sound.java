@@ -1,8 +1,8 @@
 package com.derongan.minecraft.looty.skill.component.effective;
 
-import com.derongan.minecraft.looty.skill.component.Component;
 
-public class Sound implements Component {
+//TODO implement and protoize
+public class Sound implements com.badlogic.ashley.core.Component {
     private final org.bukkit.Sound sound;
     private final SoundLocation soundLocation;
     private final int volume;

@@ -1,44 +1,27 @@
 package com.derongan.minecraft.looty.skill.component.target;
 
-import com.derongan.minecraft.looty.skill.DirectionType;
-import com.derongan.minecraft.looty.skill.LocationReferenceType;
 import com.derongan.minecraft.looty.skill.component.Component;
-import org.bukkit.util.Vector;
+import com.derongan.minecraft.looty.skill.component.proto.OffsetInfo;
 
 /**
  * Component that controls the targeting location.
  * <p>
  * The targeting location is computed based on the reference point, direction, magnitude, and offset vector.
  */
-public class TargetChooser implements Component, Offsetable {
-    public LocationReferenceType locationReferenceType;
-    public Double magnitude;
-    public DirectionType directionType;
-    public Vector modifierVector;
-    public Boolean sticky;
+public class TargetChooser implements Component<OffsetInfo> {
+    private OffsetInfo offsetInfo;
 
-    @Override
-    public LocationReferenceType getLocationReferenceType() {
-        return locationReferenceType;
+    public TargetChooser(OffsetInfo offsetInfo) {
+        this.offsetInfo = offsetInfo;
     }
 
     @Override
-    public DirectionType getDirectionType() {
-        return directionType;
+    public OffsetInfo getInfo() {
+        return offsetInfo;
     }
 
     @Override
-    public Double getMagnitude() {
-        return magnitude;
-    }
-
-    @Override
-    public Vector getModifierVector() {
-        return modifierVector;
-    }
-
-    @Override
-    public Boolean isSticky() {
-        return sticky;
+    public void setInfo(OffsetInfo info) {
+        offsetInfo = info;
     }
 }

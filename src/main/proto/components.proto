@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package com.derongan.minecraft.looty.skill.component.proto;
+
+option java_multiple_files = true;
+
+message DurationInfo {
+    int64 number_of_ticks = 1;
+}
+
+message Vector {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+message OffsetInfo {
+    enum LocationReferenceType {
+        //The initiator of the action. Usually a player.
+        INITIATOR = 0;
+        //Where the action was targeted. This could be a struck block, or a button that was activated.
+        IMPACT = 1;
+    }
+
+    enum DirectionType {
+        // The players heading
+        HEADING = 0;
+        // Directly in front of the reference point; relative to the players heading.
+        FORWARD = 1;
+        // Directly behind of the reference point; relative to the players heading.
+        BACKWARD = 2;
+        // Directly to the left of the reference point; relative to the players heading.
+        LEFT = 3;
+        // Directly to the left of the reference point; relative to the players heading.
+        RIGHT = 4;
+        // Directly above the reference point
+        UP = 5;
+        // Directly below the reference point.
+        DOWN = 6;
+    }
+
+    LocationReferenceType location_reference_type = 1;
+    DirectionType direction_type = 2;
+    double magnitude = 3;
+    Vector modifier_vector = 4;
+
+    // True if the offset should be relative to the current location of the entity it is attached to
+    bool sticky = 5;
+}
+
+message DamageInfo {
+    double damage = 1;
+}
+
+message IgniteInfo {
+    int64 strength = 1;
+}
+
+message RadiusInfo {
+    double radius = 1;
+}
+
+
+message MovementInfo {
+    double head_speed = 1;
+    double tail_speed = 2;
+    int64 tail_wait = 3;
+}
+
+message ParticleInfo {
+    enum FillStyle {
+        INITIATOR = 0;
+        ORIGIN = 1;
+        TARGET = 2;
+        PATH = 3;
+        OUTLINE = 4;
+        SPIRAL = 5;
+        DOUBLE_SPIRAL = 6;
+        RANDOM = 7;
+    }
+
+    FillStyle fill_style = 1;
+    // TODO think about how to do this
+    string particle_name = 2;
+}

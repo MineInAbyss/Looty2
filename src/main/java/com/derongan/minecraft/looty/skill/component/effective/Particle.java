@@ -1,36 +1,22 @@
 package com.derongan.minecraft.looty.skill.component.effective;
 
 import com.derongan.minecraft.looty.skill.component.Component;
+import com.derongan.minecraft.looty.skill.component.proto.ParticleInfo;
 
-public class Particle implements Component {
-    public enum ParticleStyle {
-        INITIATOR,
-        ORIGIN,
-        TARGET,
-        PATH,
-        OUTLINE,
-        SPIRAL,
-        DOUBLE_SPIRAL,
-        RANDOM;
+public class Particle implements Component<ParticleInfo> {
+    private ParticleInfo particleInfo;
+
+    public Particle(ParticleInfo particleInfo) {
+        this.particleInfo = particleInfo;
     }
 
-    private org.bukkit.Particle particle;
-    private ParticleStyle style;
-
-    public org.bukkit.Particle getParticle() {
-        return particle;
+    @Override
+    public ParticleInfo getInfo() {
+        return particleInfo;
     }
 
-    public ParticleStyle getStyle() {
-        return style;
-    }
+    @Override
+    public void setInfo(ParticleInfo info) {
 
-    private Particle(org.bukkit.Particle particle, ParticleStyle style) {
-        this.particle = particle;
-        this.style = style;
-    }
-
-    public static Particle create(org.bukkit.Particle particle, ParticleStyle style) {
-        return new Particle(particle, style);
     }
 }

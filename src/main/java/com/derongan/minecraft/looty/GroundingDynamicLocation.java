@@ -25,7 +25,7 @@ public class GroundingDynamicLocation implements DynamicLocation {
 
         Location location = referenceDynamicLocation.getLocation();
 
-        Vector offset = new Vector(0, 0, 0);
+        Vector offset = new Vector(0, 1, 0);
 
         // TODO void?
         while (location.clone().add(offset).getBlock().isPassable()) {

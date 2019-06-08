@@ -1,7 +1,7 @@
 package com.derongan.minecraft.looty.skill;
 
 import com.badlogic.ashley.core.Entity;
-import com.derongan.minecraft.looty.skill.component.Component;
+import com.derongan.minecraft.looty.skill.component.ComponentCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * A builder that creates an Action Entity
  */
 public class ActionEntityBuilder {
-    private final List<Component.ComponentCreator> componentBuilders;
+    private final List<ComponentCreator> componentBuilders;
 
     public ActionEntityBuilder() {
         componentBuilders = new ArrayList<>();
@@ -24,7 +24,7 @@ public class ActionEntityBuilder {
         return entity;
     }
 
-    public ActionEntityBuilder addComponent(Component.ComponentCreator componentCreator) {
+    public ActionEntityBuilder addComponent(ComponentCreator componentCreator) {
         componentBuilders.add(componentCreator);
         return this;
     }

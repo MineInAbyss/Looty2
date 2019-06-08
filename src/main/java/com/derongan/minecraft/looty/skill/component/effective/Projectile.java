@@ -1,12 +1,11 @@
 package com.derongan.minecraft.looty.skill.component.effective;
 
 import com.derongan.minecraft.looty.skill.ActionEntityBuilder;
-import com.derongan.minecraft.looty.skill.component.Component;
 import org.bukkit.Material;
 
 import java.util.Collection;
 
-public class Projectile implements Component {
+public class Projectile implements com.badlogic.ashley.core.Component {
     private final Collection<ActionEntityBuilder> onHitActions;
     private final Material appearance;
 

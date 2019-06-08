@@ -17,7 +17,7 @@ public class IgniteSystem extends AbstractDelayAwareIteratingSystem {
 
     @Override
     protected void processFilteredEntity(Entity entity, float deltaTime) {
-        double strength = igniteComponentMapper.get(entity).getStrength();
+        double strength = igniteComponentMapper.get(entity).getInfo().getStrength();
         entityTargetsComponentMapper.get(entity).affectedEntities.forEach(ent -> {
             ent.setFireTicks((int) strength);
         });
