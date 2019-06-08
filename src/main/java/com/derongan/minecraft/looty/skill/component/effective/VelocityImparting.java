@@ -1,8 +1,6 @@
 package com.derongan.minecraft.looty.skill.component.effective;
 
-import com.derongan.minecraft.looty.skill.component.Component;
-
-public class VelocityImparting implements Component {
+public class VelocityImparting implements com.badlogic.ashley.core.Component {
     public enum Reference {
         INITIATOR,
         TARGET,

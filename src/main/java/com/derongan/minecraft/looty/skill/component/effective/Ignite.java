@@ -1,19 +1,22 @@
 package com.derongan.minecraft.looty.skill.component.effective;
 
 import com.derongan.minecraft.looty.skill.component.Component;
+import com.derongan.minecraft.looty.skill.component.proto.IgniteInfo;
 
-public class Ignite implements Component {
-    private final int strength;
+public class Ignite implements Component<IgniteInfo> {
+    private IgniteInfo igniteInfo;
 
-    private Ignite(int strength) {
-        this.strength = strength;
+    public Ignite(IgniteInfo igniteInfo) {
+        this.igniteInfo = igniteInfo;
     }
 
-    public int getStrength() {
-        return strength;
+    @Override
+    public IgniteInfo getInfo() {
+        return igniteInfo;
     }
 
-    public static Ignite create(int strength) {
-        return new Ignite(strength);
+    @Override
+    public void setInfo(IgniteInfo info) {
+        igniteInfo = info;
     }
 }

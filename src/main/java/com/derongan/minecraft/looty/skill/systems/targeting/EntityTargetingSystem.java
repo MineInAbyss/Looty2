@@ -28,7 +28,7 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
         if (headComponentMapper.has(entity) && !tailComponentMapper.has(entity)) {
             if (radiusComponentMapper.has(entity)) {
                 SphereEntityFilter sphereEntityFilter = new SphereEntityFilter(headComponentMapper.get(entity).location, radiusComponentMapper
-                        .get(entity).radius);
+                        .get(entity).getInfo().getRadius());
                 entityTargets.affectedEntities = sphereEntityFilter.getTargets();
             } else if (actionAttributesComponentMapper.get(entity).impactEntity != null) {
                 entityTargets.affectedEntities = ImmutableSet.of(actionAttributesComponentMapper.get(entity).impactEntity);
@@ -36,7 +36,7 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
         } else if (headComponentMapper.has(entity) && tailComponentMapper.has(entity)) {
             double radius = .1;
             if (radiusComponentMapper.has(entity)) {
-                radius = radiusComponentMapper.get(entity).radius;
+                radius = radiusComponentMapper.get(entity).getInfo().getRadius();
             }
 
             BeamEntityFilter beamEntityFilter = new BeamEntityFilter(headComponentMapper.get(entity).location, tailComponentMapper

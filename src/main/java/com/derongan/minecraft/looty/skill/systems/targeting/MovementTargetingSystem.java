@@ -2,6 +2,7 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.derongan.minecraft.looty.skill.component.proto.MovementInfo;
 import com.derongan.minecraft.looty.skill.component.target.*;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.Location;
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
 /**
  * Targeting system that is in charge of creating and moving the target locations
  */
+// TODO movement info should probably create mutable components to hold the actual state
 public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
     private final Logger logger;
 
@@ -59,31 +61,6 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
     }
 
-    private void advanceSectionWithOutTail(Entity entity) {
-        Location targetLocation = targetComponentMapper.get(entity).dynamicLocation.getLocation();
-        Location originLocation = originComponentMapper.get(entity).dynamicLocation.getLocation();
-
-        Head head = headComponentMapper.get(entity);
-
-        Movement movement = movementComponentMapper.get(entity);
-
-        double distance = targetLocation.distance(originLocation);
-        Vector direction = targetLocation.toVector().subtract(originLocation.toVector()).normalize();
-
-        Vector headStep = direction.clone().multiply(movement.headSpeed);
-
-        if (distance < movement.headSpeed) {
-            movement.headSpeed = 0;
-            headStep = headStep.normalize().multiply(distance);
-        }
-
-        if (distance < movement.headSpeed) {
-            movement.headSpeed = 0;
-            headStep = headStep.normalize().multiply(distance);
-        }
-        head.location.add(headStep);
-    }
-
     private void advanceSectionWithTail(Entity entity) {
         Location targetLocation = targetComponentMapper.get(entity).dynamicLocation.getLocation();
 
@@ -102,6 +79,7 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
         }
 
         Movement movement = movementComponentMapper.get(entity);
+        MovementInfo mvInfo = movement.getInfo();
 
         double headDistance = targetLocation.distance(head.location);
         double tailDistance = targetLocation.distance(tail.location);
@@ -109,28 +87,31 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
         Vector headDirection = targetLocation.toVector().subtract(head.location.toVector()).normalize();
         Vector tailDirection = targetLocation.toVector().subtract(tail.location.toVector()).normalize();
 
-        Vector headStep = headDirection.clone().multiply(movement.headSpeed);
-        Vector tailStep = tailDirection.clone().multiply(movement.tailSpeed);
+        Vector headStep = headDirection.clone().multiply(mvInfo.getHeadSpeed());
+        Vector tailStep = tailDirection.clone().multiply(mvInfo.getTailSpeed());
 
-        if (headDistance <= movement.headSpeed) {
-            movement.headSpeed = 0;
+        if (headDistance <= mvInfo.getHeadSpeed()) {
+            movement.setInfo(mvInfo.toBuilder().setHeadSpeed(0).build());
+            mvInfo = movement.getInfo();
             headStep = headStep.normalize().multiply(headDistance);
         }
 
-        if (tailDistance <= movement.tailSpeed) {
-            movement.tailSpeed = 0;
+        if (tailDistance <= mvInfo.getTailSpeed()) {
+            movement.setInfo(mvInfo.toBuilder().setTailSpeed(0).build());
+            mvInfo = movement.getInfo();
             tailStep = tailStep.normalize().multiply(tailDistance);
         }
 
-        if (movement.tailWait == 0) {
+        if (mvInfo.getTailWait() == 0) {
             tail.location.add(tailStep);
         } else {
-            movement.tailWait--;
+            movement.setInfo(mvInfo.toBuilder().setTailWait(mvInfo.getTailWait() - 1).build());
+            mvInfo = movement.getInfo();
         }
 
         head.location.add(headStep);
 
-        if (movement.headSpeed == 0 && movement.tailSpeed == 0) {
+        if (mvInfo.getHeadSpeed() == 0 && mvInfo.getTailSpeed() == 0) {
             entity.remove(Movement.class);
         }
     }

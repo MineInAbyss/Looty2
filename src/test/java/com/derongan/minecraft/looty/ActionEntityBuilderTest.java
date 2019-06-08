@@ -4,6 +4,8 @@ import com.badlogic.ashley.core.Entity;
 import com.derongan.minecraft.looty.skill.ActionEntityBuilder;
 import com.derongan.minecraft.looty.skill.component.effective.Damage;
 import com.derongan.minecraft.looty.skill.component.effective.Ignite;
+import com.derongan.minecraft.looty.skill.component.proto.DamageInfo;
+import com.derongan.minecraft.looty.skill.component.proto.IgniteInfo;
 import org.bukkit.util.Vector;
 import org.junit.Test;
 
@@ -14,8 +16,8 @@ public class ActionEntityBuilderTest {
     @Test
     public void testReuasble() {
         ActionEntityBuilder builder = new ActionEntityBuilder();
-        Damage damage = Damage.create(5);
-        Ignite ignite = Ignite.create(3);
+        Damage damage = new Damage(DamageInfo.newBuilder().setDamage(5).build());
+        Ignite ignite = new Ignite(IgniteInfo.newBuilder().setStrength(3).build());
 
         builder.addComponent(() -> damage);
         Entity entity = builder.build();

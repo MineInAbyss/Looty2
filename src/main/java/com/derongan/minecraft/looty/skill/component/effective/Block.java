@@ -1,9 +1,8 @@
 package com.derongan.minecraft.looty.skill.component.effective;
 
-import com.derongan.minecraft.looty.skill.component.Component;
 import org.bukkit.Material;
 
-public class Block implements Component {
+public class Block implements com.badlogic.ashley.core.Component {
     private Material material;
     private int ticks;
 

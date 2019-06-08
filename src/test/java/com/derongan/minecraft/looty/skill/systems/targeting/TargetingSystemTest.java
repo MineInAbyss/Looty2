@@ -3,8 +3,7 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 import com.badlogic.ashley.core.Engine;
 import org.junit.Before;
 
-import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
 
 public class TargetingSystemTest {
     private MovementTargetingSystem movementTargetingSystem;

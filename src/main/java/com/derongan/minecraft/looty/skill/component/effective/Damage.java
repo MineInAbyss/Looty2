@@ -1,19 +1,22 @@
 package com.derongan.minecraft.looty.skill.component.effective;
 
 import com.derongan.minecraft.looty.skill.component.Component;
+import com.derongan.minecraft.looty.skill.component.proto.DamageInfo;
 
-public class Damage implements Component {
-    private final double damage;
+public class Damage implements Component<DamageInfo> {
+    private DamageInfo damageInfo;
 
-    private Damage(double damage) {
-        this.damage = damage;
+    public Damage(DamageInfo damageInfo) {
+        this.damageInfo = damageInfo;
     }
 
-    public double getDamage() {
-        return damage;
+    @Override
+    public DamageInfo getInfo() {
+        return damageInfo;
     }
 
-    public static Damage create(int damage) {
-        return new Damage(damage);
+    @Override
+    public void setInfo(DamageInfo info) {
+        damageInfo = info;
     }
 }

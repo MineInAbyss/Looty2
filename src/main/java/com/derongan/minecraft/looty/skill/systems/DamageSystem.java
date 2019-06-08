@@ -19,7 +19,7 @@ public class DamageSystem extends AbstractDelayAwareIteratingSystem {
 
     @Override
     protected void processFilteredEntity(Entity entity, float deltaTime) {
-        double damage = damageComponentMapper.get(entity).getDamage();
+        double damage = damageComponentMapper.get(entity).getInfo().getDamage();
         entityTargetsComponentMapper.get(entity).affectedEntities.forEach(ent -> {
             if (ent instanceof Damageable) {
                 ((Damageable) ent).damage(damage);

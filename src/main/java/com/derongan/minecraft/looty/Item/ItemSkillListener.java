@@ -55,6 +55,7 @@ public class ItemSkillListener implements Listener {
             .addAll(rightActions)
             .build();
 
+    // TODO this doesn't work when a player punches a block in adventure mode :(
     @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         if (actions.contains(event.getAction())) {

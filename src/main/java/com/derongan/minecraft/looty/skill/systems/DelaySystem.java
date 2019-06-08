@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.derongan.minecraft.looty.skill.component.Delay;
+import com.derongan.minecraft.looty.skill.component.proto.DurationInfo;
 
 import javax.inject.Inject;
 
@@ -23,8 +24,10 @@ public class DelaySystem extends IteratingSystem {
     protected void processEntity(Entity entity, float v) {
         Delay delay = delayComponentMapper.get(entity);
 
-        if (delay.delay > 0) {
-            delay.delay--;
+
+        DurationInfo duration = delay.getInfo();
+        if (duration.getNumberOfTicks() > 0) {
+            delay.setInfo(duration.toBuilder().setNumberOfTicks(duration.getNumberOfTicks() - 1).build());
         } else {
             entity.remove(Delay.class);
         }

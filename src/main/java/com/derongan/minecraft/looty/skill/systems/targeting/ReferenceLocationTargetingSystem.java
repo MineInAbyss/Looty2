@@ -5,8 +5,7 @@ import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.DynamicLocation;
 import com.derongan.minecraft.looty.GroundingDynamicLocation;
 import com.derongan.minecraft.looty.OffsetDynamicLocation;
-import com.derongan.minecraft.looty.skill.DirectionType;
-import com.derongan.minecraft.looty.skill.LocationReferenceType;
+import com.derongan.minecraft.looty.skill.component.proto.OffsetInfo;
 import com.derongan.minecraft.looty.skill.component.target.*;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.util.Vector;
@@ -39,19 +38,19 @@ public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratin
     private void setupOrigin(Entity entity, ActionAttributes actionAttributes, boolean grounded) {
         OriginChooser originChooser = originChooserComponentMapper.get(entity);
         Origin origin = new Origin();
-        origin.dynamicLocation = getOffsetLocation(actionAttributes, originChooser, grounded);
+        origin.dynamicLocation = getOffsetLocation(actionAttributes, originChooser.getInfo(), grounded);
         entity.add(origin);
     }
 
     private void setupTarget(Entity entity, ActionAttributes actionAttributes, boolean grounded) {
         TargetChooser targetChooser = targetChooserComponentMapper.get(entity);
         Target target = new Target();
-        target.dynamicLocation = getOffsetLocation(actionAttributes, targetChooser, grounded);
+        target.dynamicLocation = getOffsetLocation(actionAttributes, targetChooser.getInfo(), grounded);
         entity.add(target);
     }
 
     private DynamicLocation getReferenceLocation(ActionAttributes actionAttributes,
-                                                 LocationReferenceType locationReferenceType) {
+                                                 OffsetInfo.LocationReferenceType locationReferenceType) {
         switch (locationReferenceType) {
             case INITIATOR:
                 return actionAttributes.initiatorLocation;
@@ -62,7 +61,7 @@ public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratin
         }
     }
 
-    private Vector getReferenceDirection(DirectionType directionType, Vector referenceHeading) {
+    private Vector getReferenceDirection(OffsetInfo.DirectionType directionType, Vector referenceHeading) {
         switch (directionType) {
             case UP:
                 return new Vector(0, 1, 0);
@@ -83,17 +82,17 @@ public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratin
     }
 
     private DynamicLocation getOffsetLocation(ActionAttributes actionAttributes,
-                                              Offsetable offsetableChooser,
+                                              OffsetInfo offsetInfo,
                                               boolean grounded) {
-        DynamicLocation referenceDynamicLocation = getReferenceLocation(actionAttributes, offsetableChooser.getLocationReferenceType());
-        Vector referenceDirection = getReferenceDirection(offsetableChooser.getDirectionType(), actionAttributes.referenceHeading)
+        DynamicLocation referenceDynamicLocation = getReferenceLocation(actionAttributes, offsetInfo.getLocationReferenceType());
+        Vector referenceDirection = getReferenceDirection(offsetInfo.getDirectionType(), actionAttributes.referenceHeading)
                 .normalize();
 
-        if(grounded){
+        if (grounded) {
             referenceDynamicLocation = new GroundingDynamicLocation(referenceDynamicLocation);
         }
 
         return new OffsetDynamicLocation(referenceDynamicLocation, referenceDirection.clone()
-                .multiply(offsetableChooser.getMagnitude()));
+                .multiply(offsetInfo.getMagnitude()));
     }
 }
