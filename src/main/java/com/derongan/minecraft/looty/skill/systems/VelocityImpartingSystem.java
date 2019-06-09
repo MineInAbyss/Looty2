@@ -17,6 +17,6 @@ public class VelocityImpartingSystem extends AbstractDelayAwareIteratingSystem {
 
     @Override
     protected void processFilteredEntity(Entity entity, float deltaTime) {
-        
+
     }
 }

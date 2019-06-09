@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 public class IgniteSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Ignite> igniteComponentMapper = ComponentMapper.getFor(Ignite.class);
+
     @Inject
     public IgniteSystem() {
         super(Family.all(Ignite.class, EntityTargets.class).get());

@@ -9,3 +9,6 @@ commands:
   looties:
     description: List items
     usage: /looties
+  lootyreload:
+    description: Reloads the items from config files
+    usage: /lootyreload

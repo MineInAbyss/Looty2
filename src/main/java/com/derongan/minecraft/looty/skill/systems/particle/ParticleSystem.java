@@ -43,6 +43,9 @@ public class ParticleSystem extends AbstractDelayAwareIteratingSystem {
             case PATH:
                 getPointsInLine(entity, particleLocations);
                 break;
+            case ENTITIES:
+                entityTargetsComponentMapper.get(entity).affectedEntities.forEach(e -> particleLocations.add(e.getLocation()));
+                break;
             case OUTLINE:
                 if (radiusComponentMapper.has(entity) && hasPath(entity)) {
                     getPointsInOutline(entity, particleLocations);
@@ -67,7 +70,7 @@ public class ParticleSystem extends AbstractDelayAwareIteratingSystem {
                 break;
             case RANDOM:
                 Radius radius = radiusComponentMapper.get(entity);
-                int count = mcParticle == org.bukkit.Particle.LAVA || mcParticle == org.bukkit.Particle.DRIP_LAVA ? 3 : 20;
+                int count = 2;
                 for (int i = 0; i < count; i++) {
                     Location head = headComponentMapper.get(entity).location;
 

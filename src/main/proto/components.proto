@@ -4,9 +4,14 @@ package com.derongan.minecraft.looty.skill.component.proto;
 
 option java_multiple_files = true;
 
-message DurationInfo {
+message LingerInfo {
     int64 number_of_ticks = 1;
 }
+
+message DelayInfo {
+    int64 number_of_ticks = 1;
+}
+
 
 message Vector {
     double x = 1;
@@ -84,6 +89,7 @@ message ParticleInfo {
         SPIRAL = 5;
         DOUBLE_SPIRAL = 6;
         RANDOM = 7;
+        ENTITIES = 8;
     }
 
     FillStyle fill_style = 1;
