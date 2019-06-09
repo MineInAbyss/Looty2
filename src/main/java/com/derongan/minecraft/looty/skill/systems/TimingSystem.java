@@ -3,8 +3,8 @@ package com.derongan.minecraft.looty.skill.systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.derongan.minecraft.looty.skill.component.proto.DurationInfo;
-import com.derongan.minecraft.looty.skill.component.target.Linger;
+import com.derongan.minecraft.looty.skill.component.Linger;
+import com.derongan.minecraft.looty.skill.component.proto.LingerInfo;
 
 import javax.inject.Inject;
 
@@ -23,7 +23,7 @@ public class TimingSystem extends AbstractDelayAwareIteratingSystem {
     protected void processFilteredEntity(Entity entity, float v) {
         Linger linger = lingerComponentMapper.get(entity);
 
-        DurationInfo duration = linger.getInfo();
+        LingerInfo duration = linger.getInfo();
         if (duration.getNumberOfTicks() > 0) {
             linger.setInfo(duration.toBuilder().setNumberOfTicks(duration.getNumberOfTicks() - 1).build());
         } else {

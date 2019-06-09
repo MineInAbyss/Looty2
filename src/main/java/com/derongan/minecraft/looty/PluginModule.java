@@ -4,10 +4,12 @@ import dagger.Module;
 import dagger.Provides;
 import org.bukkit.Server;
 
+import javax.inject.Qualifier;
+import java.io.File;
 import java.util.logging.Logger;
 
 @Module
-class PluginModule {
+public class PluginModule {
     private final LootyPlugin lootyPlugin;
 
     PluginModule(LootyPlugin lootyPlugin) {
@@ -27,5 +29,15 @@ class PluginModule {
     @Provides
     LootyPlugin providesLootyPlugin() {
         return lootyPlugin;
+    }
+
+    @Provides
+    @DataFolder
+    File providesDataFolder() {
+        return lootyPlugin.getDataFolder();
+    }
+
+    @Qualifier
+    public @interface DataFolder {
     }
 }

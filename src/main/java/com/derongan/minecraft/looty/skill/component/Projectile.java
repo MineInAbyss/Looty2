@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.skill.component.effective;
+package com.derongan.minecraft.looty.skill.component;
 
 import com.derongan.minecraft.looty.skill.ActionEntityBuilder;
 import org.bukkit.Material;
@@ -22,7 +22,7 @@ public class Projectile implements com.badlogic.ashley.core.Component {
         return appearance;
     }
 
-    public static Projectile create(Collection<ActionEntityBuilder> onHitActions, Material appearance){
+    public static Projectile create(Collection<ActionEntityBuilder> onHitActions, Material appearance) {
         return new Projectile(onHitActions, appearance);
     }
 }

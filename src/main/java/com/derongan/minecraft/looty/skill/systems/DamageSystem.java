@@ -3,8 +3,8 @@ package com.derongan.minecraft.looty.skill.systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.derongan.minecraft.looty.skill.component.effective.Damage;
-import com.derongan.minecraft.looty.skill.component.target.EntityTargets;
+import com.derongan.minecraft.looty.skill.component.Damage;
+import com.derongan.minecraft.looty.skill.component.EntityTargets;
 import org.bukkit.entity.Damageable;
 
 import javax.inject.Inject;

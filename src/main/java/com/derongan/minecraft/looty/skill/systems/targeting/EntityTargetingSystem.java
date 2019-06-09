@@ -2,7 +2,7 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.derongan.minecraft.looty.skill.component.target.EntityTargets;
+import com.derongan.minecraft.looty.skill.component.EntityTargets;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import com.google.common.collect.ImmutableSet;
 
@@ -47,7 +47,7 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
         if (entityTargetLimitComponentMapper.has(entity)) {
             entityTargets.affectedEntities = entityTargets.affectedEntities.stream()
-                    .limit(entityTargetLimitComponentMapper.get(entity).limit)
+                    .limit(entityTargetLimitComponentMapper.get(entity).getInfo().getLimit())
                     .collect(Collectors.toSet());
         }
     }

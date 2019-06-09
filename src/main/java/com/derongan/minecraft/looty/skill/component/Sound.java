@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.skill.component.effective;
+package com.derongan.minecraft.looty.skill.component;
 
 
 //TODO implement and protoize

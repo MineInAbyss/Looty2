@@ -3,8 +3,8 @@ package com.derongan.minecraft.looty.skill.systems.particle;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.derongan.minecraft.looty.skill.component.effective.Particle;
-import com.derongan.minecraft.looty.skill.component.target.Radius;
+import com.derongan.minecraft.looty.skill.component.Particle;
+import com.derongan.minecraft.looty.skill.component.Radius;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -43,6 +43,9 @@ public class ParticleSystem extends AbstractDelayAwareIteratingSystem {
             case PATH:
                 getPointsInLine(entity, particleLocations);
                 break;
+            case ENTITIES:
+                entityTargetsComponentMapper.get(entity).affectedEntities.forEach(e -> particleLocations.add(e.getLocation()));
+                break;
             case OUTLINE:
                 if (radiusComponentMapper.has(entity) && hasPath(entity)) {
                     getPointsInOutline(entity, particleLocations);
@@ -67,7 +70,7 @@ public class ParticleSystem extends AbstractDelayAwareIteratingSystem {
                 break;
             case RANDOM:
                 Radius radius = radiusComponentMapper.get(entity);
-                int count = mcParticle == org.bukkit.Particle.LAVA || mcParticle == org.bukkit.Particle.DRIP_LAVA ? 3 : 20;
+                int count = 2;
                 for (int i = 0; i < count; i++) {
                     Location head = headComponentMapper.get(entity).location;
 

@@ -36,8 +36,14 @@ public class ItemRegistrar {
     public void register(ItemType itemType) {
         availableItemTypes.add(itemType);
 
-        itemType.getSkillMap().forEach((skillTrigger, skill) -> itemSkillMap.computeIfAbsent(skillTrigger, t -> new HashMap<>())
-                .put(ItemIdentifier.fromItemType(itemType), skill));
+        itemType.getSkillMap()
+                .forEach((skillTrigger, skill) -> itemSkillMap.computeIfAbsent(skillTrigger, t -> new HashMap<>())
+                        .put(ItemIdentifier.fromItemType(itemType), skill));
+    }
+
+    public void clear(){
+        availableItemTypes.clear();
+        itemSkillMap.clear();
     }
 
     public Collection<ItemType> getAllTypes() {
