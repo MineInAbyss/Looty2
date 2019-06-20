@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Engine;
 import com.derongan.minecraft.looty.skill.systems.*;
 import com.derongan.minecraft.looty.skill.systems.block.BlockCreationSystem;
 import com.derongan.minecraft.looty.skill.systems.particle.ParticleSystem;
+import com.derongan.minecraft.looty.skill.systems.projectile.ProjectileSystem;
 import com.derongan.minecraft.looty.skill.systems.targeting.EntityTargetingSystem;
 import com.derongan.minecraft.looty.skill.systems.targeting.MovementTargetingSystem;
 import com.derongan.minecraft.looty.skill.systems.targeting.ReferenceLocationTargetingSystem;
@@ -27,6 +28,7 @@ class EngineModule {
                          DamageSystem damageSystem,
                          IgniteSystem igniteSystem,
                          BlockCreationSystem blockCreationSystem,
+                         ProjectileSystem projectileSystem,
                          LightningSystem lightningSystem,
                          ParticleSystem particleSystem,
                          SoundSystem soundSystem,
@@ -42,6 +44,7 @@ class EngineModule {
         engine.addSystem(damageSystem);
         engine.addSystem(igniteSystem);
         engine.addSystem(blockCreationSystem);
+        engine.addSystem(projectileSystem);
         engine.addSystem(lightningSystem);
         engine.addSystem(particleSystem);
         engine.addSystem(soundSystem);

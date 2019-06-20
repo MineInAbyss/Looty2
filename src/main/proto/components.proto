@@ -106,3 +106,17 @@ message GroundedInfo {
 
 message LightningInfo {
 }
+
+message ProjectileInfo {
+    enum RotationStyle{
+        NONE = 0;
+        VERTICAL = 1;
+        HORIZONTAL = 2;
+    }
+
+    RotationStyle rotation_style = 1;
+
+    string material_name = 2;
+
+    double speed = 3;
+}
