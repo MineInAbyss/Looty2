@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package com.derongan.minecraft.looty.skill.proto;
+
+import "skill.proto";
+
+option java_multiple_files = true;
+
+
+message ItemType {
+    string name = 1;
+    repeated string lore = 2;
+
+    string material = 3;
+    int32 durability = 4;
+
+    repeated Skill skill = 5;
+}

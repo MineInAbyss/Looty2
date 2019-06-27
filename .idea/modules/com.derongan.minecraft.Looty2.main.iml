@@ -31,21 +31,21 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.dagger:dagger-producers:2.23.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.errorprone:javac-shaded:9-dev-r4023-3" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.squareup:javapoet:1.11.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.protobuf:protobuf-java:3.7.0" level="project" />
     <orderEntry type="library" name="Gradle: org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: javax.annotation:jsr250-api:1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.dagger:dagger-compiler:2.23.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.protobuf:protobuf-java:3.7.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.googlejavaformat:google-java-format:1.5" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.dagger:dagger-producers:2.23.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.errorprone:javac-shaded:9-dev-r4023-3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.ltgt.gradle.incap:incap:0.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.checkerframework:checker-compat-qual:2.5.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.errorprone:error_prone_annotations:2.2.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.auto.value:auto-value:1.6.3" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.ltgt.gradle.incap:incap:0.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.dagger:dagger-compiler:2.23.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.googlejavaformat:google-java-format:1.5" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.checkerframework:checker-compat-qual:2.5.3" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.dagger:dagger-spi:2.23.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.squareup:javapoet:1.11.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: javax.annotation:jsr250-api:1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.google.dagger:dagger-spi:2.23.2" level="project" />
     <orderEntry type="library" name="Gradle: com.google.auto.value:auto-value-annotations:1.6.3" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.dagger:dagger:2.23.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.dagger:dagger:2.23.2" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.ashley:ashley:1.7.3" level="project" />
     <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="library" name="Gradle: com.google.protobuf:protobuf-java-util:3.8.0" level="project" />
@@ -67,6 +67,5 @@
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains:annotations:17.0.0" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.10" level="project" />
     <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.1" level="project" />
-    <orderEntry type="library" name="Bundled Protobuf Distribution" level="application" />
   </component>
 </module>

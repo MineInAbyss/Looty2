@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "com.badlogicgames.ashley:ashley:1.7.3"
+    compile 'com.squareup:javapoet:1.11.1'
+    compile 'com.google.guava:guava:27.1-jre'
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.8.0'
+}

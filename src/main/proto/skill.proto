@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package com.derongan.minecraft.looty.skill.proto;
+
+import "google/protobuf/any.proto";
+import "components.proto";
+
+option java_multiple_files = true;
+
+// A bundle of components used to determine a single action
+message Action {
+    repeated google.protobuf.Any components = 1;
+}
+
+message SkillTrigger {
+    enum Trigger {
+        SWING = 0;
+    }
+
+    enum Modifier {
+        UNKNOWN = 0;
+        SNEAKING = 1;
+        SPRINTING = 2;
+    }
+
+    repeated Trigger trigger = 1;
+    repeated Modifier modifier = 2;
+}
+
+message Skill {
+    repeated SkillTrigger trigger = 1;
+
+    repeated Action action = 3;
+}
