@@ -1,5 +1,6 @@
 package com.derongan.minecraft.looty;
 
+import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.registration.ItemRegister;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import org.bukkit.ChatColor;
@@ -20,11 +21,12 @@ import java.util.stream.Collectors;
 
 class LootyCommandExecutor implements TabExecutor {
     private final ItemRegister itemRegistrar;
-//    private final ConfigLoader configLoader;
+    private final ConfigLoader configLoader;
 
     @Inject
-    LootyCommandExecutor(ItemRegister itemRegistrar) {
+    LootyCommandExecutor(ItemRegister itemRegistrar, ConfigLoader configLoader) {
         this.itemRegistrar = itemRegistrar;
+        this.configLoader = configLoader;
     }
 
     // TODO should allow /looties from non player senders
@@ -35,7 +37,8 @@ class LootyCommandExecutor implements TabExecutor {
                              @NotNull String[] args) {
         if (command.getName().equals("lootyreload")) {
             sender.sendMessage("Reloading...");
-            sender.sendMessage("Items not Reloaded");
+            configLoader.reload();
+            sender.sendMessage("Reloaded");
             return true;
         }
 

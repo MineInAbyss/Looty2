@@ -22,7 +22,7 @@ public class ActionToComponentsConverter {
     }
 
     public Set<Component> convert(Action action) {
-        return action.getComponentsList().stream().map(this::unpackMessage).map(this::wrap).collect(toImmutableSet());
+        return action.getComponentList().stream().map(this::unpackMessage).map(this::wrap).collect(toImmutableSet());
     }
 
     private Message unpackMessage(Any any) {

@@ -1,6 +1,7 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
+import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.item.ItemSkillListener;
 import com.derongan.minecraft.looty.registration.ItemRegister;
 import com.derongan.minecraft.looty.skill.component.proto.*;
@@ -30,6 +31,7 @@ class Looty {
     private final LootyPlugin lootyPlugin;
     private final Server server;
     private final Engine engine;
+    private final ConfigLoader configLoader;
     private final Logger logger;
 
     @Inject
@@ -39,13 +41,14 @@ class Looty {
                  LootyPlugin lootyPlugin,
                  Server server,
                  Engine engine,
-                 Logger logger) {
+                 ConfigLoader configLoader, Logger logger) {
         this.itemSkillListener = itemSkillListener;
         this.itemRegistrar = itemRegistrar;
         this.lootyCommandExecutor = lootyCommandExecutor;
         this.lootyPlugin = lootyPlugin;
         this.server = server;
         this.engine = engine;
+        this.configLoader = configLoader;
         this.logger = logger;
     }
 
@@ -53,7 +56,9 @@ class Looty {
         server.getScheduler().scheduleSyncRepeatingTask(lootyPlugin, () -> engine.update(1), 1, 1);
         server.getPluginManager().registerEvents(itemSkillListener, lootyPlugin);
 
-        itemRegistrar.register(blazeReap());
+//        itemRegistrar.register(blazeReap());
+
+        configLoader.reload();
 
         lootyPlugin.getCommand("looty").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("looties").setExecutor(lootyCommandExecutor);
@@ -178,7 +183,7 @@ class Looty {
                         .build(), DamageInfo.newBuilder().setDamage(5).build());
 
         return Action.newBuilder()
-                .addAllComponents(explosionBuilder.build().stream().map(Any::pack).collect(toImmutableList()))
+                .addAllComponent(explosionBuilder.build().stream().map(Any::pack).collect(toImmutableList()))
                 .build();
     }
 //

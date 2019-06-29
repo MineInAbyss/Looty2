@@ -10,10 +10,10 @@ import com.google.protobuf.Message;
 class Scratch {
     public static void main(String[] args) throws ClassNotFoundException, InvalidProtocolBufferException {
         Skill skill = Skill.newBuilder()
-                .addAction(Action.newBuilder().addComponents(Any.pack(LingerInfo.newBuilder().setNumberOfTicks(10).build())))
+                .addAction(Action.newBuilder().addComponent(Any.pack(LingerInfo.newBuilder().setNumberOfTicks(10).build())))
                 .build();
 
-        Any any = skill.getActionList().get(0).getComponentsList().get(0);
+        Any any = skill.getActionList().get(0).getComponentList().get(0);
 
         String clazzName = any.getTypeUrl().split("/")[1];
 

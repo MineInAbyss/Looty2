@@ -9,7 +9,7 @@ option java_multiple_files = true;
 
 // A bundle of components used to determine a single action
 message Action {
-    repeated google.protobuf.Any components = 1;
+    repeated google.protobuf.Any component = 1;
 }
 
 message SkillTrigger {
