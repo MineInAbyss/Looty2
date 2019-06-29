@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Looty2.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/Looty2.buildSrc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Looty2.buildSrc.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Looty2.buildSrc.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Looty2.buildSrc.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Looty2.buildSrc.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.derongan.minecraft.Looty2.iml" filepath="$PROJECT_DIR$/.idea/modules/com.derongan.minecraft.Looty2.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.derongan.minecraft.Looty2.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.derongan.minecraft.Looty2.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.derongan.minecraft.Looty2.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.derongan.minecraft.Looty2.test.iml" />

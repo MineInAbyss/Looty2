@@ -1,6 +1,6 @@
 package com.derongan.minecraft.looty.config.deserialization;
 
-import com.derongan.minecraft.looty.Item.ItemType;
+import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.google.gson.Gson;
 import org.yaml.snakeyaml.Yaml;
 
@@ -31,9 +31,8 @@ public class ItemParser {
         return fromConfigMap(itemMap);
     }
 
-    public ItemType fromConfigMap(Map<Object, Object> itemMap) {
+    private ItemType fromConfigMap(Map<Object, Object> itemMap) {
         String jsonRep = gson.toJson(itemMap);
-
         return gson.fromJson(jsonRep, ItemType.class);
     }
 }

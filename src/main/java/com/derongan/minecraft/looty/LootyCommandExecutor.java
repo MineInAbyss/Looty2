@@ -1,9 +1,10 @@
 package com.derongan.minecraft.looty;
 
-import com.derongan.minecraft.looty.Item.ItemRarity;
-import com.derongan.minecraft.looty.Item.ItemType;
 import com.derongan.minecraft.looty.config.ConfigLoader;
-import com.derongan.minecraft.looty.registration.ItemRegistrar;
+import com.derongan.minecraft.looty.registration.ItemRegister;
+import com.derongan.minecraft.looty.skill.proto.ItemType;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -19,11 +20,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class LootyCommandExecutor implements TabExecutor {
-    private final ItemRegistrar itemRegistrar;
+    private final ItemRegister itemRegistrar;
     private final ConfigLoader configLoader;
 
     @Inject
-    LootyCommandExecutor(ItemRegistrar itemRegistrar, ConfigLoader configLoader) {
+    LootyCommandExecutor(ItemRegister itemRegistrar, ConfigLoader configLoader) {
         this.itemRegistrar = itemRegistrar;
         this.configLoader = configLoader;
     }
@@ -37,7 +38,7 @@ class LootyCommandExecutor implements TabExecutor {
         if (command.getName().equals("lootyreload")) {
             sender.sendMessage("Reloading...");
             configLoader.reload();
-            sender.sendMessage("Items Reloaded");
+            sender.sendMessage("Reloaded");
             return true;
         }
 
@@ -58,9 +59,7 @@ class LootyCommandExecutor implements TabExecutor {
 
             if (command.getName().equals("looties")) {
                 player.sendMessage("Items: " + itemRegistrar.getAllTypes().stream()
-                        .map(itemType -> itemType.getItemRarity()
-                                .orElse(ItemRarity.TOOL)
-                                .getColor() + itemType.getName())
+                        .map(itemType -> ChatColor.GRAY + itemType.getName())
                         .map(s -> s.replace(" ", "_"))
                         .collect(Collectors.joining(", ")));
                 return true;
@@ -71,16 +70,16 @@ class LootyCommandExecutor implements TabExecutor {
     }
 
     private ItemStack getItem(ItemType type) {
-        ItemStack item = new org.bukkit.inventory.ItemStack(type.getMaterial());
+        ItemStack item = new org.bukkit.inventory.ItemStack(Material.valueOf(type.getMaterial()));
 
         ItemMeta meta = item.getItemMeta();
         meta.setUnbreakable(true);
 
-        type.getLore().ifPresent(meta::setLore);
+        meta.setLore(type.getLoreList());
 
         ((Damageable) meta).setDamage(type.getDurability());
 
-        meta.setDisplayName(type.getItemRarity().orElse(ItemRarity.TOOL).getColor() + type.getName());
+        meta.setDisplayName(ChatColor.GRAY + type.getName());
 
         item.setItemMeta(meta);
 

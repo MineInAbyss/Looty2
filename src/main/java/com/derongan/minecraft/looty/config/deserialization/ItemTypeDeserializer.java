@@ -1,14 +1,12 @@
 package com.derongan.minecraft.looty.config.deserialization;
 
-import com.derongan.minecraft.looty.Item.ItemRarity;
-import com.derongan.minecraft.looty.Item.ItemType;
-import com.derongan.minecraft.looty.skill.Skill;
-import com.derongan.minecraft.looty.skill.SkillTrigger;
+import com.derongan.minecraft.looty.skill.proto.ItemType;
+import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.google.gson.*;
-import org.bukkit.Material;
 
 import javax.inject.Inject;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -22,34 +20,31 @@ public class ItemTypeDeserializer implements JsonDeserializer<ItemType> {
     public ItemType deserialize(JsonElement json,
                                 Type typeOfT,
                                 JsonDeserializationContext context) throws JsonParseException {
-        ItemType.Builder itemTypeBuilder = ItemType.builder();
 
         JsonObject jsonObject = json.getAsJsonObject();
-        itemTypeBuilder.setName(jsonObject.get("name").getAsString());
-        itemTypeBuilder.setDurability(jsonObject.get("durability").getAsShort());
-        itemTypeBuilder.setMaterial(Material.valueOf(jsonObject.get("material").getAsString()));
 
+        String name = jsonObject.get("name").getAsString();
+        String material = jsonObject.get("material").getAsString();
+        int durability = jsonObject.get("durability").getAsInt();
+
+        ItemType.Builder itemTypeBuilder = ItemType.newBuilder();
 
         if (jsonObject.has("lore")) {
-            itemTypeBuilder.setLore(StreamSupport.stream(jsonObject.get("lore").getAsJsonArray().spliterator(), false)
+            List<String> lore = StreamSupport.stream(jsonObject.get("lore").getAsJsonArray().spliterator(), false)
                     .map(JsonElement::getAsString)
-                    .collect(toImmutableList()));
-        }
-        if (jsonObject.has("rarity")) {
-            itemTypeBuilder.setItemRarity(ItemRarity.valueOf(jsonObject.get("rarity").getAsString()));
+                    .collect(toImmutableList());
+
+            itemTypeBuilder.addAllLore(lore);
         }
 
-        if (jsonObject.has("skills")) {
-            JsonArray skillsArray = jsonObject.get("skills").getAsJsonArray();
+        itemTypeBuilder
+                .setName(name)
+                .setMaterial(material)
+                .setDurability(durability);
 
-            skillsArray.forEach(skillObject -> {
-                SkillTrigger skillTrigger = context.deserialize(skillObject.getAsJsonObject()
-                        .get("trigger"), SkillTrigger.class);
-
-                Skill skill = context.deserialize(skillObject.getAsJsonObject().get("skill"), Skill.class);
-                itemTypeBuilder.addSkillWithTrigger(skillTrigger, skill);
-            });
-        }
+        jsonObject.get("skills").getAsJsonArray().forEach(skillJson -> {
+            itemTypeBuilder.addSkill((Skill) context.deserialize(skillJson, Skill.class));
+        });
 
         return itemTypeBuilder.build();
     }

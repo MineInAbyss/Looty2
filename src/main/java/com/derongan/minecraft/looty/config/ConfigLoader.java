@@ -2,7 +2,7 @@ package com.derongan.minecraft.looty.config;
 
 import com.derongan.minecraft.looty.PluginModule;
 import com.derongan.minecraft.looty.config.deserialization.ItemParser;
-import com.derongan.minecraft.looty.registration.ItemRegistrar;
+import com.derongan.minecraft.looty.registration.ItemRegister;
 import com.google.common.io.Files;
 
 import javax.inject.Inject;
@@ -12,13 +12,13 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 public class ConfigLoader {
-    private final ItemRegistrar itemRegistrar;
+    private final ItemRegister itemRegistrar;
     private final File dataFolder;
     private final ItemParser itemParser;
     private final Logger logger;
 
     @Inject
-    public ConfigLoader(ItemRegistrar itemRegistrar,
+    public ConfigLoader(ItemRegister itemRegistrar,
                         @PluginModule.DataFolder File dataFolder,
                         ItemParser itemParser,
                         Logger logger) {
