@@ -106,3 +106,18 @@ message GroundedInfo {
 
 message LightningInfo {
 }
+
+message BlockInfo {
+}
+
+message SoundInfo {
+    enum LocationReference {
+        ORIGIN = 0;
+        TARGET = 1;
+    }
+
+    string sound_name = 1;
+    float volume = 2;
+    float pitch = 3;
+    LocationReference location_reference = 4;
+}

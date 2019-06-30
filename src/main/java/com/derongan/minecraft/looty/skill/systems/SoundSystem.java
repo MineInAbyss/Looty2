@@ -1,20 +1,43 @@
 package com.derongan.minecraft.looty.skill.systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
 import com.derongan.minecraft.looty.skill.component.Sound;
+import com.derongan.minecraft.looty.skill.component.proto.SoundInfo;
+import org.bukkit.Location;
 
 import javax.inject.Inject;
 
-public class SoundSystem extends IteratingSystem {
+public class SoundSystem extends AbstractDelayAwareIteratingSystem {
+    private final ComponentMapper<Sound> soundComponentMapper = ComponentMapper.getFor(Sound.class);
+
     @Inject
     public SoundSystem() {
         super(Family.all(Sound.class).get());
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
-    }
+    protected void processFilteredEntity(Entity entity, float deltaTime) {
+        Sound sound = soundComponentMapper.get(entity);
 
+        Location location;
+
+        SoundInfo info = sound.getInfo();
+        switch (info.getLocationReference()) {
+            case ORIGIN:
+                location = originComponentMapper.get(entity).dynamicLocation.getLocation();
+                break;
+            case TARGET:
+            default:
+                location = headComponentMapper.get(entity).location;
+                break;
+        }
+
+        org.bukkit.Sound mcSound = org.bukkit.Sound.valueOf(info.getSoundName());
+        float volume = info.getVolume();
+        float pitch = info.getPitch();
+
+        location.getWorld().playSound(location, mcSound, volume, pitch);
+    }
 }

@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.Linger;
+import com.derongan.minecraft.looty.skill.component.LingerInternal;
 import com.derongan.minecraft.looty.skill.component.proto.LingerInfo;
 
 import javax.inject.Inject;
@@ -16,17 +17,26 @@ public class TimingSystem extends AbstractDelayAwareIteratingSystem {
 
     @Inject
     public TimingSystem() {
-        super(Family.all(Linger.class).get());
+        super(Family.one(Linger.class, LingerInternal.class).get());
     }
 
     @Override
     protected void processFilteredEntity(Entity entity, float v) {
-        Linger linger = lingerComponentMapper.get(entity);
-
-        LingerInfo duration = linger.getInfo();
-        if (duration.getNumberOfTicks() > 0) {
-            linger.setInfo(duration.toBuilder().setNumberOfTicks(duration.getNumberOfTicks() - 1).build());
+        if (persistComponentMapper.has(entity)) {
+            LingerInternal lingerInternal = persistComponentMapper.get(entity);
+            lingerInternal.ticks--;
+            if (lingerInternal.ticks < 0) {
+                entity.remove(LingerInternal.class);
+            }
         } else {
+            Linger linger = lingerComponentMapper.get(entity);
+
+            LingerInfo duration = linger.getInfo();
+
+            LingerInternal lingerInternal = new LingerInternal();
+            lingerInternal.ticks = duration.getNumberOfTicks();
+
+            entity.add(lingerInternal);
             entity.remove(Linger.class);
         }
     }

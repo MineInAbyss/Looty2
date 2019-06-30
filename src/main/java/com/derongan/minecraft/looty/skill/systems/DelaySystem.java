@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.derongan.minecraft.looty.skill.component.Delay;
+import com.derongan.minecraft.looty.skill.component.DelayInternal;
 import com.derongan.minecraft.looty.skill.component.proto.DelayInfo;
 
 import javax.inject.Inject;
@@ -14,21 +15,30 @@ import javax.inject.Inject;
  */
 public class DelaySystem extends IteratingSystem {
     private ComponentMapper<Delay> delayComponentMapper = ComponentMapper.getFor(Delay.class);
+    private ComponentMapper<DelayInternal> delayInternalComponentMapper = ComponentMapper.getFor(DelayInternal.class);
 
     @Inject
     public DelaySystem() {
-        super(Family.all(Delay.class).get());
+        super(Family.one(Delay.class, DelayInternal.class).get());
     }
 
     @Override
     protected void processEntity(Entity entity, float v) {
-        Delay delay = delayComponentMapper.get(entity);
-
-
-        DelayInfo duration = delay.getInfo();
-        if (duration.getNumberOfTicks() > 0) {
-            delay.setInfo(duration.toBuilder().setNumberOfTicks(duration.getNumberOfTicks() - 1).build());
+        if (delayInternalComponentMapper.has(entity)) {
+            DelayInternal delayInternalingerInternal = delayInternalComponentMapper.get(entity);
+            delayInternalingerInternal.ticks--;
+            if (delayInternalingerInternal.ticks < 0) {
+                entity.remove(DelayInternal.class);
+            }
         } else {
+            Delay linger = delayComponentMapper.get(entity);
+
+            DelayInfo duration = linger.getInfo();
+
+            DelayInternal delayInternal = new DelayInternal();
+            delayInternal.ticks = duration.getNumberOfTicks();
+
+            entity.add(delayInternal);
             entity.remove(Delay.class);
         }
     }
