@@ -12,3 +12,6 @@ commands:
   lootyreload:
     description: Reloads the items from config files
     usage: /lootyreload
+  lootyeditor:
+    description: Looty editor
+    usage: /lootyeditor
