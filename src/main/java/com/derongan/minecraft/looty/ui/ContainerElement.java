@@ -1,6 +1,5 @@
 package com.derongan.minecraft.looty.ui;
 
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
 import org.bukkit.inventory.meta.tags.ItemTagType;
@@ -29,18 +28,18 @@ public class ContainerElement extends FillableElement {
         CustomItemTagContainer customTagContainer = clickEvent.getItemOnCursor().getItemMeta().getCustomTagContainer();
 
         boolean anyMatch = allowedKeys.stream()
-                .anyMatch(key -> customTagContainer.hasCustomTag(key, ItemTagType.STRING));
+                .anyMatch(key -> customTagContainer.hasCustomTag(key, ItemTagType.BYTE_ARRAY));
 
         if (!anyMatch) {
             clickEvent.setCancelled(true);
         } else {
-            clickEvent.setCancelled(true);
-            setElement(clickEvent.getX(), clickEvent.getY(), Cell.forItemStack(clickEvent.getItemOnCursor()));
+            clickEvent.setCancelled(false);
+            setElement(clickEvent.getX(), clickEvent.getY(), Cell.forItemStack(clickEvent.getItemOnCursor().clone()));
 
-            Bukkit.getScheduler()
-                    .scheduleSyncDelayedTask(plugin, () -> clickEvent.getRawEvent()
-                            .getWhoClicked()
-                            .setItemOnCursor(null));
+//            Bukkit.getScheduler()
+//                    .scheduleSyncDelayedTask(plugin, () -> clickEvent.getRawEvent()
+//                            .getWhoClicked()
+//                            .setItemOnCursor(null));
         }
     }
 

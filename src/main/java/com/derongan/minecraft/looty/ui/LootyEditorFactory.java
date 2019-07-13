@@ -14,9 +14,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.tags.ItemTagType;
 
 import javax.inject.Inject;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
@@ -37,7 +40,7 @@ public class LootyEditorFactory {
         Layout skillSelectionWindow = new Layout();
         Layout skillEditorWindow = new Layout();
         SwappableElement swappableWindow = new SwappableElement(skillSelectionWindow);
-        ContainerElement dropArea = new ContainerElement(6, 5, ImmutableSet.of(new NamespacedKey(lootyPlugin, "tool")), lootyPlugin);
+        ContainerElement dropArea = new ContainerElement(6, 5, ImmutableSet.of(new NamespacedKey(lootyPlugin, "skill")), lootyPlugin);
 
         main.addElement(0, 0, pallet);
         main.addElement(1, 0, divider);
@@ -98,7 +101,7 @@ public class LootyEditorFactory {
         return new ClickableElement(Cell.forItemStack(itemStack, name));
     }
 
-    private static ItemStack generateRandomBanner() {
+    private ItemStack generateRandomBanner() {
         List<Material> materialList = Arrays.stream(Material.values())
                 .filter(mat -> mat.name().endsWith("BANNER") && !mat.name().contains("WALL"))
                 .collect(toImmutableList());
@@ -115,6 +118,17 @@ public class LootyEditorFactory {
             System.out.println(dyeColor);
             System.out.println(patternType);
         }
+
+        UUID uuid = UUID.randomUUID();
+
+        byte[] uuidBytes = new byte[16];
+        ByteBuffer.wrap(uuidBytes)
+                .order(ByteOrder.BIG_ENDIAN)
+                .putLong(uuid.getMostSignificantBits())
+                .putLong(uuid.getLeastSignificantBits());
+
+        bannerMeta.getCustomTagContainer()
+                .setCustomTag(new NamespacedKey(lootyPlugin, "skill"), ItemTagType.BYTE_ARRAY, uuidBytes);
 
         ItemStack itemStack = new ItemStack(material);
         itemStack.setItemMeta(bannerMeta);

@@ -1,10 +1,16 @@
 package com.derongan.minecraft.looty.ui;
 
 import com.derongan.minecraft.looty.LootyPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.tags.ItemTagType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
@@ -67,7 +73,22 @@ public class LootyEditorCommandExecutor implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            guiHolder.show(player);
+//            player.openInventory(Bukkit.createInventory(null, InventoryType.DISPENSER, "Hello World"));
+//            guiHolder.show(player);
+
+            ItemStack itemStack = new ItemStack(Material.CRAFTING_TABLE);
+
+            ItemMeta itemMeta = Bukkit.getItemFactory().getItemMeta(Material.CRAFTING_TABLE);
+
+            itemMeta
+                    .getCustomTagContainer()
+                    .setCustomTag(new NamespacedKey(plugin, "craft"), ItemTagType.BYTE, (byte) 1);
+
+            itemMeta.setDisplayName("Looty Bench");
+            itemStack.setItemMeta(itemMeta);
+
+            player.getInventory().addItem(itemStack);
+
         }
 
         return true;
