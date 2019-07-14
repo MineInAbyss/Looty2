@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.ui;
+package com.derongan.minecraft.ui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -44,17 +44,7 @@ public class Cell implements Element {
     }
 
     @Override
-    public void onPickup(ClickEvent clickEvent) {
-        clickEvent.setCancelled(true);
-    }
-
-    @Override
-    public void onPlace(ClickEvent clickEvent) {
-        clickEvent.setCancelled(true);
-    }
-
-    @Override
-    public void onSwap(ClickEvent clickEvent) {
+    public void onClick(ClickEvent clickEvent) {
         clickEvent.setCancelled(true);
     }
 

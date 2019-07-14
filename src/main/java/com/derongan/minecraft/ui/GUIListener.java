@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.ui;
+package com.derongan.minecraft.ui;
 
 import com.derongan.minecraft.looty.LootyPlugin;
 import org.bukkit.DyeColor;
@@ -31,22 +31,8 @@ public class GUIListener implements Listener {
     public void onInventoryClick(InventoryClickEvent inventoryClickEvent) {
         InventoryHolder holder = inventoryClickEvent.getClickedInventory().getHolder();
         if (holder instanceof GUIHolder) {
-            switch (inventoryClickEvent.getAction()) {
-                case PICKUP_ALL:
-                case PICKUP_HALF:
-                case PICKUP_SOME:
-                case PICKUP_ONE:
-                    ((GUIHolder) holder).onPickup(ClickEvent.createClickEvent(inventoryClickEvent));
-                    break;
-                case SWAP_WITH_CURSOR:
-                    ((GUIHolder) holder).onSwap(ClickEvent.createClickEvent(inventoryClickEvent));
-                    break;
-                case PLACE_ALL:
-                case PLACE_ONE:
-                case PLACE_SOME:
-                    ((GUIHolder) holder).onPlace(ClickEvent.createClickEvent(inventoryClickEvent));
-                    break;
-            }
+            inventoryClickEvent.setCancelled(true);
+            ((GUIHolder) holder).onClick(ClickEvent.createClickEvent(inventoryClickEvent));
         }
     }
 

@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.ui;
+package com.derongan.minecraft.ui;
 
 import com.google.auto.value.AutoValue;
 

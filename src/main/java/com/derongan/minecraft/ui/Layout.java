@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.ui;
+package com.derongan.minecraft.ui;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,10 +19,10 @@ public class Layout implements Element {
     }
 
     @Override
-    public void onPickup(ClickEvent clickEvent) {
+    public void onClick(ClickEvent clickEvent) {
         findEffectedElements(clickEvent.getX(), clickEvent.getY())
                 .forEach(child -> child.getValue()
-                        .onPickup(ClickEvent.offsetClickEvent(clickEvent, child.getKey().getFirst(), child.getKey()
+                        .onClick(ClickEvent.offsetClickEvent(clickEvent, child.getKey().getFirst(), child.getKey()
                                 .getSecond())));
     }
 
@@ -41,22 +41,6 @@ public class Layout implements Element {
 
                     return x <= xr && x >= xl && y <= yb && y >= yt;
                 });
-    }
-
-    @Override
-    public void onPlace(ClickEvent clickEvent) {
-        findEffectedElements(clickEvent.getX(), clickEvent.getY())
-                .forEach(child -> child.getValue()
-                        .onPlace(ClickEvent.offsetClickEvent(clickEvent, child.getKey().getFirst(), child.getKey()
-                                .getSecond())));
-    }
-
-    @Override
-    public void onSwap(ClickEvent clickEvent) {
-        findEffectedElements(clickEvent.getX(), clickEvent.getY())
-                .forEach(child -> child.getValue()
-                        .onSwap(ClickEvent.offsetClickEvent(clickEvent, child.getKey().getFirst(), child.getKey()
-                                .getSecond())));
     }
 
     @Override

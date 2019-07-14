@@ -1,6 +1,7 @@
 package com.derongan.minecraft.looty.ui;
 
 import com.derongan.minecraft.looty.LootyPlugin;
+import com.derongan.minecraft.ui.*;
 import com.google.common.collect.ImmutableSet;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -27,6 +28,13 @@ public class LootyEditorFactory {
 
     private static Random random = new Random();
     private final LootyPlugin lootyPlugin;
+    public static final String SKILL_UUID_KEY = "skill_uuid";
+    public static final String TYPE_KEY = "type";
+    public static final String TOOL_TYPE_KEY = "tool_type";
+    public static final String TOOL_VALUE = "tool";
+    public static final String SKILL_VALUE = "skill";
+    public static final String ACTION_VALUE = "action";
+    public static final String COMPONENT_VALUE = "component";
 
     @Inject
     public LootyEditorFactory(LootyPlugin lootyPlugin) {
@@ -38,9 +46,10 @@ public class LootyEditorFactory {
         Element divider = buildDivider();
         Layout pallet = new Layout();
         Layout skillSelectionWindow = new Layout();
-        Layout skillEditorWindow = new Layout();
+        Layout skillEditWindow = new Layout();
         SwappableElement swappableWindow = new SwappableElement(skillSelectionWindow);
-        ContainerElement dropArea = new ContainerElement(6, 5, ImmutableSet.of(new NamespacedKey(lootyPlugin, "skill")), lootyPlugin);
+        ContainerElement dropArea = new ContainerElement(6, 5, ImmutableSet.of(SKILL_VALUE), lootyPlugin);
+        ToolInterceptor toolInterceptor = new ToolInterceptor(dropArea, lootyPlugin);
 
         main.addElement(0, 0, pallet);
         main.addElement(1, 0, divider);
@@ -48,10 +57,11 @@ public class LootyEditorFactory {
         main.addElement(7, 0, divider);
 
 
-        skillSelectionWindow.addElement(0, 0, dropArea);
+        skillSelectionWindow.addElement(0, 0, toolInterceptor);
 
         ClickableElement newButton = buildButton(Material.BUCKET, "New Skill");
-        ClickableElement editButton = buildButton(Material.SALMON_BUCKET, "Edit Skill");
+        String editSkillName = "Edit Skill";
+        ClickableElement editButton = buildButton(Material.SALMON_BUCKET, editSkillName);
         ClickableElement copyButton = buildButton(Material.WATER_BUCKET, "Copy Skill");
         ClickableElement deleteButton = buildButton(Material.LAVA_BUCKET, "Delete Skill");
 
@@ -60,21 +70,22 @@ public class LootyEditorFactory {
         pallet.addElement(0, 2, copyButton);
         pallet.addElement(0, 5, deleteButton);
 
-        newButton.setPickupAction(event -> {
-            event.setCancelled(true);
-            dropArea.addElement(Cell.forItemStack(generateRandomBanner(), "Skill"));
-        });
-
-        editButton.setPickupAction(event -> {
-            event.setCancelled(false);
-        });
-
-        deleteButton.setSwapAction(clickEvent -> {
+        newButton.setClickAction(clickEvent -> {
+            ItemStack itemStack = generateRandomBanner();
+            dropArea.addElement(Cell.forItemStack(itemStack, "Skill"));
             clickEvent.setCancelled(true);
-            Bukkit.getScheduler()
-                    .scheduleSyncDelayedTask(lootyPlugin, () -> clickEvent.getRawEvent()
-                            .getWhoClicked()
-                            .setItemOnCursor(null));
+        });
+
+        editButton.setClickAction(clickEvent -> {
+            clickEvent.setCancelled(false);
+        });
+
+        toolInterceptor.registerToolAction(editSkillName, (clickEvent, element) -> {
+            swappableWindow.swap(skillEditWindow);
+            clickEvent.setCancelled(true);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(lootyPlugin, () -> {
+                clickEvent.getRawEvent().getWhoClicked().setItemOnCursor(null);
+            }, 1);
         });
 
         return main;
@@ -94,7 +105,10 @@ public class LootyEditorFactory {
 
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
 
-        meta.getCustomTagContainer().setCustomTag(new NamespacedKey(lootyPlugin, "tool"), ItemTagType.STRING, name);
+        meta.getCustomTagContainer()
+                .setCustomTag(new NamespacedKey(lootyPlugin, TYPE_KEY), ItemTagType.STRING, TOOL_VALUE);
+        meta.getCustomTagContainer()
+                .setCustomTag(new NamespacedKey(lootyPlugin, TOOL_TYPE_KEY), ItemTagType.STRING, name);
 
         itemStack.setItemMeta(meta);
 
@@ -128,7 +142,9 @@ public class LootyEditorFactory {
                 .putLong(uuid.getLeastSignificantBits());
 
         bannerMeta.getCustomTagContainer()
-                .setCustomTag(new NamespacedKey(lootyPlugin, "skill"), ItemTagType.BYTE_ARRAY, uuidBytes);
+                .setCustomTag(new NamespacedKey(lootyPlugin, SKILL_UUID_KEY), ItemTagType.BYTE_ARRAY, uuidBytes);
+        bannerMeta.getCustomTagContainer()
+                .setCustomTag(new NamespacedKey(lootyPlugin, TYPE_KEY), ItemTagType.STRING, SKILL_VALUE);
 
         ItemStack itemStack = new ItemStack(material);
         itemStack.setItemMeta(bannerMeta);

@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.ui;
+package com.derongan.minecraft.ui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,12 +12,21 @@ import java.util.function.Consumer;
 public class GUIHolder implements InventoryHolder {
     private Inventory inventory;
     private int numRows;
-    private Layout initial;
+
+    private Element initial;
     private final Plugin plugin;
 
-    public GUIHolder(int numRows, String title, Layout initial, Plugin plugin) {
+    public GUIHolder(int numRows, String title, Element initial, Plugin plugin) {
         this.numRows = numRows;
         this.initial = initial;
+        this.plugin = plugin;
+
+        inventory = Bukkit.createInventory(this, 9 * numRows, title);
+    }
+
+    public GUIHolder(int numRows, String title, Plugin plugin) {
+        this.numRows = numRows;
+        this.initial = new Layout();
         this.plugin = plugin;
 
         inventory = Bukkit.createInventory(this, 9 * numRows, title);
@@ -46,16 +55,8 @@ public class GUIHolder implements InventoryHolder {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::render);
     }
 
-    public void onPickup(ClickEvent clickEvent) {
-        processEvent(clickEvent, initial::onPickup);
-    }
-
-    public void onPlace(ClickEvent clickEvent) {
-        processEvent(clickEvent, initial::onPlace);
-    }
-
-    public void onSwap(ClickEvent clickEvent) {
-        processEvent(clickEvent, initial::onSwap);
+    public void onClick(ClickEvent clickEvent) {
+        processEvent(clickEvent, initial::onClick);
     }
 
     private void processEvent(ClickEvent clickEvent, Consumer<ClickEvent> clickEventConsumer) {
@@ -66,5 +67,9 @@ public class GUIHolder implements InventoryHolder {
     public void show(Player player) {
         render();
         player.openInventory(inventory);
+    }
+
+    public void setElement(Element element) {
+        this.initial = element;
     }
 }

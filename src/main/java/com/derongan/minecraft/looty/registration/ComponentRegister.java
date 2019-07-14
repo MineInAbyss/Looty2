@@ -3,12 +3,14 @@ package com.derongan.minecraft.looty.registration;
 import com.badlogic.ashley.core.Component;
 import com.derongan.minecraft.looty.skill.component.proto.GeneratedComponentSupplier;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Message;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Singleton
 public class ComponentRegister {
@@ -37,5 +39,9 @@ public class ComponentRegister {
 
     public Class<? extends Message> getMessageForString(String name) {
         return stringToMessageMap.get(name);
+    }
+
+    public Set<Class<? extends Component>> getAllComponents() {
+        return ImmutableSet.copyOf(messageToComponentMap.values());
     }
 }

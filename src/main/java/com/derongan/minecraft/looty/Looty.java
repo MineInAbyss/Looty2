@@ -9,8 +9,9 @@ import com.derongan.minecraft.looty.skill.proto.Action;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
-import com.derongan.minecraft.looty.ui.GUIListener;
 import com.derongan.minecraft.looty.ui.LootyEditorCommandExecutor;
+import com.derongan.minecraft.looty.ui.LootyEditorListener;
+import com.derongan.minecraft.ui.GUIListener;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Any;
@@ -32,6 +33,7 @@ class Looty {
     private final LootyCommandExecutor lootyCommandExecutor;
     private final LootyEditorCommandExecutor LootyEditorCommandExecutor;
     private final GUIListener guiListener;
+    private final LootyEditorListener lootyEditorListener;
     private final LootyPlugin lootyPlugin;
     private final Server server;
     private final Engine engine;
@@ -43,7 +45,9 @@ class Looty {
                  ItemRegister itemRegistrar,
                  LootyCommandExecutor lootyCommandExecutor,
                  LootyEditorCommandExecutor LootyEditorCommandExecutor,
-                 GUIListener guiListener, LootyPlugin lootyPlugin,
+                 GUIListener guiListener,
+                 LootyEditorListener lootyEditorListener,
+                 LootyPlugin lootyPlugin,
                  Server server,
                  Engine engine,
                  ConfigLoader configLoader, Logger logger) {
@@ -52,6 +56,7 @@ class Looty {
         this.lootyCommandExecutor = lootyCommandExecutor;
         this.LootyEditorCommandExecutor = LootyEditorCommandExecutor;
         this.guiListener = guiListener;
+        this.lootyEditorListener = lootyEditorListener;
         this.lootyPlugin = lootyPlugin;
         this.server = server;
         this.engine = engine;
@@ -63,6 +68,7 @@ class Looty {
         server.getScheduler().scheduleSyncRepeatingTask(lootyPlugin, () -> engine.update(1), 1, 1);
         server.getPluginManager().registerEvents(itemSkillListener, lootyPlugin);
         server.getPluginManager().registerEvents(guiListener, lootyPlugin);
+        server.getPluginManager().registerEvents(lootyEditorListener, lootyPlugin);
 
         configLoader.reload();
 

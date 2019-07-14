@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.ui;
+package com.derongan.minecraft.ui;
 
 public class SwappableElement implements Element {
     private Element wrapped;
@@ -18,22 +18,11 @@ public class SwappableElement implements Element {
     }
 
     @Override
-    public void onPickup(ClickEvent clickEvent) {
-        wrapped.onPickup(clickEvent);
-    }
-
-    @Override
-    public void onPlace(ClickEvent clickEvent) {
-        wrapped.onPlace(clickEvent);
-    }
-
-    @Override
-    public void onSwap(ClickEvent clickEvent) {
-        wrapped.onSwap(clickEvent);
+    public void onClick(ClickEvent clickEvent) {
+        wrapped.onClick(clickEvent);
     }
 
     public void swap(Element element) {
         this.wrapped = element;
     }
-
 }

@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.ui;
+package com.derongan.minecraft.ui;
 
 public class FillableElement implements Element {
     private final int height;
@@ -52,6 +52,10 @@ public class FillableElement implements Element {
         elements[x][y] = null;
     }
 
+    public boolean hasElement(int x, int y) {
+        return elements[x][y] != null;
+    }
+
     public void clear() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -63,16 +67,10 @@ public class FillableElement implements Element {
 
     // TODO decide these
     @Override
-    public void onPickup(ClickEvent clickEvent) {
+    public void onClick(ClickEvent clickEvent) {
     }
 
-    @Override
-    public void onPlace(ClickEvent clickEvent) {
-
-    }
-
-    @Override
-    public void onSwap(ClickEvent clickEvent) {
-
+    public Element getElement(int x, int y) {
+        return elements[x][y];
     }
 }
