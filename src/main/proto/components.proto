@@ -1,14 +1,20 @@
 syntax = "proto3";
 
+import "visual_extensions.proto";
+
 package com.derongan.minecraft.looty.skill.component.proto;
 
 option java_multiple_files = true;
 
 message LingerInfo {
+    option (visual.display_as).uuid = "b4f1661d-8f18-470f-a5e9-65c0c9e05388";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQ3N2RhZmM4YzllYTA3OTk2MzMzODE3OTM4NjZkMTQ2YzlhMzlmYWQ0YzY2ODRlNzExN2Q5N2U5YjZjMyJ9fX0=";
     int64 number_of_ticks = 1;
 }
 
 message DelayInfo {
+    option (visual.display_as).uuid = "98806d6a-ba85-407d-a9dd-ccbae8de119f";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmM3ZDM1YzdmNWMyODQ5ZDFlMjM4OTZlYmFiMjQ0ZDM0ZWYwZGFmZWRkODkxOTc0OTQ2MWI3ZDE1Y2MxZjA0In19fQ==";
     int64 number_of_ticks = 1;
 }
 
@@ -57,14 +63,20 @@ message OriginChooserInfo {
 }
 
 message TargetChooserInfo {
+    option (visual.display_as).uuid = "9f955e4c-901e-492f-9bbe-8c8cf79ae86a";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ4ZTFlYmM4M2YwZjU2NjI4MjFiYzY2MDA5ODFlMTdmM2NlMjZiMjU3NGVkZjY3ZGUyMjhjNzQ5NDgxZjIzMCJ9fX0=";
     Offset offset = 1;
 }
 
 message DamageInfo {
+    option (visual.display_as).uuid = "b0d8e114-7652-4b82-b5fb-a8474c62bf35";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc3OTFjY2VjMTZmYjY4ZjNjOTJlMGIwMjY0Zjk2ODBlMTI0YzM4NTlkNjY0MDM1MjRiYTViOTU3NmM5ODE4In19fQ==";
     double damage = 1;
 }
 
 message IgniteInfo {
+    option (visual.display_as).uuid = "f6dfc929-30da-45f4-b9d5-9ed06e28022f";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA4MGJiZWZjYTg3ZGMwZjM2NTM2YjY1MDg0MjVjZmM0Yjk1YmE2ZThmNWU2YTQ2ZmY5ZTljYjQ4OGE5ZWQifX19";
     int64 strength = 1;
 }
 
@@ -80,6 +92,9 @@ message MovementInfo {
 }
 
 message ParticleInfo {
+    option (visual.display_as).uuid = "ba8525b3-8722-43a5-aca3-b8b94558052d";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGQwYjA4OTkwYTQzMTRjYTRmMGFlODhjNDA5YTA1OGM0MTAzMDg2YjY2YTU4YjY3YmEzNzdlNDAzN2JiZGRkZCJ9fX0=";
+
     enum FillStyle {
         INITIATOR = 0;
         ORIGIN = 1;
@@ -102,15 +117,23 @@ message EntityTargetLimitInfo {
 }
 
 message GroundedInfo {
+    option (visual.display_as).uuid = "dba0d5d8-1359-492e-a2fd-3500240168cd";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE5ZTM2YTg3YmFmMGFjNzYzMTQzNTJmNTlhN2Y2M2JkYjNmNGM4NmJkOWJiYTY5Mjc3NzJjMDFkNGQxIn19fQ==";
 }
 
 message LightningInfo {
+    option (visual.display_as).uuid = "1a54b719-36d9-47de-83c8-ccc186e407ae";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNkNjlhNjBkOTcwYWQwYjhhYTE1ODk3OTE0ZjVhYWMyNjVlOTllNmY1MDE2YTdkOGFhN2JlOWFjMDNiNjE0OCJ9fX0=";
 }
 
 message BlockInfo {
+    option (visual.display_as).uuid = "3d351ecc-23dd-409e-80c9-3fbf0bfd6ebc";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYzMTU5N2RjZTRlNDA1MWU4ZDVhNTQzNjQxOTY2YWI1NGZiZjI1YTBlZDYwNDdmMTFlNjE0MGQ4OGJmNDhmIn19fQ==";
 }
 
 message SoundInfo {
+    option (visual.display_as).uuid = "2e612bcd-d9a5-4352-b4bd-1f426a1bbaa0";
+    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzkxOWZiZDFkZjQ4YzMyMmMxMzA1YmIxZjhlYWI5Njc0YzIxODQ0YTA0OTNhNTUzNWQ5NGNhYmExZWNhM2MxZCJ9fX0=";
     enum LocationReference {
         ORIGIN = 0;
         TARGET = 1;

@@ -86,7 +86,8 @@ public class ProtobufInput<E extends Message> implements Element, Input<E> {
             ClickableElement clickableElement = new ClickableElement(element);
 
             if (fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.BOOL || fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.ENUM || fieldDescriptor
-                    .getType() == Descriptors.FieldDescriptor.Type.DOUBLE || fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.INT64 ||
+                    .getType() == Descriptors.FieldDescriptor.Type.DOUBLE || fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.INT64 || fieldDescriptor
+                    .getType() == Descriptors.FieldDescriptor.Type.FLOAT ||
                     fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.MESSAGE || fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.STRING) {
                 clickableElement.setClickAction(clickEvent -> {
                     Input input;
@@ -122,7 +123,8 @@ public class ProtobufInput<E extends Message> implements Element, Input<E> {
                         };
 
                         elem = new VerticalScrollingElement(5, (Element) fixedInput);
-                    } else if (fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.DOUBLE || fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.INT64) {
+                    } else if (fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.DOUBLE || fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.INT64 || fieldDescriptor
+                            .getType() == Descriptors.FieldDescriptor.Type.FLOAT) {
                         input = new NumberInput();
 
                         elem = (Element) input;
@@ -147,6 +149,9 @@ public class ProtobufInput<E extends Message> implements Element, Input<E> {
                             builder.clearField(fieldDescriptor);
                         } else if (fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.INT64) {
                             long l = new Double((double) result).longValue();
+                            builder.setField(fieldDescriptor, repeated ? ImmutableList.of(l) : l);
+                        } else if (fieldDescriptor.getType() == Descriptors.FieldDescriptor.Type.FLOAT) {
+                            float l = new Double((double) result).floatValue();
                             builder.setField(fieldDescriptor, repeated ? ImmutableList.of(l) : l);
                         } else {
                             builder.setField(fieldDescriptor, repeated ? ImmutableList.of(result) : result);

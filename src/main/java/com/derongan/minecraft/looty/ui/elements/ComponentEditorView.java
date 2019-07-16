@@ -15,10 +15,12 @@ import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.tags.ItemTagType;
+import visual.VisualExtensions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +48,7 @@ public class ComponentEditorView implements Element {
 
         componentRegister.getAllComponents()
                 .stream()
+                .sorted(Comparator.comparing(Class::getSimpleName))
                 .map(this::createComponentElement)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -123,21 +126,32 @@ public class ComponentEditorView implements Element {
     }
 
     private Optional<Element> createComponentElement(Class<? extends Component> clazz) {
-        String firstLetter = clazz.getSimpleName().substring(0, 1).toUpperCase();
-        ItemStack itemStack = HeadLib.valueOf(String.format("QUARTZ_%s", firstLetter))
-                .toItemStack(1, clazz.getSimpleName());
-
-        ItemMeta itemMeta = itemStack.getItemMeta();
-
-        itemMeta.getCustomTagContainer()
-                .setCustomTag(new NamespacedKey(plugin, TYPE_KEY), ItemTagType.STRING, "component");
-
         try {
             String key = clazz.getSimpleName().toLowerCase();
             Class<? extends Message> infoClazz = componentRegister.getMessageForString(key);
 
             Method builderMethod = infoClazz.getMethod("newBuilder");
             Message.Builder messageBuilder = (Message.Builder) builderMethod.invoke(null);
+
+
+            ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+
+            if (messageBuilder.build().getDescriptorForType().getOptions().hasExtension(VisualExtensions.displayAs)) {
+                VisualExtensions.DisplayHead displayHead = messageBuilder.build()
+                        .getDescriptorForType()
+                        .getOptions()
+                        .getExtension(VisualExtensions.displayAs);
+                itemStack = HeadLib.setSkullOwner(itemStack, displayHead.getUuid(), displayHead.getTexture());
+            } else {
+                String firstLetter = clazz.getSimpleName().substring(0, 1).toUpperCase();
+                itemStack = HeadLib.valueOf(String.format("QUARTZ_%s", firstLetter))
+                        .toItemStack(1, clazz.getSimpleName());
+            }
+
+            ItemMeta itemMeta = itemStack.getItemMeta();
+
+            itemMeta.getCustomTagContainer()
+                    .setCustomTag(new NamespacedKey(plugin, TYPE_KEY), ItemTagType.STRING, "component");
 
             itemMeta.getCustomTagContainer()
                     .setCustomTag(new NamespacedKey(plugin, "proto_type"), ItemTagType.STRING, key);
@@ -147,20 +161,20 @@ public class ComponentEditorView implements Element {
 
             itemMeta.setLore(MessageFormater.format(messageBuilder.build()));
 
+            itemStack.setItemMeta(itemMeta);
+
+            Element element = Cell.forItemStack(itemStack, clazz.getSimpleName());
+
+            ClickableElement clickableElement = new ClickableElement(element);
+            clickableElement.setClickAction(clickEvent -> clickEvent.setCancelled(false));
+
+            return Optional.of(clickableElement);
+
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             Bukkit.getLogger().warning(String.format("Failed to create element for %s", clazz.getSimpleName()));
             e.printStackTrace();
             return Optional.empty();
         }
-
-        itemStack.setItemMeta(itemMeta);
-
-        Element element = Cell.forItemStack(itemStack, clazz.getSimpleName());
-
-        ClickableElement clickableElement = new ClickableElement(element);
-        clickableElement.setClickAction(clickEvent -> clickEvent.setCancelled(false));
-
-        return Optional.of(clickableElement);
     }
 
     @Override
