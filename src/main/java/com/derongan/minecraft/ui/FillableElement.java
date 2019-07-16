@@ -68,6 +68,10 @@ public class FillableElement implements Element {
     // TODO decide these
     @Override
     public void onClick(ClickEvent clickEvent) {
+        Element element = elements[clickEvent.getX()][clickEvent.getY()];
+        if (element != null) {
+            element.onClick(ClickEvent.offsetClickEvent(clickEvent, clickEvent.getX(), clickEvent.getY()));
+        }
     }
 
     public Element getElement(int x, int y) {

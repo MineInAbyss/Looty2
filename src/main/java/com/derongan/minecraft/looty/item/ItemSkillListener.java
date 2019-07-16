@@ -6,9 +6,11 @@ import com.derongan.minecraft.looty.DynamicLocationImpl;
 import com.derongan.minecraft.looty.registration.ItemIdentifier;
 import com.derongan.minecraft.looty.registration.ItemRegister;
 import com.derongan.minecraft.looty.registration.PlayerSkillRegister;
+import com.derongan.minecraft.looty.registration.SingleItemSkillRegister;
 import com.derongan.minecraft.looty.skill.SkillWrapper;
 import com.derongan.minecraft.looty.skill.component.ActionAttributes;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -17,14 +19,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -33,16 +38,19 @@ import java.util.logging.Logger;
 public class ItemSkillListener implements Listener {
     private final PlayerSkillRegister playerSkillRegister;
     private final ItemRegister itemRegistrar;
+    private final SingleItemSkillRegister singleItemSkillRegister;
     private final Engine engine;
     private final Logger logger;
 
     @Inject
     ItemSkillListener(PlayerSkillRegister playerSkillRegister,
                       ItemRegister itemRegistrar,
+                      SingleItemSkillRegister singleItemSkillRegister,
                       Engine engine,
                       Logger logger) {
         this.playerSkillRegister = playerSkillRegister;
         this.itemRegistrar = itemRegistrar;
+        this.singleItemSkillRegister = singleItemSkillRegister;
         this.engine = engine;
         this.logger = logger;
     }
@@ -55,10 +63,81 @@ public class ItemSkillListener implements Listener {
 
     // TODO this doesn't work when a player punches a block in adventure mode :(
     @EventHandler
-    public void onPlayerInteractEvent(PlayerInteractEvent event) {
-        if (actions.contains(event.getAction())) {
+    public void onPlayerAnimationEvent(PlayerAnimationEvent event) {
+        SkillTrigger.Builder skillTriggerBuilder = SkillTrigger.newBuilder();
+        Player player = event.getPlayer();
+        if (player.isSneaking()) {
+            skillTriggerBuilder.addModifier(SkillTrigger.Modifier.SNEAKING);
+        }
+        if (player.isSprinting()) {
+            skillTriggerBuilder.addModifier(SkillTrigger.Modifier.SPRINTING);
+        }
+
+        skillTriggerBuilder.addTrigger(SkillTrigger.Trigger.SWING);
+
+        SkillTrigger trigger = skillTriggerBuilder.build();
+
+        Collection<SkillWrapper> skillsToUse = getSkillWrappers(player, trigger);
+
+        ActionAttributes actionAttributes = new ActionAttributes();
+
+        actionAttributes.initiatorLocation = new DynamicLocationImpl(player.getEyeLocation(), player);
+        actionAttributes.initiatorEntity = player;
+        actionAttributes.referenceHeading = player.getEyeLocation().getDirection();
+
+        RayTraceResult rayTraceResult = getRayTraceResultOrDefault(player);
+
+        Vector hitPosition = rayTraceResult.getHitPosition();
+        Location hitLocation = hitPosition.toLocation(player.getWorld());
+        if (rayTraceResult.getHitEntity() != null) {
+            org.bukkit.entity.Entity hitEntity = rayTraceResult.getHitEntity();
+            actionAttributes.impactEntity = hitEntity;
+            actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation, hitEntity);
+        } else {
+            actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation);
+        }
+
+        skillsToUse.forEach(skill -> {
+            event.setCancelled(true);
+
+            skill.getActions().forEach(components -> {
+                Entity entity = new Entity();
+                components.forEach(entity::add);
+                entity.add(actionAttributes);
+                engine.addEntity(entity);
+            });
+        });
+    }
+
+    @NotNull
+    private Collection<SkillWrapper> getSkillWrappers(Player player, SkillTrigger trigger) {
+        Collection<SkillWrapper> skillsToUse = singleItemSkillRegister.getSkill(trigger, player.getInventory()
+                .getItemInMainHand());
+
+        if (skillsToUse.isEmpty()) {
+
+            Material material = player.getInventory().getItemInMainHand().getType();
+            ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
+            short durability = (meta == null) ? 0 : (short) ((Damageable) meta).getDamage();
+
+            Optional<SkillWrapper> skillToUse = itemRegistrar.getSkill(trigger, ItemIdentifier.builder()
+                    .setDurability(durability)
+                    .setMaterial(material)
+                    .build());
+
+            if (skillToUse.isPresent()) {
+                skillsToUse = ImmutableList.of(skillToUse.get());
+            }
+        }
+        return skillsToUse;
+    }
+
+    @EventHandler
+    public void on(EntityDamageByEntityEvent entityDamageByEntityEvent) {
+        if (entityDamageByEntityEvent.getDamager() instanceof Player) {
+
             SkillTrigger.Builder skillTriggerBuilder = SkillTrigger.newBuilder();
-            Player player = event.getPlayer();
+            Player player = (Player) entityDamageByEntityEvent.getDamager();
             if (player.isSneaking()) {
                 skillTriggerBuilder.addModifier(SkillTrigger.Modifier.SNEAKING);
             }
@@ -66,54 +145,13 @@ public class ItemSkillListener implements Listener {
                 skillTriggerBuilder.addModifier(SkillTrigger.Modifier.SPRINTING);
             }
 
-            // TODO this is bork
-            if (leftActions.contains(event.getAction())) {
-                skillTriggerBuilder.addTrigger(SkillTrigger.Trigger.SWING);
-            } else {
-                skillTriggerBuilder.addTrigger(SkillTrigger.Trigger.SWING);
+            skillTriggerBuilder.addTrigger(SkillTrigger.Trigger.SWING);
+
+            SkillTrigger trigger = skillTriggerBuilder.build();
+
+            if (!getSkillWrappers(player, trigger).isEmpty()) {
+                entityDamageByEntityEvent.setCancelled(true);
             }
-
-            Material material = player.getInventory().getItemInMainHand().getType();
-            ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
-            short durability = (meta == null) ? 0 : (short) ((Damageable) meta).getDamage();
-
-            Optional<SkillWrapper> skillToUse = itemRegistrar.getSkill(skillTriggerBuilder.build(), ItemIdentifier.builder()
-                    .setDurability(durability)
-                    .setMaterial(material)
-                    .build());
-
-//            if (!skillToUse.isPresent()) {
-//                skillToUse = playerSkillRegister.getSkill(player, skillTriggerBuilder.build());
-//            }
-
-            ActionAttributes actionAttributes = new ActionAttributes();
-
-            actionAttributes.initiatorLocation = new DynamicLocationImpl(player.getEyeLocation(), player);
-            actionAttributes.initiatorEntity = player;
-            actionAttributes.referenceHeading = player.getEyeLocation().getDirection();
-
-            RayTraceResult rayTraceResult = getRayTraceResultOrDefault(player);
-
-            Vector hitPosition = rayTraceResult.getHitPosition();
-            Location hitLocation = hitPosition.toLocation(player.getWorld());
-            if (rayTraceResult.getHitEntity() != null) {
-                org.bukkit.entity.Entity hitEntity = rayTraceResult.getHitEntity();
-                actionAttributes.impactEntity = hitEntity;
-                actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation, hitEntity);
-            } else {
-                actionAttributes.impactLocation = new DynamicLocationImpl(hitLocation);
-            }
-
-            skillToUse.ifPresent(skill -> {
-                event.setCancelled(true);
-
-                skill.getActions().forEach(components -> {
-                    Entity entity = new Entity();
-                    components.forEach(entity::add);
-                    entity.add(actionAttributes);
-                    engine.addEntity(entity);
-                });
-            });
         }
     }
 
@@ -121,7 +159,7 @@ public class ItemSkillListener implements Listener {
         RayTraceResult rayTraceResult = player
                 .getWorld()
                 .rayTrace(player.getEyeLocation(), player.getEyeLocation()
-                        .getDirection(), 5, FluidCollisionMode.NEVER, true, .1, (entity -> entity != player));
+                        .getDirection(), 6, FluidCollisionMode.NEVER, true, .5, (entity -> entity != player));
 
 
         if (rayTraceResult == null) {

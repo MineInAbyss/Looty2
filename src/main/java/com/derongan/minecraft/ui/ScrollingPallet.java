@@ -1,6 +1,6 @@
 package com.derongan.minecraft.ui;
 
-import org.bukkit.Material;
+import de.erethon.headlib.HeadLib;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +20,8 @@ public class ScrollingPallet implements Element {
         this.width = width;
         this.innerLayout = new Layout();
 
-        innerLayout.addElement(0, 0, Cell.forMaterial(Material.GOLDEN_CARROT, "LEFT"));
-        innerLayout.addElement(width - 1, 0, Cell.forMaterial(Material.ARROW, "RIGHT"));
+        innerLayout.addElement(0, 0, Cell.forItemStack(HeadLib.WOODEN_ARROW_LEFT.toItemStack("Left")));
+        innerLayout.addElement(width - 1, 0, Cell.forItemStack(HeadLib.WOODEN_ARROW_RIGHT.toItemStack("Right")));
     }
 
     @Override

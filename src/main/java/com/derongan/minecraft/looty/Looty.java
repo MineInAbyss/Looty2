@@ -75,7 +75,8 @@ class Looty {
         lootyPlugin.getCommand("looty").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("looties").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("lootyreload").setExecutor(lootyCommandExecutor);
-        lootyPlugin.getCommand("lootyeditor").setExecutor(LootyEditorCommandExecutor);
+        lootyPlugin.getCommand("createskill").setExecutor(LootyEditorCommandExecutor);
+        lootyPlugin.getCommand("createaction").setExecutor(LootyEditorCommandExecutor);
         logger.info("Loaded Looty");
     }
 

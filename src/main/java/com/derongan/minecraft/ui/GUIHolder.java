@@ -44,7 +44,7 @@ public class GUIHolder implements InventoryHolder {
             if (x + 9 * y < numRows * 9) {
                 if (itemStack == null) {
                     inventory.clear(x + 9 * y);
-                } else {
+                } else if(x + 9 * y < inventory.getSize() && x + 9 * y >= 0) {
                     inventory.setItem(x + 9 * y, itemStack);
                 }
             }

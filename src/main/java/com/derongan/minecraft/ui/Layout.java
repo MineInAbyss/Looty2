@@ -17,6 +17,9 @@ public class Layout implements Element {
     public void addElement(int x, int y, Element e) {
         elements.put(Pair.create(x, y), e);
     }
+    public void removeElement(int x, int y) {
+        elements.remove(Pair.create(x, y));
+    }
 
     @Override
     public void onClick(ClickEvent clickEvent) {

@@ -43,6 +43,8 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
                     .get(entity).location, radius);
 
             entityTargets.affectedEntities = beamEntityFilter.getTargets();
+        } else if (actionAttributesComponentMapper.get(entity).impactEntity != null) {
+            entityTargets.affectedEntities = ImmutableSet.of(actionAttributesComponentMapper.get(entity).impactEntity);
         }
 
         if (entityTargetLimitComponentMapper.has(entity)) {

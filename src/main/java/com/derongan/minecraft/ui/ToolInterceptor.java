@@ -1,5 +1,6 @@
 package com.derongan.minecraft.ui;
 
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
@@ -46,6 +47,11 @@ public class ToolInterceptor implements Element {
 
                 if (customTagContainer.getCustomTag(new NamespacedKey(plugin, TYPE_KEY), ItemTagType.STRING)
                         .equals(TOOL_VALUE)) {
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        clickEvent.getRawEvent().getWhoClicked().setItemOnCursor(null);
+                    }, 1);
+
                     Element element = wrapped.getElement(clickEvent.getX(), clickEvent.getY());
 
                     String toolType = customTagContainer.getCustomTag(new NamespacedKey(plugin, TOOL_TYPE_KEY), ItemTagType.STRING);

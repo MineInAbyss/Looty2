@@ -3,16 +3,16 @@ package com.derongan.minecraft.looty.ui;
 import com.derongan.minecraft.looty.LootyPlugin;
 import com.derongan.minecraft.looty.registration.ComponentRegister;
 import com.derongan.minecraft.ui.*;
-import com.google.common.collect.ImmutableList;
+import com.derongan.minecraft.ui.inputs.MessageFormater;
+import com.derongan.minecraft.ui.inputs.ProtobufInput;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
-import com.google.protobuf.Descriptors;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
+import de.erethon.headlib.HeadLib;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
 import org.bukkit.inventory.meta.tags.ItemTagType;
 
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -102,7 +103,7 @@ public class LootyEditorGui extends GUIHolder {
 
         ScrollingPallet scrollingPallet = new ScrollingPallet(9);
 
-        Element confirm = Cell.forMaterial(Material.LEVER, "Confirm");
+        Element confirm = Cell.forItemStack(HeadLib.CHECKMARK.toItemStack("Confirm"));
         confirmItemButton = new ClickableElement(confirm);
 
         scrollingPallet.addTool(confirmItemButton);
@@ -165,7 +166,12 @@ public class LootyEditorGui extends GUIHolder {
         skillLayout.addElement(0, 5, scrollingPallet);
         skillLayout.addElement(2, 0, toolInterceptor);
 
-        ClickableElement addNew = new ClickableElement(Cell.forMaterial(Material.BUCKET, "Add Skill"));
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
+
+        head = HeadLib.setSkullOwner(head, "b4f61444-f5fa-4668-91f0-9e00408d6298", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2VkZDIwYmU5MzUyMDk0OWU2Y2U3ODlkYzRmNDNlZmFlYjI4YzcxN2VlNmJmY2JiZTAyNzgwMTQyZjcxNiJ9fX0=");
+
+
+        ClickableElement addNew = new ClickableElement(Cell.forItemStack(head, "Add Skill"));
 
         addNew.setClickAction(clickEvent -> {
             skillContainer.addElement(Cell.forItemStack(generateRandomSkill(), "Skill"));
@@ -173,7 +179,7 @@ public class LootyEditorGui extends GUIHolder {
 
         scrollingPallet.addTool(addNew);
 
-        editDraggable = buildButton(Material.SALMON_BUCKET, "Edit", "edit");
+        editDraggable = buildButton(Material.WRITABLE_BOOK, "Edit", "edit");
 
         editDraggable.setClickAction(clickEvent -> clickEvent.setCancelled(false));
 
@@ -220,7 +226,7 @@ public class LootyEditorGui extends GUIHolder {
             }
         });
 
-        editDraggable = buildButton(Material.SALMON_BUCKET, "Edit", "edit");
+        editDraggable = buildButton(Material.WRITABLE_BOOK, "Edit", "edit");
 
         editDraggable.setClickAction(clickEvent -> clickEvent.setCancelled(false));
 
@@ -228,9 +234,20 @@ public class LootyEditorGui extends GUIHolder {
         editLayout.addElement(0, 5, scrollingPallet);
         editLayout.addElement(2, 0, toolInterceptor);
 
-        ClickableElement addAction = new ClickableElement(Cell.forMaterial(Material.TNT, "Add Action"));
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
+
+        head = HeadLib.setSkullOwner(head, "b4f61444-f5fa-4668-91f0-9e00408d6298", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2VkZDIwYmU5MzUyMDk0OWU2Y2U3ODlkYzRmNDNlZmFlYjI4YzcxN2VlNmJmY2JiZTAyNzgwMTQyZjcxNiJ9fX0=");
+
+
+        ClickableElement addAction = new ClickableElement(Cell.forItemStack(head, "Add Action"));
         scrollingPallet.addTool(addAction);
-        scrollingPallet.addTool(Cell.forMaterial(Material.REDSTONE_TORCH, "Add Trigger"));
+
+        ItemStack head2 = new ItemStack(Material.PLAYER_HEAD, 1);
+
+        head2 = HeadLib.setSkullOwner(head2, "2feda52e-9a86-49e8-adf5-2270bedbc0fc", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkxMjNhMDY4ZGFjZmM0Mzk2NGVjODg2OTc2YzRiMDg4NzU2ODczMTZmYzFlZWQyNzExYTExZDY1ZmE3MTIifX19");
+
+
+        scrollingPallet.addTool(Cell.forItemStack(head2, "Add Trigger"));
 
         addAction.setClickAction(clickEvent -> {
             actionContainer.addElement(Cell.forItemStack(generateRandomAction(), "Action"));
@@ -270,20 +287,23 @@ public class LootyEditorGui extends GUIHolder {
 
 
             try {
-                Class<? extends Message> clazz = componentRegister.getMessageForString(comp.getSimpleName()
-                        .toLowerCase());
+                String key = comp.getSimpleName()
+                        .toLowerCase();
+                Class<? extends Message> clazz = componentRegister.getMessageForString(key);
 
                 Method builderMethod = clazz.getMethod("newBuilder");
                 Message.Builder messageBuilder = (Message.Builder) builderMethod.invoke(null);
 
-                List<String> fields = messageBuilder.getDescriptorForType()
-                        .getFields()
-                        .stream()
-                        .map(Descriptors.FieldDescriptor::getName)
-                        .collect(toImmutableList());
-
                 ItemMeta itemMeta = component.getItemMeta();
-                itemMeta.setLore(fields);
+                itemMeta.setLore(MessageFormater.format(messageBuilder.build()));
+
+                itemMeta.getCustomTagContainer()
+                        .setCustomTag(new NamespacedKey(lootyPlugin, "proto_data"), ItemTagType.BYTE_ARRAY, messageBuilder
+                                .build()
+                                .toByteArray());
+
+                itemMeta.getCustomTagContainer()
+                        .setCustomTag(new NamespacedKey(lootyPlugin, "proto_key"), ItemTagType.STRING, key);
 
                 component.setItemMeta(itemMeta);
 
@@ -307,8 +327,12 @@ public class LootyEditorGui extends GUIHolder {
                 clickEvent.getRawEvent().getWhoClicked().setItemOnCursor(null);
             }, 1);
 
-            ItemStack currentItem = clickEvent.getRawEvent().getCurrentItem();
-            if (currentItem != null && currentItem.hasItemMeta()) {
+            if (clickEvent.getRawEvent().getCurrentItem() != null && clickEvent.getRawEvent()
+                    .getCurrentItem()
+                    .hasItemMeta()) {
+                //todo hack
+                ItemStack currentItem = ((Cell) element).itemStack;
+
                 CustomItemTagContainer customTagContainer = currentItem.getItemMeta()
                         .getCustomTagContainer();
                 if (customTagContainer
@@ -316,29 +340,64 @@ public class LootyEditorGui extends GUIHolder {
                         .getCustomTag(new NamespacedKey(lootyPlugin, TYPE_KEY), ItemTagType.STRING)
                         .equals(COMPONENT_VALUE)) {
 
-                    HumanEntity player = clickEvent.getRawEvent().getWhoClicked();
+                    Layout protoLayout = new Layout();
 
-                    if (player instanceof Player) {
-                        ProtoBasedForm v = new ProtoBasedForm((Player) player, currentItem, ImmutableList
-                                .of("Hello?", "Yo?"));
+                    byte[] componentData = customTagContainer.getCustomTag(new NamespacedKey(lootyPlugin, "proto_data"), ItemTagType.BYTE_ARRAY);
+                    String key = customTagContainer.getCustomTag(new NamespacedKey(lootyPlugin, "proto_key"), ItemTagType.STRING);
 
-                        v.feed();
+                    try {
+                        Method builderMethod = componentRegister.getMessageForString(key).getMethod("newBuilder");
+                        Message.Builder messageBuilder = (Message.Builder) builderMethod.invoke(null);
 
-                        lootyEditorListener.playerIsWaitingOnInput.putIfAbsent(player.getUniqueId(), v);
+                        messageBuilder.mergeFrom(componentData);
+
+                        ProtobufInput protobufInput = new ProtobufInput(messageBuilder.build());
+                        protoLayout.addElement(0, 0, protobufInput);
+
+                        ClickableElement submit = new ClickableElement(Cell.forItemStack(HeadLib.CHECKMARK.toItemStack("Confirm")));
+                        submit.setClickAction(e -> protobufInput.onSubmit());
+                        protoLayout.addElement(4, 5, submit);
+
+                        history.addElement(0, 1, element);
+
+                        protobufInput.setSubmitAction(o -> {
+                            ItemMeta itemMeta = currentItem.getItemMeta();
+                            itemMeta.getCustomTagContainer()
+                                    .setCustomTag(new NamespacedKey(lootyPlugin, "proto_data"), ItemTagType.BYTE_ARRAY, ((Message) o)
+                                            .toByteArray());
+
+
+                            itemMeta.setLore(MessageFormater.format((Message) o));
+
+                            currentItem.setItemMeta(itemMeta);
+
+                            swappableArea.swap(editActionLayout);
+                            history.removeElement(0, 1);
+                        });
+
+                        swappableArea.swap(protoLayout);
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InvalidProtocolBufferException e) {
+                        e.printStackTrace();
                     }
-
-
-                    player.closeInventory();
                 }
             }
         });
 
-        editDraggable = buildButton(Material.SALMON_BUCKET, "Edit", "edit");
+        editDraggable = buildButton(Material.WRITABLE_BOOK, "Edit", "edit");
 
         editDraggable.setClickAction(clickEvent -> clickEvent.setCancelled(false));
 
 
+        ClickableElement finalize = new ClickableElement(Cell.forItemStack(HeadLib.CHECKMARK.toItemStack("Confirm")));
+
+        finalize.setClickAction(clickEvent -> {
+            history.removeElement(0, 2);
+            swappableArea.swap(editSkillLayout);
+        });
+
+
         editActionLayout.addElement(0, 0, editDraggable);
+        editActionLayout.addElement(0, 1, finalize);
 
         return editActionLayout;
     }
@@ -357,7 +416,7 @@ public class LootyEditorGui extends GUIHolder {
     }
 
 
-    private Iterator<Material> getWoolIterator() {
+    private static Iterator<Material> getWoolIterator() {
         List<Material> wools = Arrays.stream(Material.values())
                 .filter(mat -> mat.name().endsWith("_WOOL"))
                 .collect(toImmutableList());
