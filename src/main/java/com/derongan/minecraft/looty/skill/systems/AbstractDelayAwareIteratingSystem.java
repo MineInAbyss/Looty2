@@ -21,6 +21,7 @@ public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem 
     protected ComponentMapper<Radius> radiusComponentMapper = ComponentMapper.getFor(Radius.class);
     protected ComponentMapper<Grounded> groundedComponentMapper = ComponentMapper.getFor(Grounded.class);
     protected ComponentMapper<EntityTargetLimit> entityTargetLimitComponentMapper = ComponentMapper.getFor(EntityTargetLimit.class);
+    protected ComponentMapper<LingerInternal> persistComponentMapper = ComponentMapper.getFor(LingerInternal.class);
 
 
     public AbstractDelayAwareIteratingSystem(Family family) {

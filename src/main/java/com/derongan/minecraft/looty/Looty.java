@@ -1,6 +1,7 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
+import com.derongan.minecraft.guiy.GUIListener;
 import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.item.ItemSkillListener;
 import com.derongan.minecraft.looty.registration.ItemRegister;
@@ -9,6 +10,8 @@ import com.derongan.minecraft.looty.skill.proto.Action;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
+import com.derongan.minecraft.looty.ui.LootyEditorCommandExecutor;
+import com.derongan.minecraft.looty.ui.LootyEditorListener;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Any;
@@ -28,6 +31,9 @@ class Looty {
     private final ItemSkillListener itemSkillListener;
     private final ItemRegister itemRegistrar;
     private final LootyCommandExecutor lootyCommandExecutor;
+    private final LootyEditorCommandExecutor LootyEditorCommandExecutor;
+    private final GUIListener guiListener;
+    private final LootyEditorListener lootyEditorListener;
     private final LootyPlugin lootyPlugin;
     private final Server server;
     private final Engine engine;
@@ -38,6 +44,9 @@ class Looty {
     public Looty(ItemSkillListener itemSkillListener,
                  ItemRegister itemRegistrar,
                  LootyCommandExecutor lootyCommandExecutor,
+                 LootyEditorCommandExecutor LootyEditorCommandExecutor,
+                 GUIListener guiListener,
+                 LootyEditorListener lootyEditorListener,
                  LootyPlugin lootyPlugin,
                  Server server,
                  Engine engine,
@@ -45,6 +54,9 @@ class Looty {
         this.itemSkillListener = itemSkillListener;
         this.itemRegistrar = itemRegistrar;
         this.lootyCommandExecutor = lootyCommandExecutor;
+        this.LootyEditorCommandExecutor = LootyEditorCommandExecutor;
+        this.guiListener = guiListener;
+        this.lootyEditorListener = lootyEditorListener;
         this.lootyPlugin = lootyPlugin;
         this.server = server;
         this.engine = engine;
@@ -55,14 +67,16 @@ class Looty {
     void onEnable() {
         server.getScheduler().scheduleSyncRepeatingTask(lootyPlugin, () -> engine.update(1), 1, 1);
         server.getPluginManager().registerEvents(itemSkillListener, lootyPlugin);
-
-//        itemRegistrar.register(blazeReap());
+        server.getPluginManager().registerEvents(guiListener, lootyPlugin);
+        server.getPluginManager().registerEvents(lootyEditorListener, lootyPlugin);
 
         configLoader.reload();
 
         lootyPlugin.getCommand("looty").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("looties").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("lootyreload").setExecutor(lootyCommandExecutor);
+        lootyPlugin.getCommand("createskill").setExecutor(LootyEditorCommandExecutor);
+        lootyPlugin.getCommand("createaction").setExecutor(LootyEditorCommandExecutor);
         logger.info("Loaded Looty");
     }
 
@@ -92,7 +106,7 @@ class Looty {
 //
 //        return ItemType.builder()
 //                .setDurability((short) 1)
-//                .setMaterial(Material.BLAZE_ROD)
+//                .setItemStack(Material.BLAZE_ROD)
 //                .setName("Rain Stick")
 //                .setItemRarity(ItemRarity.SECOND_GRADE)
 //                .addSkillWithTrigger(normalTrigger, getLavaRain())

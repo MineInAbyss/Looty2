@@ -12,3 +12,9 @@ commands:
   lootyreload:
     description: Reloads the items from config files
     usage: /lootyreload
+  createskill:
+    description: Create a skill block
+    usage: /createskill
+  createaction:
+    description: Create an action block
+    usage: /createaction

@@ -39,7 +39,7 @@ public class ItemDumperTest {
 //                .addComponent(() -> new Damage(DamageInfo.newBuilder().setDamage(5).build()));
 //        Skill skill = Skill.builder().addActionBuilder(actionEntityBuilder).build();
 //        ItemType simpleItem = ItemType.builder()
-//                .setMaterial(Material.DIAMOND_PICKAXE)
+//                .setItemStack(Material.DIAMOND_PICKAXE)
 //                .setName("Blaze Reap")
 //                .setDurability((short) 1)
 //                .setItemRarity(ItemRarity.SPECIAL_GRADE)

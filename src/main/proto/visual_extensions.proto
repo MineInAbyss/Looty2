@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package visual;
+
+
+extend google.protobuf.MessageOptions {
+    // Display as material
+    DisplayHead display_as = 2005;
+}
+
+message DisplayHead {
+    string uuid = 1;
+    string texture = 2;
+}
