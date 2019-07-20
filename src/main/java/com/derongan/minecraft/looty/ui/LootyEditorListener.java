@@ -1,5 +1,7 @@
 package com.derongan.minecraft.looty.ui;
 
+import com.derongan.minecraft.guiy.gui.GUIHolder;
+import com.derongan.minecraft.guiy.gui.inputs.MessageFormater;
 import com.derongan.minecraft.looty.LootyPlugin;
 import com.derongan.minecraft.looty.registration.ComponentRegister;
 import com.derongan.minecraft.looty.skill.proto.Action;
@@ -9,8 +11,6 @@ import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
 import com.derongan.minecraft.looty.ui.elements.ComponentEditorView;
 import com.derongan.minecraft.looty.ui.elements.TriggerEditorView;
-import com.derongan.minecraft.ui.GUIHolder;
-import com.derongan.minecraft.ui.inputs.MessageFormater;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -40,7 +40,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import static com.derongan.minecraft.looty.ui.LootyEditorFactory.TYPE_KEY;
+import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 

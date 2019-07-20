@@ -20,7 +20,7 @@ import javax.inject.Singleton;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import static com.derongan.minecraft.looty.ui.LootyEditorFactory.TYPE_KEY;
+import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 

@@ -1,7 +1,7 @@
 package com.derongan.minecraft.looty.ui;
 
+import com.derongan.minecraft.guiy.gui.*;
 import com.derongan.minecraft.looty.LootyPlugin;
-import com.derongan.minecraft.ui.*;
 import com.google.common.collect.ImmutableSet;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 public class LootyEditorFactory {
@@ -29,7 +30,6 @@ public class LootyEditorFactory {
     private static Random random = new Random();
     private final LootyPlugin lootyPlugin;
     public static final String SKILL_UUID_KEY = "skill_uuid";
-    public static final String TYPE_KEY = "type";
     public static final String TOOL_TYPE_KEY = "tool_type";
     public static final String TOOL_VALUE = "tool";
     public static final String SKILL_VALUE = "skill";

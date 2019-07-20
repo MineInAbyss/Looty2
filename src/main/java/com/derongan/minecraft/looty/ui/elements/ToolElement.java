@@ -1,6 +1,6 @@
 package com.derongan.minecraft.looty.ui.elements;
 
-import com.derongan.minecraft.ui.*;
+import com.derongan.minecraft.guiy.gui.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -9,7 +9,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.tags.ItemTagType;
 import org.bukkit.plugin.Plugin;
 
-import static com.derongan.minecraft.looty.ui.LootyEditorFactory.*;
+import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
+import static com.derongan.minecraft.looty.ui.LootyEditorFactory.TOOL_TYPE_KEY;
+import static com.derongan.minecraft.looty.ui.LootyEditorFactory.TOOL_VALUE;
 
 public class ToolElement implements Element {
 

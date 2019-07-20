@@ -1,6 +1,7 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
+import com.derongan.minecraft.guiy.GUIListener;
 import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.item.ItemSkillListener;
 import com.derongan.minecraft.looty.registration.ItemRegister;
@@ -11,7 +12,6 @@ import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
 import com.derongan.minecraft.looty.ui.LootyEditorCommandExecutor;
 import com.derongan.minecraft.looty.ui.LootyEditorListener;
-import com.derongan.minecraft.ui.GUIListener;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.Any;

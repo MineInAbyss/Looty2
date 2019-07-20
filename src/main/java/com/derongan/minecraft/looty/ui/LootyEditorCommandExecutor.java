@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static com.derongan.minecraft.looty.ui.LootyEditorFactory.TYPE_KEY;
+import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 public class LootyEditorCommandExecutor implements CommandExecutor {

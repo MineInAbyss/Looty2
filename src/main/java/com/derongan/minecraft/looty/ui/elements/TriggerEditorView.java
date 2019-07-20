@@ -1,9 +1,9 @@
 package com.derongan.minecraft.looty.ui.elements;
 
+import com.derongan.minecraft.guiy.gui.*;
+import com.derongan.minecraft.guiy.gui.inputs.MessageFormater;
+import com.derongan.minecraft.guiy.gui.inputs.ProtobufInput;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
-import com.derongan.minecraft.ui.*;
-import com.derongan.minecraft.ui.inputs.MessageFormater;
-import com.derongan.minecraft.ui.inputs.ProtobufInput;
 import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.tags.ItemTagType;
 import org.bukkit.plugin.Plugin;
 
-import static com.derongan.minecraft.looty.ui.LootyEditorFactory.TYPE_KEY;
+import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
 
 public class TriggerEditorView implements Element {
     private final Plugin plugin;

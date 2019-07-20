@@ -1,10 +1,10 @@
 package com.derongan.minecraft.looty.ui;
 
+import com.derongan.minecraft.guiy.gui.*;
+import com.derongan.minecraft.guiy.gui.inputs.MessageFormater;
+import com.derongan.minecraft.guiy.gui.inputs.ProtobufInput;
 import com.derongan.minecraft.looty.LootyPlugin;
 import com.derongan.minecraft.looty.registration.ComponentRegister;
-import com.derongan.minecraft.ui.*;
-import com.derongan.minecraft.ui.inputs.MessageFormater;
-import com.derongan.minecraft.ui.inputs.ProtobufInput;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
 
+import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
 import static com.derongan.minecraft.looty.ui.LootyEditorFactory.*;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
