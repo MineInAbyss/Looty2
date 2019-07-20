@@ -383,6 +383,11 @@ public class LootyEditorListener implements Listener {
 
     private void createLootyItem(Player player) {
         ItemStack doused = player.getInventory().getItemInMainHand();
+
+        if (doused.getType() == Material.AIR) {
+            return;
+        }
+
         String name;
 
         if (doused.hasItemMeta() && doused.getItemMeta().hasDisplayName()) {

@@ -73,6 +73,11 @@ public class ComponentEditorView implements Element {
         toolInterceptor.registerToolAction("edit", (clickEvent, element) -> {
             ItemStack currentItem = clickEvent.getRawEvent().getCurrentItem();
 
+
+            if (currentItem == null || !currentItem.hasItemMeta()) {
+                return;
+            }
+
             String protoType = currentItem.getItemMeta()
                     .getCustomTagContainer()
                     .getCustomTag(new NamespacedKey(plugin, "proto_type"), ItemTagType.STRING);

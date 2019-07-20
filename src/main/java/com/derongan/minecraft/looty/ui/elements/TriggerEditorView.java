@@ -43,6 +43,10 @@ public class TriggerEditorView implements Element {
         toolInterceptor.registerToolAction("edit", (clickEvent, element) -> {
             ItemStack currentItem = clickEvent.getRawEvent().getCurrentItem();
 
+            if (currentItem == null || !currentItem.hasItemMeta()) {
+                return;
+            }
+
             try {
                 byte[] protoBytes = currentItem.getItemMeta()
                         .getCustomTagContainer()
