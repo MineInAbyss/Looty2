@@ -8,13 +8,14 @@ import com.derongan.minecraft.looty.skill.component.EntityTargets;
 import org.bukkit.entity.Damageable;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 public class DamageSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Damage> damageComponentMapper = ComponentMapper.getFor(Damage.class);
 
     @Inject
-    public DamageSystem() {
-        super(Family.all(Damage.class, EntityTargets.class).get());
+    public DamageSystem(Logger logger) {
+        super(logger, Family.all(Damage.class, EntityTargets.class).get());
     }
 
     @Override

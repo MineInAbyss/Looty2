@@ -1,7 +1,8 @@
 package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
-import com.derongan.minecraft.guiy.GUIListener;
+import com.derongan.minecraft.guiy.GuiListener;
+import com.derongan.minecraft.guiy.gui.ClickEvent;
 import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.item.ItemSkillListener;
 import com.derongan.minecraft.looty.registration.ItemRegister;
@@ -10,7 +11,9 @@ import com.derongan.minecraft.looty.skill.proto.Action;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
+import com.derongan.minecraft.looty.skill.systems.particle.ParticleManager;
 import com.derongan.minecraft.looty.ui.LootyEditorCommandExecutor;
+import com.derongan.minecraft.looty.ui.LootyEditorGui;
 import com.derongan.minecraft.looty.ui.LootyEditorListener;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
@@ -18,6 +21,10 @@ import com.google.protobuf.Any;
 import com.google.protobuf.Message;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,42 +39,58 @@ class Looty {
     private final ItemRegister itemRegistrar;
     private final LootyCommandExecutor lootyCommandExecutor;
     private final LootyEditorCommandExecutor LootyEditorCommandExecutor;
-    private final GUIListener guiListener;
     private final LootyEditorListener lootyEditorListener;
     private final LootyPlugin lootyPlugin;
     private final Server server;
     private final Engine engine;
     private final ConfigLoader configLoader;
     private final Logger logger;
+    private final ParticleManager particleManager;
 
     @Inject
     public Looty(ItemSkillListener itemSkillListener,
                  ItemRegister itemRegistrar,
                  LootyCommandExecutor lootyCommandExecutor,
                  LootyEditorCommandExecutor LootyEditorCommandExecutor,
-                 GUIListener guiListener,
+                 GuiListener guiListener,
                  LootyEditorListener lootyEditorListener,
                  LootyPlugin lootyPlugin,
                  Server server,
                  Engine engine,
-                 ConfigLoader configLoader, Logger logger) {
+                 ConfigLoader configLoader, Logger logger, ParticleManager particleManager) {
         this.itemSkillListener = itemSkillListener;
         this.itemRegistrar = itemRegistrar;
         this.lootyCommandExecutor = lootyCommandExecutor;
         this.LootyEditorCommandExecutor = LootyEditorCommandExecutor;
-        this.guiListener = guiListener;
         this.lootyEditorListener = lootyEditorListener;
         this.lootyPlugin = lootyPlugin;
         this.server = server;
         this.engine = engine;
         this.configLoader = configLoader;
         this.logger = logger;
+        this.particleManager = particleManager;
     }
 
     void onEnable() {
-        server.getScheduler().scheduleSyncRepeatingTask(lootyPlugin, () -> engine.update(1), 1, 1);
+        server.getScheduler().scheduleSyncRepeatingTask(lootyPlugin, () -> {
+                    engine.update(1);
+                    particleManager.update(0);
+                }, 1, 1
+        );
         server.getPluginManager().registerEvents(itemSkillListener, lootyPlugin);
-        server.getPluginManager().registerEvents(guiListener, lootyPlugin);
+        server.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onInventoryClick(InventoryClickEvent inventoryClickEvent) {
+                if (inventoryClickEvent.getClickedInventory() == null) {
+                    return;
+                }
+                InventoryHolder holder = inventoryClickEvent.getClickedInventory().getHolder();
+                if (holder instanceof LootyEditorGui) {
+                    inventoryClickEvent.setCancelled(true);
+                    ((LootyEditorGui) holder).onClick(ClickEvent.createClickEvent(inventoryClickEvent));
+                }
+            }
+        }, lootyPlugin);
         server.getPluginManager().registerEvents(lootyEditorListener, lootyPlugin);
 
         configLoader.reload();

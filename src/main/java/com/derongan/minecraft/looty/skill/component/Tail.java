@@ -8,4 +8,5 @@ import org.bukkit.Location;
 @InternalComponent
 public class Tail implements com.badlogic.ashley.core.Component {
     public Location location;
+    public long wait;
 }

@@ -6,9 +6,13 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.derongan.minecraft.looty.skill.component.*;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static com.derongan.minecraft.looty.skill.component.Families.IGNORABLE;
 
 public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem {
+    protected final Logger logger;
     protected ComponentMapper<OriginChooser> originChooserComponentMapper = ComponentMapper.getFor(OriginChooser.class);
     protected ComponentMapper<TargetChooser> targetChooserComponentMapper = ComponentMapper.getFor(TargetChooser.class);
     protected ComponentMapper<ActionAttributes> actionAttributesComponentMapper = ComponentMapper.getFor(ActionAttributes.class);
@@ -24,18 +28,25 @@ public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem 
     protected ComponentMapper<LingerInternal> persistComponentMapper = ComponentMapper.getFor(LingerInternal.class);
 
 
-    public AbstractDelayAwareIteratingSystem(Family family) {
+    public AbstractDelayAwareIteratingSystem(Logger logger, Family family) {
         super(family);
+        this.logger = logger;
     }
 
-    public AbstractDelayAwareIteratingSystem(Family family, int priority) {
+    public AbstractDelayAwareIteratingSystem(Logger logger, Family family, int priority) {
         super(family, priority);
+        this.logger = logger;
     }
 
     @Override
     final protected void processEntity(Entity entity, float deltaTime) {
         if (!IGNORABLE.matches(entity)) {
-            processFilteredEntity(entity, deltaTime);
+            try {
+                processFilteredEntity(entity, deltaTime);
+            } catch (RuntimeException e) {
+                logger.log(Level.WARNING, "Error encountered updating entity. Removing", e);
+                getEngine().removeEntity(entity);
+            }
         }
     }
 

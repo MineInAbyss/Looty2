@@ -8,13 +8,14 @@ import com.derongan.minecraft.looty.skill.component.proto.SoundInfo;
 import org.bukkit.Location;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 public class SoundSystem extends AbstractDelayAwareIteratingSystem {
     private final ComponentMapper<Sound> soundComponentMapper = ComponentMapper.getFor(Sound.class);
 
     @Inject
-    public SoundSystem() {
-        super(Family.all(Sound.class).get());
+    public SoundSystem(Logger logger) {
+        super(logger, Family.all(Sound.class).get());
     }
 
     @Override

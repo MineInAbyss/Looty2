@@ -4,7 +4,9 @@ import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.registration.ItemRegister;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -12,11 +14,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 class LootyCommandExecutor implements TabExecutor {
@@ -42,28 +47,45 @@ class LootyCommandExecutor implements TabExecutor {
             return true;
         }
 
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        Collection<ItemType> allTypes = itemRegistrar.getAllTypes();
+        if (command.getName().equals("looty")) {
+            if (args.length == 0) {
+                return false;
+            }
 
-            if (command.getName().equals("looty")) {
-                if (args.length == 0) {
-                    return false;
-                }
-                for (ItemType relicType : itemRegistrar.getAllTypes()) {
-                    if (relicType.getName().replace(" ", "_").toLowerCase().equals(args[0].toLowerCase())) {
-                        player.getInventory().addItem(getItem(relicType));
-                        return true;
-                    }
+            Optional<ItemType> itemType = Optional.empty();
+
+            if (args[0].toLowerCase().equals("random")) {
+                itemType = allTypes.stream().skip((int) (allTypes.size() * Math.random())).findFirst();
+
+            }
+            for (ItemType relicType : allTypes) {
+                if (relicType.getName().replace(" ", "_").toLowerCase().equals(args[0].toLowerCase())) {
+                    itemType = Optional.of(relicType);
                 }
             }
 
-            if (command.getName().equals("looties")) {
-                player.sendMessage("Items: " + itemRegistrar.getAllTypes().stream()
-                        .map(itemType -> ChatColor.GRAY + itemType.getName())
-                        .map(s -> s.replace(" ", "_"))
-                        .collect(Collectors.joining(", ")));
-                return true;
+            if (itemType.isPresent()) {
+                if (sender instanceof Player) {
+                    ((Player) sender).getInventory().addItem(getItem(itemType.get()));
+                    return true;
+                } else if (sender instanceof BlockCommandSender) {
+                    Location location = ((BlockCommandSender) sender).getBlock()
+                            .getLocation()
+                            .clone()
+                            .add(Vector.getRandom());
+                    location.getWorld().dropItem(location, getItem(itemType.get()));
+                }
             }
+
+        }
+
+        if (command.getName().equals("looties")) {
+            sender.sendMessage("Items: " + allTypes.stream()
+                    .map(itemType -> ChatColor.GRAY + itemType.getName())
+                    .map(s -> s.replace(" ", "_"))
+                    .collect(Collectors.joining(", ")));
+            return true;
         }
 
         return false;

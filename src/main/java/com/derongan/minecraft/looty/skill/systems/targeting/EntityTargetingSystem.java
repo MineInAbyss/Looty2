@@ -7,13 +7,14 @@ import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSys
 import com.google.common.collect.ImmutableSet;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
     @Inject
-    public EntityTargetingSystem() {
-        super(Family.exclude().get());
+    public EntityTargetingSystem(Logger logger) {
+        super(logger, Family.exclude().get());
     }
 
     @Override

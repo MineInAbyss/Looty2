@@ -60,6 +60,12 @@ processResources {
     }
 }
 
+
+shadowJar {
+    dependencies {
+        exclude('org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT')
+    }
+}
 task copyJar(type: Copy) {
     from shadowJar // here it automatically reads jar file produced from jar task
     into '/srv/craftbukkit/plugins/'
