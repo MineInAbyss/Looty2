@@ -7,7 +7,6 @@ import com.derongan.minecraft.looty.skill.component.Particle;
 import com.derongan.minecraft.looty.skill.component.Radius;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
@@ -18,12 +17,12 @@ import java.util.logging.Logger;
 public class ParticleSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Particle> particleComponentMapper = ComponentMapper.getFor(Particle.class);
 
-    private final Logger logger;
+    private final ParticleManager particleManager;
 
     @Inject
-    public ParticleSystem(Logger logger) {
-        super(Family.all(Particle.class).get());
-        this.logger = logger;
+    public ParticleSystem(Logger logger, ParticleManager particleManager) {
+        super(logger, Family.all(Particle.class).get());
+        this.particleManager = particleManager;
     }
 
     @Override
@@ -143,7 +142,6 @@ public class ParticleSystem extends AbstractDelayAwareIteratingSystem {
     }
 
     private void spawnParticleAtLocation(org.bukkit.Particle particle, Location location) {
-        World world = location.getWorld();
-        world.spawnParticle(particle, location, 1, 0, 0, 0, .001, null, true);
+        particleManager.addParticle(particle, location);
     }
 }

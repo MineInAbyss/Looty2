@@ -30,7 +30,7 @@ import static com.derongan.minecraft.guiy.GuiyKeys.TYPE_KEY;
 import static com.derongan.minecraft.looty.ui.LootyEditorFactory.*;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
-public class LootyEditorGui extends GUIHolder {
+public class LootyEditorGui extends GuiHolder {
     private final LootyPlugin lootyPlugin;
     private final ComponentRegister componentRegister;
     private final LootyEditorListener lootyEditorListener;

@@ -16,12 +16,9 @@ import java.util.logging.Logger;
  */
 // TODO movement info should probably create mutable components to hold the actual state
 public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
-    private final Logger logger;
-
     @Inject
     MovementTargetingSystem(Logger logger) {
-        super(Family.one(Target.class, Origin.class).get());
-        this.logger = logger;
+        super(logger, Family.one(Target.class, Origin.class).get());
     }
 
     @Override
@@ -61,6 +58,7 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
     }
 
+    //TODO there is a lot of logic that can be cleaned up here
     private void advanceSectionWithTail(Entity entity) {
         Location targetLocation = targetComponentMapper.get(entity).dynamicLocation.getLocation();
 
@@ -74,6 +72,7 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
         }
         if (tail == null) {
             tail = new Tail();
+            tail.wait = movementComponentMapper.get(entity).getInfo().getTailWait();
             tail.location = originComponentMapper.get(entity).dynamicLocation.getLocation();
             entity.add(tail);
         }
@@ -91,27 +90,26 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
         Vector tailStep = tailDirection.clone().multiply(mvInfo.getTailSpeed());
 
         if (headDistance <= mvInfo.getHeadSpeed()) {
-            movement.setInfo(mvInfo.toBuilder().setHeadSpeed(0).build());
-            mvInfo = movement.getInfo();
             headStep = headStep.normalize().multiply(headDistance);
         }
 
         if (tailDistance <= mvInfo.getTailSpeed()) {
-            movement.setInfo(mvInfo.toBuilder().setTailSpeed(0).build());
-            mvInfo = movement.getInfo();
             tailStep = tailStep.normalize().multiply(tailDistance);
         }
 
-        if (mvInfo.getTailWait() == 0) {
-            tail.location.add(tailStep);
+        if (tail.wait == 0) {
+            if (tailDistance != 0) {
+                tail.location.add(tailStep);
+            }
         } else {
-            movement.setInfo(mvInfo.toBuilder().setTailWait(mvInfo.getTailWait() - 1).build());
-            mvInfo = movement.getInfo();
+            tail.wait--;
         }
 
-        head.location.add(headStep);
+        if (headDistance != 0) {
+            head.location.add(headStep);
+        }
 
-        if (mvInfo.getHeadSpeed() == 0 && mvInfo.getTailSpeed() == 0) {
+        if (headDistance == 0 && tailDistance == 0) {
             entity.remove(Movement.class);
         }
     }

@@ -7,13 +7,14 @@ import com.derongan.minecraft.looty.skill.component.EntityTargets;
 import com.derongan.minecraft.looty.skill.component.Ignite;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 public class IgniteSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Ignite> igniteComponentMapper = ComponentMapper.getFor(Ignite.class);
 
     @Inject
-    public IgniteSystem() {
-        super(Family.all(Ignite.class, EntityTargets.class).get());
+    public IgniteSystem(Logger logger) {
+        super(logger, Family.all(Ignite.class, EntityTargets.class).get());
     }
 
     @Override

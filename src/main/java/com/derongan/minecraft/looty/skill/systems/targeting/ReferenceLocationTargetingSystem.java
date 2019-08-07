@@ -13,14 +13,15 @@ import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSys
 import org.bukkit.util.Vector;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Targeting system that is in charge of preparing reference points.
  */
 public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratingSystem {
     @Inject
-    public ReferenceLocationTargetingSystem() {
-        super(Family.one(TargetChooser.class, OriginChooser.class).exclude(Target.class, Origin.class).get());
+    public ReferenceLocationTargetingSystem(Logger logger) {
+        super(logger, Family.one(TargetChooser.class, OriginChooser.class).exclude(Target.class, Origin.class).get());
     }
 
     @Override

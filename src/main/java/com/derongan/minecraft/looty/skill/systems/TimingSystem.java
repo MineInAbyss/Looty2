@@ -8,6 +8,7 @@ import com.derongan.minecraft.looty.skill.component.LingerInternal;
 import com.derongan.minecraft.looty.skill.component.proto.LingerInfo;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * System responsible for decrementing timers and setting entities as removed if the timer has expired
@@ -16,8 +17,8 @@ public class TimingSystem extends AbstractDelayAwareIteratingSystem {
     private ComponentMapper<Linger> lingerComponentMapper = ComponentMapper.getFor(Linger.class);
 
     @Inject
-    public TimingSystem() {
-        super(Family.one(Linger.class, LingerInternal.class).get());
+    public TimingSystem(Logger logger) {
+        super(logger, Family.one(Linger.class, LingerInternal.class).get());
     }
 
     @Override

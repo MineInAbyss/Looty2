@@ -11,12 +11,10 @@ import java.util.logging.Logger;
  * component will be removed.
  */
 public class CleanupSystem extends AbstractDelayAwareIteratingSystem {
-    private final Logger logger;
 
     @Inject
     public CleanupSystem(Logger logger) {
-        super(Families.REMOVABLE);
-        this.logger = logger;
+        super(logger, Families.REMOVABLE);
     }
 
     @Override

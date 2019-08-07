@@ -13,7 +13,7 @@ public class DamageSystemTest {
 
     @Before
     public void setUp() {
-        damageSystem = spy(new DamageSystem());
+        damageSystem = spy(new DamageSystem(null));
         this.engine = new Engine();
         engine.addSystem(damageSystem);
     }

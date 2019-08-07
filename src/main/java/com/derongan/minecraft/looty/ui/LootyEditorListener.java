@@ -1,6 +1,6 @@
 package com.derongan.minecraft.looty.ui;
 
-import com.derongan.minecraft.guiy.gui.GUIHolder;
+import com.derongan.minecraft.guiy.gui.GuiHolder;
 import com.derongan.minecraft.guiy.gui.inputs.MessageFormater;
 import com.derongan.minecraft.looty.LootyPlugin;
 import com.derongan.minecraft.looty.registration.ComponentRegister;
@@ -73,7 +73,6 @@ public class LootyEditorListener implements Listener {
 
     @EventHandler
     public void onInventoryClickEvent(InventoryClickEvent inventoryClickEvent) {
-
         if (skip.contains(inventoryClickEvent.getWhoClicked().getUniqueId())) {
             return;
         }
@@ -298,7 +297,21 @@ public class LootyEditorListener implements Listener {
 
             actionBuilder.mergeFrom(actionBytes);
 
-            actionBuilder.addComponent(Any.pack(componentBuilder.build()));
+            Any pack = Any.pack(componentBuilder.build());
+
+            for (int i = 0; i < actionBuilder.getComponentList().size(); i++) {
+                if (actionBuilder.getComponentList().get(i).getTypeUrl().equals(pack.getTypeUrl())) {
+                    inventoryClickEvent.getWhoClicked()
+                            .sendMessage(String.format("Overwriting existing %s", componentBuilder.getClass()
+                                    .getSimpleName()));
+
+
+                    actionBuilder.removeComponent(i);
+                    break;
+                }
+            }
+
+            actionBuilder.addComponent(pack);
 
             consumerMeta.getCustomTagContainer()
                     .setCustomTag(this.proto_bytes, ItemTagType.BYTE_ARRAY, actionBuilder.build().toByteArray());
@@ -367,17 +380,16 @@ public class LootyEditorListener implements Listener {
         }
     }
 
-
-    private Map<UUID, GUIHolder> componentMap = new HashMap<>();
-    private Map<UUID, GUIHolder> triggerMap = new HashMap<>();
+    private Map<UUID, GuiHolder> componentMap = new HashMap<>();
+    private Map<UUID, GuiHolder> triggerMap = new HashMap<>();
 
     private void openComponentCrafting(Player player) {
-        componentMap.computeIfAbsent(player.getUniqueId(), uuid -> new GUIHolder(6, "Component Creator", new ComponentEditorView(plugin, componentRegister), plugin))
+        componentMap.computeIfAbsent(player.getUniqueId(), uuid -> new GuiHolder(6, "Component Creator", new ComponentEditorView(plugin, componentRegister), plugin))
                 .show(player);
     }
 
     private void openTriggerCrafting(Player player) {
-        triggerMap.computeIfAbsent(player.getUniqueId(), uuid -> new GUIHolder(6, "Trigger Creator", new TriggerEditorView(plugin), plugin))
+        triggerMap.computeIfAbsent(player.getUniqueId(), uuid -> new GuiHolder(6, "Trigger Creator", new TriggerEditorView(plugin), plugin))
                 .show(player);
     }
 

@@ -6,14 +6,15 @@ import com.derongan.minecraft.looty.skill.component.EntityTargets;
 import com.derongan.minecraft.looty.skill.component.Lightning;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * System that handles lightning bolts
  */
 public class LightningSystem extends AbstractDelayAwareIteratingSystem {
     @Inject
-    public LightningSystem() {
-        super(Family.all(Lightning.class, EntityTargets.class).get());
+    public LightningSystem(Logger logger) {
+        super(logger, Family.all(Lightning.class, EntityTargets.class).get());
     }
 
     @Override
