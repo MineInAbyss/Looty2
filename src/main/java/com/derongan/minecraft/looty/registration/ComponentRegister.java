@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A register that provides conversion methods back and forth between wrapped {@link Component} classes
+ * and raw protobuf classes
+ */
 @Singleton
 public class ComponentRegister {
     private Map<Class<? extends Message>, Class<? extends Component>> messageToComponentMap;

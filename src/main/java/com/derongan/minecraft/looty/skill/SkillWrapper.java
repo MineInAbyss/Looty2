@@ -2,6 +2,7 @@ package com.derongan.minecraft.looty.skill;
 
 import com.badlogic.ashley.core.Component;
 import com.derongan.minecraft.looty.skill.proto.Skill;
+import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
@@ -27,5 +28,9 @@ public class SkillWrapper {
 
     public Iterable<Set<Component>> getActions() {
         return actions;
+    }
+
+    public List<SkillTrigger> getSkillTriggers() {
+        return skill.getTriggerList();
     }
 }

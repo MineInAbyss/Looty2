@@ -1,9 +1,6 @@
 package com.derongan.minecraft.looty.config;
 
-import com.derongan.minecraft.looty.config.deserialization.ActionDeserializer;
-import com.derongan.minecraft.looty.config.deserialization.ItemTypeDeserializer;
-import com.derongan.minecraft.looty.config.deserialization.SkillDeserializer;
-import com.derongan.minecraft.looty.config.deserialization.SkillTriggerDeserializer;
+import com.derongan.minecraft.looty.config.deserialization.*;
 import com.derongan.minecraft.looty.skill.proto.Action;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.derongan.minecraft.looty.skill.proto.Skill;
@@ -21,12 +18,14 @@ public class ConfigModule {
     Gson providesGson(ItemTypeDeserializer itemTypeDeserializer,
                       SkillDeserializer skillDeserializer,
                       SkillTriggerDeserializer skillTriggerDeserializer,
-                      ActionDeserializer actionDeserializer) {
+                      ActionDeserializer actionDeserializer,
+                      SkillTargetDeserializer skillTargetDeserializer) {
         return new GsonBuilder()
                 .registerTypeAdapter(ItemType.class, itemTypeDeserializer)
                 .registerTypeAdapter(Skill.class, skillDeserializer)
                 .registerTypeAdapter(SkillTrigger.class, skillTriggerDeserializer)
                 .registerTypeAdapter(Action.class, actionDeserializer)
+                .registerTypeAdapter(SkillTrigger.SkillTarget.class, skillTargetDeserializer)
                 .create();
     }
 

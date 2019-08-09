@@ -1,10 +1,8 @@
 package com.derongan.minecraft.looty.config.deserialization;
 
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.*;
 
 import javax.inject.Inject;
 import java.lang.reflect.Type;
@@ -27,8 +25,13 @@ public class SkillTriggerDeserializer implements JsonDeserializer<SkillTrigger> 
 
         SkillTrigger.Builder skillTrigger = SkillTrigger.newBuilder();
 
-        skillTrigger.addTrigger(SkillTrigger.Trigger.valueOf(json.getAsJsonObject().get("trigger").getAsString()));
-        List<SkillTrigger.Modifier> modifiers = StreamSupport.stream(json.getAsJsonObject()
+        JsonObject asJsonObject = json.getAsJsonObject();
+        JsonArray triggers = asJsonObject.get("triggers").getAsJsonArray();
+
+        skillTrigger.addAllTrigger(StreamSupport.stream(triggers.spliterator(), false)
+                .map(JsonElement::getAsString)
+                .map(SkillTrigger.Trigger::valueOf).collect(toImmutableList()));
+        List<SkillTrigger.Modifier> modifiers = StreamSupport.stream(asJsonObject
                 .get("modifiers")
                 .getAsJsonArray()
                 .spliterator(), false)
@@ -36,6 +39,16 @@ public class SkillTriggerDeserializer implements JsonDeserializer<SkillTrigger> 
                 .map(SkillTrigger.Modifier::valueOf)
                 .collect(toImmutableList());
         skillTrigger.addAllModifier(modifiers);
+
+        if (asJsonObject.has("target")) {
+            skillTrigger.setTarget((SkillTrigger.SkillTarget) context.deserialize(asJsonObject.get("target"), SkillTrigger.SkillTarget.class));
+        } else {
+            skillTrigger.setTarget(SkillTrigger.SkillTarget.newBuilder()
+                    .setRange(5)
+                    .addAllTargetType(ImmutableList.copyOf(SkillTrigger.SkillTarget.TargetType.values()))
+                    .build());
+        }
+
 
         return skillTrigger.build();
     }

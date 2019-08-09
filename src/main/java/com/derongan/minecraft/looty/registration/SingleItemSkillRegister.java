@@ -32,12 +32,12 @@ public class SingleItemSkillRegister {
     private final NamespacedKey uuidKey;
     private final NamespacedKey proto_bytes;
     private NamespacedKey typeKey;
-    private ActionToComponentsConverter actionToComponentsConverter;
+    private ActionToComponentsMapper actionToComponentsMapper;
 
     @Inject
     public SingleItemSkillRegister(LootyPlugin plugin,
-                                   ActionToComponentsConverter actionToComponentsConverter) {
-        this.actionToComponentsConverter = actionToComponentsConverter;
+                                   ActionToComponentsMapper actionToComponentsMapper) {
+        this.actionToComponentsMapper = actionToComponentsMapper;
         this.map = new HashMap<>();
 
         dirty = new NamespacedKey(plugin, "dirty");
@@ -109,7 +109,7 @@ public class SingleItemSkillRegister {
     private SkillWrapper getSkillWrapper(Skill skill) {
         ImmutableList<Set<Component>> actions = skill.getActionList()
                 .stream()
-                .map(actionToComponentsConverter::convert)
+                .map(actionToComponentsMapper::convert)
                 .collect(toImmutableList());
 
         return new SkillWrapper(skill, actions);
