@@ -6,6 +6,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -67,6 +69,24 @@ public class SkillListener implements Listener {
             if (lootyItemDetector.isLootyItem(mainHandItemStack)) {
                 entityDamageByEntityEvent.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    private void onBlockPlaceEvent(BlockPlaceEvent blockPlaceEvent) {
+        ItemStack mainHandItemStack = blockPlaceEvent.getItemInHand();
+
+        if (lootyItemDetector.isLootyItem(mainHandItemStack)) {
+            blockPlaceEvent.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    private void onBlockBreakEvent(BlockBreakEvent blockBreakEvent) {
+        ItemStack mainHandItemStack = blockBreakEvent.getPlayer().getInventory().getItemInMainHand();
+
+        if (lootyItemDetector.isLootyItem(mainHandItemStack)) {
+            blockBreakEvent.setCancelled(true);
         }
     }
 }
