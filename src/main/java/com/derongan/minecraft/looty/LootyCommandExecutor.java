@@ -1,7 +1,7 @@
 package com.derongan.minecraft.looty;
 
 import com.derongan.minecraft.looty.config.ConfigLoader;
-import com.derongan.minecraft.looty.registration.ItemRegister;
+import com.derongan.minecraft.looty.registration.ConfigItemRegister;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -25,11 +25,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 class LootyCommandExecutor implements TabExecutor {
-    private final ItemRegister itemRegistrar;
+    private final ConfigItemRegister itemRegistrar;
     private final ConfigLoader configLoader;
 
     @Inject
-    LootyCommandExecutor(ItemRegister itemRegistrar, ConfigLoader configLoader) {
+    LootyCommandExecutor(ConfigItemRegister itemRegistrar, ConfigLoader configLoader) {
         this.itemRegistrar = itemRegistrar;
         this.configLoader = configLoader;
     }

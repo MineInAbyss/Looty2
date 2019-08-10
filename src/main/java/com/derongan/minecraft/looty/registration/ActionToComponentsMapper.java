@@ -13,11 +13,14 @@ import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
-public class ActionToComponentsConverter {
+/**
+ * Maps an {@link Action} to a set of unpacked and wrapped {@link Component}s
+ */
+public class ActionToComponentsMapper {
     private final ComponentRegister componentRegister;
 
     @Inject
-    public ActionToComponentsConverter(ComponentRegister componentRegister) {
+    public ActionToComponentsMapper(ComponentRegister componentRegister) {
         this.componentRegister = componentRegister;
     }
 

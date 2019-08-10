@@ -3,6 +3,7 @@ package com.derongan.minecraft.looty;
 import dagger.Module;
 import dagger.Provides;
 import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 
 import javax.inject.Qualifier;
 import java.io.File;
@@ -28,6 +29,11 @@ public class PluginModule {
 
     @Provides
     LootyPlugin providesLootyPlugin() {
+        return lootyPlugin;
+    }
+
+    @Provides
+    Plugin providesPlugin() {
         return lootyPlugin;
     }
 

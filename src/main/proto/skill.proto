@@ -14,7 +14,8 @@ message Action {
 
 message SkillTrigger {
     enum Trigger {
-        SWING = 0;
+        RIGHT_CLICK = 0;
+        LEFT_CLICK = 1;
     }
 
     enum Modifier {
@@ -23,12 +24,27 @@ message SkillTrigger {
         SPRINTING = 2;
     }
 
+    message SkillTarget {
+        enum TargetType {
+            ENTITY = 0;
+            BLOCK = 1;
+            AIR = 2;
+        }
+
+        repeated TargetType target_type = 1;
+
+        double range = 2;
+    }
+
     repeated Trigger trigger = 1;
     repeated Modifier modifier = 2;
+    SkillTarget target = 3;
 }
 
 message Skill {
     repeated SkillTrigger trigger = 1;
 
     repeated Action action = 3;
+
+    int64 cooldown = 4;
 }
