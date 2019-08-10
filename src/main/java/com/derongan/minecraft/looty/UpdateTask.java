@@ -8,7 +8,9 @@ import com.derongan.minecraft.looty.registration.ConfigItemIdentifier;
 import com.derongan.minecraft.looty.registration.ConfigItemRegister;
 import com.derongan.minecraft.looty.registration.NBTItemSkillCache;
 import com.derongan.minecraft.looty.skill.SkillUseAggregator;
+import com.derongan.minecraft.looty.skill.SkillWrapper;
 import com.derongan.minecraft.looty.skill.component.ActionAttributes;
+import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
 import com.derongan.minecraft.looty.skill.systems.particle.ParticleManager;
 import com.google.common.collect.ImmutableList;
@@ -22,9 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -38,6 +38,7 @@ public class UpdateTask extends BukkitRunnable {
     private final NBTItemSkillCache nbtItemSkillCache;
     private final LootyItemDetector lootyItemDetector;
     private final Logger logger;
+    private Map<UUID, Map<Skill, Integer>> cooldowns;
 
     @Inject
     public UpdateTask(SkillUseAggregator skillUseAggregator,
@@ -56,10 +57,15 @@ public class UpdateTask extends BukkitRunnable {
         this.nbtItemSkillCache = nbtItemSkillCache;
         this.lootyItemDetector = lootyItemDetector;
         this.logger = logger;
+        cooldowns = new HashMap<>();
     }
 
     @Override
     public void run() {
+        cooldowns.forEach(((uuid, cd) -> cd.entrySet().forEach(a -> a.setValue(a.getValue() - 1))));
+        cooldowns.forEach((uuid, cd) ->
+                cd.entrySet().removeIf(a -> a.getValue() == 0));
+
         skillUseAggregator.getEventsTakenThisTick().forEach(this::createActionsForUUID);
 
         engine.update(1);
@@ -97,6 +103,10 @@ public class UpdateTask extends BukkitRunnable {
                         .stream()
                         .filter(skill -> doesPlayerMatchTriggerStateConditions(player, skill.getSkillTriggers()))
                         .forEach(skillWrapper -> {
+                            if (isOnCooldown(uuid, skillWrapper)) {
+                                return;
+                            }
+
                             ImmutableList<SkillTrigger> validTriggers = skillWrapper.getSkillTriggers().stream()
                                     .filter(skillTrigger -> skillTrigger.getTriggerList().contains(triggerHint))
                                     .collect(toImmutableList());
@@ -134,6 +144,12 @@ public class UpdateTask extends BukkitRunnable {
                                 boolean playerMatchesTriggerTargetConditions = doesPlayerMatchTriggerTargetConditions(didHitEntity, didHitSolidBlock, skillTrigger
                                         .getTarget());
                                 if (playerMatchesTriggerTargetConditions) {
+                                    cooldowns.putIfAbsent(uuid, new HashMap<>());
+                                    cooldowns.get(uuid)
+                                            .putIfAbsent(skillWrapper.getSkill(), skillWrapper.getSkill()
+                                                    .getCooldown());
+
+
                                     skillWrapper.getActions().forEach(components -> {
                                         Entity entity = new Entity();
                                         entity.add(actionAttributes);
@@ -151,6 +167,10 @@ public class UpdateTask extends BukkitRunnable {
                 logger.warning(String.format("Player %s was not holding an item when they should have been", player.getName()));
             }
         }
+    }
+
+    private boolean isOnCooldown(UUID uuid, SkillWrapper skillWrapper) {
+        return cooldowns.containsKey(uuid) && cooldowns.get(uuid).containsKey(skillWrapper.getSkill());
     }
 
     private boolean doesPlayerMatchTriggerStateConditions(Player player, List<SkillTrigger> skillTriggers) {

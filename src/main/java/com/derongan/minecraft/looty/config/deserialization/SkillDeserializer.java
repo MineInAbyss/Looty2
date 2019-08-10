@@ -31,6 +31,11 @@ public class SkillDeserializer implements JsonDeserializer<Skill> {
         asJsonObject.get("actions")
                 .getAsJsonArray()
                 .forEach(jsonElement -> skillBuilder.addAction((Action) context.deserialize(jsonElement, Action.class)));
+        if(asJsonObject.has("cooldown")) {
+            skillBuilder.setCooldown(asJsonObject.get("cooldown").getAsInt());
+        } else {
+            skillBuilder.setCooldown(1);
+        }
 
         return skillBuilder.build();
     }

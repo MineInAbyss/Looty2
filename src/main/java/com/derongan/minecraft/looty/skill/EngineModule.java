@@ -35,6 +35,7 @@ class EngineModule {
                          CleanupSystem cleanupSystem) {
         Engine engine = new Engine();
 
+        engine.addSystem(delaySystem);
         engine.addSystem(referenceLocationTargetingSystem);
         engine.addSystem(movementTargetingSystem);
         engine.addSystem(entityTargetingSystem);
@@ -46,7 +47,6 @@ class EngineModule {
         engine.addSystem(particleSystem);
         engine.addSystem(soundSystem);
         engine.addSystem(timingSystem);
-        engine.addSystem(delaySystem);
         engine.addSystem(cleanupSystem);
 
         return engine;

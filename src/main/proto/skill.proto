@@ -46,5 +46,5 @@ message Skill {
 
     repeated Action action = 3;
 
-    int64 cooldown = 4;
+    int32 cooldown = 4;
 }
