@@ -20,7 +20,9 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.*;
 import org.bukkit.util.RayTraceResult;
 
 import javax.inject.Inject;
@@ -34,17 +36,20 @@ public class UpdateTask extends BukkitRunnable {
     private final Engine engine;
     private final ParticleManager particleManager;
     private final Server server;
+    private final Plugin plugin;
     private final ConfigItemRegister configItemRegister;
     private final NBTItemSkillCache nbtItemSkillCache;
     private final LootyItemDetector lootyItemDetector;
     private final Logger logger;
     private Map<UUID, Map<Skill, Integer>> cooldowns;
+    private Map<UUID, Scoreboard> scoreboards;
 
     @Inject
     public UpdateTask(SkillUseAggregator skillUseAggregator,
                       Engine engine,
                       ParticleManager particleManager,
                       Server server,
+                      Plugin plugin,
                       ConfigItemRegister configItemRegister,
                       NBTItemSkillCache nbtItemSkillCache,
                       LootyItemDetector lootyItemDetector,
@@ -53,11 +58,13 @@ public class UpdateTask extends BukkitRunnable {
         this.engine = engine;
         this.particleManager = particleManager;
         this.server = server;
+        this.plugin = plugin;
         this.configItemRegister = configItemRegister;
         this.nbtItemSkillCache = nbtItemSkillCache;
         this.lootyItemDetector = lootyItemDetector;
         this.logger = logger;
         cooldowns = new HashMap<>();
+        scoreboards = new HashMap<>();
     }
 
     @Override
@@ -150,6 +157,27 @@ public class UpdateTask extends BukkitRunnable {
                                                     .getCooldown());
 
 
+                                    Scoreboard board = scoreboards.computeIfAbsent(uuid, uuid1 -> {
+                                        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+
+                                        Objective obj = scoreboard.registerNewObjective("cooldown", Criterias.HEALTH, "Cooldowns", RenderType.HEARTS);
+                                        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+                                        return scoreboard;
+                                    });
+
+                                    Objective objective = board.getObjective("cooldown");
+
+                                    Score score = objective.getScore(String.valueOf(skillWrapper.getSkill()
+                                            .hashCode()));
+                                    score.setScore(cooldowns.get(uuid).get(skillWrapper.getSkill()) / 15);
+
+                                    Bukkit.getScheduler()
+                                            .scheduleSyncDelayedTask(plugin, () -> decrement(score, uuid, skillWrapper), 15);
+
+
+                                    player.setScoreboard(board);
+
                                     skillWrapper.getActions().forEach(components -> {
                                         Entity entity = new Entity();
                                         entity.add(actionAttributes);
@@ -166,6 +194,17 @@ public class UpdateTask extends BukkitRunnable {
             } else {
                 logger.warning(String.format("Player %s was not holding an item when they should have been", player.getName()));
             }
+        }
+    }
+
+    private void decrement(Score score, UUID uuid, SkillWrapper skillWrapper) {
+        Integer integer = cooldowns.get(uuid).get(skillWrapper.getSkill());
+        if (integer != null) {
+            score.setScore(integer / 15);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> decrement(score, uuid, skillWrapper), 15);
+        } else {
+            score.getScoreboard().resetScores(String.valueOf(skillWrapper.getSkill().hashCode()));
         }
     }
 
