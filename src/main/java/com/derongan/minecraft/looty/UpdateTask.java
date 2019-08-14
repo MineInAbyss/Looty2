@@ -64,7 +64,7 @@ public class UpdateTask extends BukkitRunnable {
     public void run() {
         cooldowns.forEach(((uuid, cd) -> cd.entrySet().forEach(a -> a.setValue(a.getValue() - 1))));
         cooldowns.forEach((uuid, cd) ->
-                cd.entrySet().removeIf(a -> a.getValue() == 0));
+                cd.entrySet().removeIf(a -> a.getValue() <= 0));
 
         skillUseAggregator.getEventsTakenThisTick().forEach(this::createActionsForUUID);
 

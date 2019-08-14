@@ -1,8 +1,10 @@
 package com.derongan.minecraft.looty.skill.systems.targeting;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.EntityTargets;
+import com.derongan.minecraft.looty.skill.component.Self;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import com.google.common.collect.ImmutableSet;
 
@@ -11,6 +13,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
+
+    ComponentMapper<Self> selfComponentMapper = ComponentMapper.getFor(Self.class);
 
     @Inject
     public EntityTargetingSystem(Logger logger) {
@@ -25,6 +29,12 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
         }
 
         EntityTargets entityTargets = entityTargetsComponentMapper.get(entity);
+
+        if (selfComponentMapper.has(entity)) {
+            if (selfComponentMapper.get(entity).getInfo().getAlwaysInclude()) {
+                entityTargets.affectedEntities.add(actionAttributesComponentMapper.get(entity).initiatorEntity);
+            }
+        }
 
         if (headComponentMapper.has(entity) && !tailComponentMapper.has(entity)) {
             if (radiusComponentMapper.has(entity)) {

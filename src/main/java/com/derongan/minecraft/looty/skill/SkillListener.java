@@ -29,7 +29,7 @@ public class SkillListener implements Listener {
         this.skillUseAggregator = skillUseAggregator;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     private void onPlayerAnimationEvent(PlayerAnimationEvent playerAnimationEvent) {
         Player player = playerAnimationEvent.getPlayer();
 
@@ -40,7 +40,7 @@ public class SkillListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     private void onPlayerInteractEvent(PlayerInteractEvent playerInteractEvent) {
         Player player = playerInteractEvent.getPlayer();
         ItemStack mainHandItemStack = player.getInventory().getItemInMainHand();

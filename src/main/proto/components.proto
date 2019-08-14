@@ -134,6 +134,7 @@ message BlockInfo {
 enum LocationReference {
     ORIGIN = 0;
     TARGET = 1;
+    ENTITY_TARGETS = 2;
 }
 
 message SoundInfo {
@@ -153,14 +154,21 @@ message VelocityInfo {
     }
 
     message Direction {
-        LocationReference from = 1;
         DirectionType direction_Type = 2;
     }
 
     double magnitude = 1;
+    bool add = 2;
 
     oneof targeting {
         Between between = 5;
         Direction direction = 6;
+    }
+}
+
+message SelfInfo {
+    oneof choice {
+        bool always_include = 1;
+        bool always_exclude = 2;
     }
 }
