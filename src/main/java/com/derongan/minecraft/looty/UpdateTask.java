@@ -160,7 +160,7 @@ public class UpdateTask extends BukkitRunnable {
                                     Scoreboard board = scoreboards.computeIfAbsent(uuid, uuid1 -> {
                                         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-                                        Objective obj = scoreboard.registerNewObjective("cooldown", Criterias.HEALTH, "Cooldowns", RenderType.HEARTS);
+                                        Objective obj = scoreboard.registerNewObjective("cooldown", "dummy", "Cooldowns", RenderType.HEARTS);
                                         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
                                         return scoreboard;
