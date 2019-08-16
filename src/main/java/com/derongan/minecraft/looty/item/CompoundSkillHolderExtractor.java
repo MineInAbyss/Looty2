@@ -1,6 +1,5 @@
-package com.derongan.minecraft.looty.registration;
+package com.derongan.minecraft.looty.item;
 
-import com.derongan.minecraft.looty.item.SkillHolder;
 import org.bukkit.inventory.ItemStack;
 
 import javax.inject.Inject;

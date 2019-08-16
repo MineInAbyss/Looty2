@@ -4,7 +4,7 @@ import com.derongan.minecraft.guiy.gui.*;
 import com.derongan.minecraft.guiy.gui.inputs.MessageFormater;
 import com.derongan.minecraft.guiy.gui.inputs.ProtobufInput;
 import com.derongan.minecraft.looty.LootyPlugin;
-import com.derongan.minecraft.looty.registration.ComponentRegister;
+import com.derongan.minecraft.looty.skill.component.ComponentRegister;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.protobuf.InvalidProtocolBufferException;

@@ -5,11 +5,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.derongan.minecraft.looty.skill.component.*;
+import com.derongan.minecraft.looty.skill.component.components.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.derongan.minecraft.looty.skill.component.Families.IGNORABLE;
+import static com.derongan.minecraft.looty.skill.component.components.Families.IGNORABLE;
 
 public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem {
     protected final Logger logger;

@@ -1,7 +1,7 @@
 package com.derongan.minecraft.looty;
 
 import com.derongan.minecraft.looty.config.ConfigLoader;
-import com.derongan.minecraft.looty.registration.ConfigItemRegister;
+import com.derongan.minecraft.looty.item.ConfigItemRegister;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

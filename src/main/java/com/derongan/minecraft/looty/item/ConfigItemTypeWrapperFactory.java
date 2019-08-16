@@ -1,8 +1,8 @@
 package com.derongan.minecraft.looty.item;
 
 import com.badlogic.ashley.core.Component;
-import com.derongan.minecraft.looty.registration.ActionToComponentsMapper;
 import com.derongan.minecraft.looty.skill.SkillWrapper;
+import com.derongan.minecraft.looty.skill.component.ActionToComponentsMapper;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.google.common.collect.ImmutableList;

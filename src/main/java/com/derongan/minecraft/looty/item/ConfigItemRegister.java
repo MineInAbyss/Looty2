@@ -1,7 +1,5 @@
-package com.derongan.minecraft.looty.registration;
+package com.derongan.minecraft.looty.item;
 
-import com.derongan.minecraft.looty.item.ConfigItemTypeWrapperFactory;
-import com.derongan.minecraft.looty.item.SkillHolder;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import org.bukkit.inventory.ItemStack;
 

@@ -1,6 +1,5 @@
 package com.derongan.minecraft.looty.item;
 
-import com.derongan.minecraft.looty.registration.ConfigItemRegister;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.tags.ItemTagType;

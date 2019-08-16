@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.Linger;
-import com.derongan.minecraft.looty.skill.component.LingerInternal;
+import com.derongan.minecraft.looty.skill.component.components.LingerInternal;
 import com.derongan.minecraft.looty.skill.component.proto.LingerInfo;
 
 import javax.inject.Inject;

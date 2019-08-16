@@ -2,11 +2,11 @@ package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.derongan.minecraft.looty.item.CompoundSkillHolderExtractor;
 import com.derongan.minecraft.looty.item.SkillHolder;
-import com.derongan.minecraft.looty.registration.CompoundSkillHolderExtractor;
 import com.derongan.minecraft.looty.skill.SkillUseAggregator;
 import com.derongan.minecraft.looty.skill.SkillWrapper;
-import com.derongan.minecraft.looty.skill.component.ActionAttributes;
+import com.derongan.minecraft.looty.skill.component.components.ActionAttributes;
 import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
 import com.derongan.minecraft.looty.skill.systems.particle.ParticleManager;

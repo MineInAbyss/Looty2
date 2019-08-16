@@ -1,8 +1,8 @@
 package com.derongan.minecraft.looty;
 
-import com.derongan.minecraft.looty.registration.ConfigItemRegister;
-import com.derongan.minecraft.looty.registration.NBTItemSkillCache;
-import com.derongan.minecraft.looty.registration.SkillHolderExtractor;
+import com.derongan.minecraft.looty.item.ConfigItemRegister;
+import com.derongan.minecraft.looty.item.NBTItemSkillCache;
+import com.derongan.minecraft.looty.item.SkillHolderExtractor;
 import com.google.common.collect.ImmutableSet;
 import dagger.Module;
 import dagger.Provides;

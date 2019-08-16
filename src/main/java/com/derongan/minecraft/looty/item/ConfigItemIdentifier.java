@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.registration;
+package com.derongan.minecraft.looty.item;
 
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.google.auto.value.AutoValue;

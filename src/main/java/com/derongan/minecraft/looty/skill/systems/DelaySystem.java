@@ -5,7 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.derongan.minecraft.looty.skill.component.Delay;
-import com.derongan.minecraft.looty.skill.component.DelayInternal;
+import com.derongan.minecraft.looty.skill.component.components.DelayInternal;
 import com.derongan.minecraft.looty.skill.component.proto.DelayInfo;
 
 import javax.inject.Inject;
