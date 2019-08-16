@@ -3,6 +3,7 @@ package com.derongan.minecraft.looty.registration;
 import com.derongan.minecraft.looty.item.ConfigItemTypeWrapperFactory;
 import com.derongan.minecraft.looty.item.SkillHolder;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
+import org.bukkit.inventory.ItemStack;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -17,7 +18,7 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
  * Handles registration of configuration based items.
  */
 @Singleton
-public class ConfigItemRegister {
+public class ConfigItemRegister implements SkillHolderExtractor {
     private final Map<ConfigItemIdentifier, ConfigItemTypeWrapperFactory.ConfigItemTypeWrapper> identifierToConfigItemMap;
     private final ConfigItemTypeWrapperFactory configItemTypeWrapperFactory;
 
@@ -27,8 +28,9 @@ public class ConfigItemRegister {
         identifierToConfigItemMap = new HashMap<>();
     }
 
-    public Optional<SkillHolder> getConfigItemType(ConfigItemIdentifier configItemIdentifier) {
-        return Optional.ofNullable(identifierToConfigItemMap.get(configItemIdentifier));
+    @Override
+    public Optional<SkillHolder> getSkillHolder(ItemStack itemStack) {
+        return Optional.ofNullable(identifierToConfigItemMap.get(ConfigItemIdentifier.fromItemStack(itemStack)));
     }
 
     public void register(ItemType itemType) {

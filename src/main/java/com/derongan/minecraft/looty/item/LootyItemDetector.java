@@ -1,6 +1,5 @@
 package com.derongan.minecraft.looty.item;
 
-import com.derongan.minecraft.looty.registration.ConfigItemIdentifier;
 import com.derongan.minecraft.looty.registration.ConfigItemRegister;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +24,7 @@ public class LootyItemDetector {
     }
 
     public boolean isConfigBasedLootyItem(ItemStack itemStack) {
-        return configItemRegister.getConfigItemType(ConfigItemIdentifier.fromItemStack(itemStack))
+        return configItemRegister.getSkillHolder(itemStack)
                 .isPresent();
     }
 

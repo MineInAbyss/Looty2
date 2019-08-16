@@ -1,12 +1,18 @@
 package com.derongan.minecraft.looty;
 
+import com.derongan.minecraft.looty.registration.ConfigItemRegister;
+import com.derongan.minecraft.looty.registration.NBTItemSkillCache;
+import com.derongan.minecraft.looty.registration.SkillHolderExtractor;
+import com.google.common.collect.ImmutableSet;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.ElementsIntoSet;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
 import javax.inject.Qualifier;
 import java.io.File;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Module
@@ -35,6 +41,15 @@ public class PluginModule {
     @Provides
     Plugin providesPlugin() {
         return lootyPlugin;
+    }
+
+
+    //TODO different module?
+    @Provides
+    @ElementsIntoSet
+    Set<SkillHolderExtractor> providesSkillHolderTranslator(ConfigItemRegister configItemRegister,
+                                                            NBTItemSkillCache nbtItemSkillCache) {
+        return ImmutableSet.of(configItemRegister, nbtItemSkillCache);
     }
 
     @Provides

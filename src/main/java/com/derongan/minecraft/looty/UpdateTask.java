@@ -2,11 +2,8 @@ package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.derongan.minecraft.looty.item.LootyItemDetector;
 import com.derongan.minecraft.looty.item.SkillHolder;
-import com.derongan.minecraft.looty.registration.ConfigItemIdentifier;
-import com.derongan.minecraft.looty.registration.ConfigItemRegister;
-import com.derongan.minecraft.looty.registration.NBTItemSkillCache;
+import com.derongan.minecraft.looty.registration.CompoundSkillHolderExtractor;
 import com.derongan.minecraft.looty.skill.SkillUseAggregator;
 import com.derongan.minecraft.looty.skill.SkillWrapper;
 import com.derongan.minecraft.looty.skill.component.ActionAttributes;
@@ -16,10 +13,12 @@ import com.derongan.minecraft.looty.skill.systems.particle.ParticleManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
@@ -37,9 +36,7 @@ public class UpdateTask extends BukkitRunnable {
     private final ParticleManager particleManager;
     private final Server server;
     private final Plugin plugin;
-    private final ConfigItemRegister configItemRegister;
-    private final NBTItemSkillCache nbtItemSkillCache;
-    private final LootyItemDetector lootyItemDetector;
+    private final CompoundSkillHolderExtractor compoundSkillHolderExtractor;
     private final Logger logger;
     private Map<UUID, Map<Skill, Integer>> cooldowns;
     private Map<UUID, Scoreboard> scoreboards;
@@ -50,18 +47,14 @@ public class UpdateTask extends BukkitRunnable {
                       ParticleManager particleManager,
                       Server server,
                       Plugin plugin,
-                      ConfigItemRegister configItemRegister,
-                      NBTItemSkillCache nbtItemSkillCache,
-                      LootyItemDetector lootyItemDetector,
+                      CompoundSkillHolderExtractor compoundSkillHolderExtractor,
                       Logger logger) {
         this.skillUseAggregator = skillUseAggregator;
         this.engine = engine;
         this.particleManager = particleManager;
         this.server = server;
         this.plugin = plugin;
-        this.configItemRegister = configItemRegister;
-        this.nbtItemSkillCache = nbtItemSkillCache;
-        this.lootyItemDetector = lootyItemDetector;
+        this.compoundSkillHolderExtractor = compoundSkillHolderExtractor;
         this.logger = logger;
         cooldowns = new HashMap<>();
         scoreboards = new HashMap<>();
@@ -87,22 +80,7 @@ public class UpdateTask extends BukkitRunnable {
         if (player != null && player.isOnline()) {
             ItemStack mainHandItemStack = player.getInventory().getItemInMainHand();
 
-            Optional<SkillHolder> skillHolder = Optional.empty();
-
-            if (lootyItemDetector.isNBTBasedLootyItem(mainHandItemStack)) {
-                try {
-                    skillHolder = nbtItemSkillCache.getSkillHolder(mainHandItemStack);
-                } catch (NBTItemSkillCache.InvalidSkillNBTException e) {
-                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Your item's power has faded... you must imbue it again.");
-
-                    ItemMeta newMeta = Bukkit.getItemFactory().getItemMeta(mainHandItemStack.getType());
-                    mainHandItemStack.setItemMeta(newMeta);
-
-                    return;
-                }
-            } else if (lootyItemDetector.isConfigBasedLootyItem(mainHandItemStack)) {
-                skillHolder = configItemRegister.getConfigItemType(ConfigItemIdentifier.fromItemStack(mainHandItemStack));
-            }
+            Optional<SkillHolder> skillHolder = compoundSkillHolderExtractor.getSkillHolder(mainHandItemStack);
 
             if (skillHolder.isPresent()) {
                 skillHolder.get()
