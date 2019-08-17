@@ -44,7 +44,7 @@ public class BossBarIndicator implements CooldownIndicator {
             return;
         }
 
-        String name = String.valueOf(skill.hashCode());
+        String name = skill.getName().isEmpty() ? String.valueOf(skill.hashCode()) : skill.getName();
 
         BossBar bossBar = skillToBossBarMap.computeIfAbsent(skill, skill1 -> Bukkit.createBossBar(namespacedKey, name, BarColor.RED, BarStyle.SOLID));
 

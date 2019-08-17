@@ -38,17 +38,17 @@ public class ScoreboardIndicator implements CooldownIndicator {
     }
 
     private void update(Skill skill, int ticksRemaining) {
-        String entry = String.valueOf(skill.hashCode());
-        Score score = objective.getScore(entry);
+        String name = skill.getName().isEmpty() ? String.valueOf(skill.hashCode()) : skill.getName();
+        Score score = objective.getScore(name);
         score.setScore(ticksRemaining);
 
         if (ticksRemaining <= 0) {
-            scoreboard.resetScores(entry);
+            scoreboard.resetScores(name);
         }
     }
 
     @Override
     public void remove() {
-        players.forEach(a->Bukkit.getPlayer(a).setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard()));
+        players.forEach(a -> Bukkit.getPlayer(a).setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard()));
     }
 }

@@ -12,7 +12,6 @@ import com.derongan.minecraft.looty.skill.systems.particle.ParticleManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -89,7 +88,7 @@ public class UpdateTask extends BukkitRunnable {
 
                                 double range = skillTrigger.getTarget().getRange();
 
-                                RayTraceResult rayTraceResult = getRayTraceResultOrDefault(player, range);
+                                RayTraceResult rayTraceResult = RayTraceUtil.getRayTraceResultOrDefault(player, range);
 
                                 boolean didHitEntity = false;
                                 boolean didHitSolidBlock = false;
@@ -173,22 +172,5 @@ public class UpdateTask extends BukkitRunnable {
         ImmutableSet<SkillTrigger.SkillTarget.TargetType> actualTargets = actualTargetsBuilder.build();
 
         return !Sets.intersection(ImmutableSet.copyOf(skillTarget.getTargetTypeList()), actualTargets).isEmpty();
-    }
-
-    private RayTraceResult getRayTraceResultOrDefault(Player player, double range) {
-        RayTraceResult rayTraceResult = player
-                .getWorld()
-                .rayTrace(player.getEyeLocation(), player.getEyeLocation()
-                        .getDirection(), range, FluidCollisionMode.NEVER, true, .5, (entity -> entity != player));
-
-
-        if (rayTraceResult == null) {
-            Location hitLocation = player.getEyeLocation()
-                    .clone()
-                    .add(player.getEyeLocation().getDirection().clone().normalize().multiply(range));
-            rayTraceResult = new RayTraceResult(hitLocation.toVector());
-        }
-
-        return rayTraceResult;
     }
 }

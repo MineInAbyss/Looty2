@@ -37,6 +37,10 @@ public class SkillDeserializer implements JsonDeserializer<Skill> {
             skillBuilder.setCooldown(1);
         }
 
+        if(asJsonObject.has("name")) {
+            skillBuilder.setName(asJsonObject.get("name").getAsString());
+        }
+
         return skillBuilder.build();
     }
 }
