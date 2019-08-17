@@ -1,7 +1,7 @@
 package com.derongan.minecraft.looty.skill.systems;
 
 import com.badlogic.ashley.core.Entity;
-import com.derongan.minecraft.looty.skill.component.Families;
+import com.derongan.minecraft.looty.skill.component.components.Families;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;

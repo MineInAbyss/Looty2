@@ -1,6 +1,8 @@
-package com.derongan.minecraft.looty.skill.component;
+package com.derongan.minecraft.looty.skill.component.components;
 
 import com.badlogic.ashley.core.Family;
+import com.derongan.minecraft.looty.skill.component.Delay;
+import com.derongan.minecraft.looty.skill.component.Movement;
 
 public class Families {
     public static final Family ALL_ENTITIES = Family.exclude().get();

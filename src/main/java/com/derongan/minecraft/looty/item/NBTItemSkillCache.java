@@ -1,9 +1,9 @@
-package com.derongan.minecraft.looty.registration;
+package com.derongan.minecraft.looty.item;
 
 import com.badlogic.ashley.core.Component;
 import com.derongan.minecraft.looty.LootyPlugin;
-import com.derongan.minecraft.looty.item.SkillHolder;
 import com.derongan.minecraft.looty.skill.SkillWrapper;
+import com.derongan.minecraft.looty.skill.component.ActionToComponentsMapper;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.derongan.minecraft.looty.skill.proto.Skill;
 import com.google.common.collect.ImmutableList;
@@ -26,7 +26,7 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
  * Caches actions for existing NBT based items
  */
 @Singleton
-public class NBTItemSkillCache {
+public class NBTItemSkillCache implements SkillHolderExtractor {
     private final NamespacedKey dirty;
     private Map<UUID, SkillHolder> map;
 
@@ -35,8 +35,8 @@ public class NBTItemSkillCache {
     private ActionToComponentsMapper actionToComponentsMapper;
 
     @Inject
-    public NBTItemSkillCache(LootyPlugin plugin,
-                             ActionToComponentsMapper actionToComponentsMapper) {
+    NBTItemSkillCache(LootyPlugin plugin,
+                      ActionToComponentsMapper actionToComponentsMapper) {
         this.actionToComponentsMapper = actionToComponentsMapper;
         this.map = new HashMap<>();
 
@@ -108,7 +108,7 @@ public class NBTItemSkillCache {
         return new SkillWrapper(skill, actions);
     }
 
-    public static UUID getUUIDFromBytes(byte[] bytes) {
+    private static UUID getUUIDFromBytes(byte[] bytes) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         Long high = byteBuffer.getLong();
         Long low = byteBuffer.getLong();
@@ -117,7 +117,7 @@ public class NBTItemSkillCache {
     }
 
     public static class InvalidSkillNBTException extends RuntimeException{
-        public InvalidSkillNBTException(Throwable throwable) {
+        InvalidSkillNBTException(Throwable throwable) {
             super(throwable);
         }
     }

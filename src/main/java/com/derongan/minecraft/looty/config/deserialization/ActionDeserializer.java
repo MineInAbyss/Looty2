@@ -1,6 +1,6 @@
 package com.derongan.minecraft.looty.config.deserialization;
 
-import com.derongan.minecraft.looty.registration.ComponentRegister;
+import com.derongan.minecraft.looty.skill.component.ComponentRegister;
 import com.derongan.minecraft.looty.skill.proto.Action;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

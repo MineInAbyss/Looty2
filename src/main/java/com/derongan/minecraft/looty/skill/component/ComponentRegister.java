@@ -1,4 +1,4 @@
-package com.derongan.minecraft.looty.registration;
+package com.derongan.minecraft.looty.skill.component;
 
 import com.badlogic.ashley.core.Component;
 import com.derongan.minecraft.looty.skill.component.proto.GeneratedComponentSupplier;

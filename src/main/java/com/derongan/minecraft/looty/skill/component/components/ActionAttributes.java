@@ -1,6 +1,7 @@
-package com.derongan.minecraft.looty.skill.component;
+package com.derongan.minecraft.looty.skill.component.components;
 
 import com.derongan.minecraft.looty.DynamicLocation;
+import com.derongan.minecraft.looty.skill.component.InternalComponent;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 

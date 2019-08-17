@@ -3,7 +3,7 @@ package com.derongan.minecraft.looty.ui;
 import com.derongan.minecraft.guiy.gui.GuiHolder;
 import com.derongan.minecraft.guiy.gui.inputs.MessageFormater;
 import com.derongan.minecraft.looty.LootyPlugin;
-import com.derongan.minecraft.looty.registration.ComponentRegister;
+import com.derongan.minecraft.looty.skill.component.ComponentRegister;
 import com.derongan.minecraft.looty.skill.proto.Action;
 import com.derongan.minecraft.looty.skill.proto.Action.Builder;
 import com.derongan.minecraft.looty.skill.proto.ItemType;

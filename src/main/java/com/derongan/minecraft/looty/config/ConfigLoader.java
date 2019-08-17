@@ -2,7 +2,7 @@ package com.derongan.minecraft.looty.config;
 
 import com.derongan.minecraft.looty.PluginModule;
 import com.derongan.minecraft.looty.config.deserialization.ItemParser;
-import com.derongan.minecraft.looty.registration.ConfigItemRegister;
+import com.derongan.minecraft.looty.item.ConfigItemRegister;
 import com.google.common.io.Files;
 
 import javax.inject.Inject;

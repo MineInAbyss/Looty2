@@ -2,31 +2,27 @@ package com.derongan.minecraft.looty;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.derongan.minecraft.looty.item.LootyItemDetector;
+import com.derongan.minecraft.looty.item.CompoundSkillHolderExtractor;
 import com.derongan.minecraft.looty.item.SkillHolder;
-import com.derongan.minecraft.looty.registration.ConfigItemIdentifier;
-import com.derongan.minecraft.looty.registration.ConfigItemRegister;
-import com.derongan.minecraft.looty.registration.NBTItemSkillCache;
 import com.derongan.minecraft.looty.skill.SkillUseAggregator;
-import com.derongan.minecraft.looty.skill.SkillWrapper;
-import com.derongan.minecraft.looty.skill.component.ActionAttributes;
-import com.derongan.minecraft.looty.skill.proto.Skill;
+import com.derongan.minecraft.looty.skill.component.components.ActionAttributes;
+import com.derongan.minecraft.looty.skill.cooldown.CooldownManager;
 import com.derongan.minecraft.looty.skill.proto.SkillTrigger;
 import com.derongan.minecraft.looty.skill.systems.particle.ParticleManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.*;
 import org.bukkit.util.RayTraceResult;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -36,43 +32,29 @@ public class UpdateTask extends BukkitRunnable {
     private final Engine engine;
     private final ParticleManager particleManager;
     private final Server server;
-    private final Plugin plugin;
-    private final ConfigItemRegister configItemRegister;
-    private final NBTItemSkillCache nbtItemSkillCache;
-    private final LootyItemDetector lootyItemDetector;
+    private final CompoundSkillHolderExtractor compoundSkillHolderExtractor;
+    private final CooldownManager cooldownManager;
     private final Logger logger;
-    private Map<UUID, Map<Skill, Integer>> cooldowns;
-    private Map<UUID, Scoreboard> scoreboards;
 
     @Inject
     public UpdateTask(SkillUseAggregator skillUseAggregator,
                       Engine engine,
                       ParticleManager particleManager,
                       Server server,
-                      Plugin plugin,
-                      ConfigItemRegister configItemRegister,
-                      NBTItemSkillCache nbtItemSkillCache,
-                      LootyItemDetector lootyItemDetector,
+                      CompoundSkillHolderExtractor compoundSkillHolderExtractor,
+                      CooldownManager cooldownManager,
                       Logger logger) {
         this.skillUseAggregator = skillUseAggregator;
         this.engine = engine;
         this.particleManager = particleManager;
         this.server = server;
-        this.plugin = plugin;
-        this.configItemRegister = configItemRegister;
-        this.nbtItemSkillCache = nbtItemSkillCache;
-        this.lootyItemDetector = lootyItemDetector;
+        this.compoundSkillHolderExtractor = compoundSkillHolderExtractor;
+        this.cooldownManager = cooldownManager;
         this.logger = logger;
-        cooldowns = new HashMap<>();
-        scoreboards = new HashMap<>();
     }
 
     @Override
     public void run() {
-        cooldowns.forEach(((uuid, cd) -> cd.entrySet().forEach(a -> a.setValue(a.getValue() - 1))));
-        cooldowns.forEach((uuid, cd) ->
-                cd.entrySet().removeIf(a -> a.getValue() <= 0));
-
         skillUseAggregator.getEventsTakenThisTick().forEach(this::createActionsForUUID);
 
         engine.update(1);
@@ -87,22 +69,7 @@ public class UpdateTask extends BukkitRunnable {
         if (player != null && player.isOnline()) {
             ItemStack mainHandItemStack = player.getInventory().getItemInMainHand();
 
-            Optional<SkillHolder> skillHolder = Optional.empty();
-
-            if (lootyItemDetector.isNBTBasedLootyItem(mainHandItemStack)) {
-                try {
-                    skillHolder = nbtItemSkillCache.getSkillHolder(mainHandItemStack);
-                } catch (NBTItemSkillCache.InvalidSkillNBTException e) {
-                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Your item's power has faded... you must imbue it again.");
-
-                    ItemMeta newMeta = Bukkit.getItemFactory().getItemMeta(mainHandItemStack.getType());
-                    mainHandItemStack.setItemMeta(newMeta);
-
-                    return;
-                }
-            } else if (lootyItemDetector.isConfigBasedLootyItem(mainHandItemStack)) {
-                skillHolder = configItemRegister.getConfigItemType(ConfigItemIdentifier.fromItemStack(mainHandItemStack));
-            }
+            Optional<SkillHolder> skillHolder = compoundSkillHolderExtractor.getSkillHolder(mainHandItemStack);
 
             if (skillHolder.isPresent()) {
                 skillHolder.get()
@@ -110,7 +77,7 @@ public class UpdateTask extends BukkitRunnable {
                         .stream()
                         .filter(skill -> doesPlayerMatchTriggerStateConditions(player, skill.getSkillTriggers()))
                         .forEach(skillWrapper -> {
-                            if (isOnCooldown(uuid, skillWrapper)) {
+                            if (cooldownManager.isOnCooldown(player, skillWrapper.getSkill())) {
                                 return;
                             }
 
@@ -121,7 +88,7 @@ public class UpdateTask extends BukkitRunnable {
 
                                 double range = skillTrigger.getTarget().getRange();
 
-                                RayTraceResult rayTraceResult = getRayTraceResultOrDefault(player, range);
+                                RayTraceResult rayTraceResult = RayTraceUtil.getRayTraceResultOrDefault(player, range);
 
                                 boolean didHitEntity = false;
                                 boolean didHitSolidBlock = false;
@@ -151,32 +118,7 @@ public class UpdateTask extends BukkitRunnable {
                                 boolean playerMatchesTriggerTargetConditions = doesPlayerMatchTriggerTargetConditions(didHitEntity, didHitSolidBlock, skillTrigger
                                         .getTarget());
                                 if (playerMatchesTriggerTargetConditions) {
-                                    cooldowns.putIfAbsent(uuid, new HashMap<>());
-                                    cooldowns.get(uuid)
-                                            .putIfAbsent(skillWrapper.getSkill(), skillWrapper.getSkill()
-                                                    .getCooldown());
-
-
-                                    Scoreboard board = scoreboards.computeIfAbsent(uuid, uuid1 -> {
-                                        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-
-                                        Objective obj = scoreboard.registerNewObjective("cooldown", "dummy", "Cooldowns", RenderType.HEARTS);
-                                        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-                                        return scoreboard;
-                                    });
-
-                                    Objective objective = board.getObjective("cooldown");
-
-                                    Score score = objective.getScore(String.valueOf(skillWrapper.getSkill()
-                                            .hashCode()));
-                                    score.setScore(cooldowns.get(uuid).get(skillWrapper.getSkill()) / 15);
-
-                                    Bukkit.getScheduler()
-                                            .scheduleSyncDelayedTask(plugin, () -> decrement(score, uuid, skillWrapper), 15);
-
-
-                                    player.setScoreboard(board);
+                                    cooldownManager.startCooldown(player, skillWrapper.getSkill());
 
                                     skillWrapper.getActions().forEach(components -> {
                                         Entity entity = new Entity();
@@ -195,21 +137,6 @@ public class UpdateTask extends BukkitRunnable {
                 logger.warning(String.format("Player %s was not holding an item when they should have been", player.getName()));
             }
         }
-    }
-
-    private void decrement(Score score, UUID uuid, SkillWrapper skillWrapper) {
-        Integer integer = cooldowns.get(uuid).get(skillWrapper.getSkill());
-        if (integer != null) {
-            score.setScore(integer / 15);
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> decrement(score, uuid, skillWrapper), 15);
-        } else {
-            score.getScoreboard().resetScores(String.valueOf(skillWrapper.getSkill().hashCode()));
-        }
-    }
-
-    private boolean isOnCooldown(UUID uuid, SkillWrapper skillWrapper) {
-        return cooldowns.containsKey(uuid) && cooldowns.get(uuid).containsKey(skillWrapper.getSkill());
     }
 
     private boolean doesPlayerMatchTriggerStateConditions(Player player, List<SkillTrigger> skillTriggers) {
@@ -245,22 +172,5 @@ public class UpdateTask extends BukkitRunnable {
         ImmutableSet<SkillTrigger.SkillTarget.TargetType> actualTargets = actualTargetsBuilder.build();
 
         return !Sets.intersection(ImmutableSet.copyOf(skillTarget.getTargetTypeList()), actualTargets).isEmpty();
-    }
-
-    private RayTraceResult getRayTraceResultOrDefault(Player player, double range) {
-        RayTraceResult rayTraceResult = player
-                .getWorld()
-                .rayTrace(player.getEyeLocation(), player.getEyeLocation()
-                        .getDirection(), range, FluidCollisionMode.NEVER, true, .5, (entity -> entity != player));
-
-
-        if (rayTraceResult == null) {
-            Location hitLocation = player.getEyeLocation()
-                    .clone()
-                    .add(player.getEyeLocation().getDirection().clone().normalize().multiply(range));
-            rayTraceResult = new RayTraceResult(hitLocation.toVector());
-        }
-
-        return rayTraceResult;
     }
 }

@@ -2,7 +2,11 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.derongan.minecraft.looty.skill.component.*;
+import com.derongan.minecraft.looty.skill.component.Movement;
+import com.derongan.minecraft.looty.skill.component.components.Head;
+import com.derongan.minecraft.looty.skill.component.components.Origin;
+import com.derongan.minecraft.looty.skill.component.components.Tail;
+import com.derongan.minecraft.looty.skill.component.components.Target;
 import com.derongan.minecraft.looty.skill.component.proto.MovementInfo;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.Location;
