@@ -1,8 +1,10 @@
 package com.derongan.minecraft.looty;
 
 import com.derongan.minecraft.guiy.GuiListener;
+import com.derongan.minecraft.looty.command.LootyCommandExecutor;
 import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.skill.SkillListener;
+import com.derongan.minecraft.looty.skill.cooldown.CooldownManager;
 import com.derongan.minecraft.looty.ui.LootyEditorCommandExecutor;
 import com.derongan.minecraft.looty.ui.LootyEditorListener;
 import org.bukkit.Server;
@@ -20,6 +22,7 @@ class Looty {
     private final LootyEditorListener lootyEditorListener;
     private final LootyPlugin lootyPlugin;
     private final GuiListener guiListener;
+    private final CooldownManager cooldownManager;
     private final Server server;
     private final ConfigLoader configLoader;
     private final UpdateTask updateRunnable;
@@ -33,6 +36,7 @@ class Looty {
                  LootyEditorListener lootyEditorListener,
                  LootyPlugin lootyPlugin,
                  GuiListener guiListener,
+                 CooldownManager cooldownManager,
                  Server server,
                  ConfigLoader configLoader,
                  UpdateTask updateRunnable,
@@ -43,6 +47,7 @@ class Looty {
         this.lootyEditorListener = lootyEditorListener;
         this.lootyPlugin = lootyPlugin;
         this.guiListener = guiListener;
+        this.cooldownManager = cooldownManager;
         this.server = server;
         this.configLoader = configLoader;
         this.updateRunnable = updateRunnable;
@@ -59,16 +64,20 @@ class Looty {
         configLoader.reload();
 
         updateRunnable.runTaskTimer(lootyPlugin, 0, 1);
+        // Start after the update
+        cooldownManager.start();
 
         lootyPlugin.getCommand("looty").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("looties").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("lootyreload").setExecutor(lootyCommandExecutor);
         lootyPlugin.getCommand("createskill").setExecutor(LootyEditorCommandExecutor);
         lootyPlugin.getCommand("createaction").setExecutor(LootyEditorCommandExecutor);
+        lootyPlugin.getCommand("indicator").setExecutor(lootyCommandExecutor);
         logger.info("Loaded Looty");
     }
 
     void onDisable() {
+        cooldownManager.stop();
         updateRunnable.cancel();
     }
 }

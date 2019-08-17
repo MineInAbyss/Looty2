@@ -18,3 +18,6 @@ commands:
   createaction:
     description: Create an action block
     usage: /createaction
+  indicator:
+    description: lol
+    usage: lol

@@ -1,11 +1,13 @@
-package com.derongan.minecraft.looty;
+package com.derongan.minecraft.looty.command;
 
 import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.item.ConfigItemRegister;
+import com.derongan.minecraft.looty.skill.cooldown.*;
 import com.derongan.minecraft.looty.skill.proto.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,14 +27,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-class LootyCommandExecutor implements TabExecutor {
+public class LootyCommandExecutor implements TabExecutor {
     private final ConfigItemRegister itemRegistrar;
     private final ConfigLoader configLoader;
+    private final CooldownManager cooldownManager;
+    private Plugin plugin;
 
     @Inject
-    LootyCommandExecutor(ConfigItemRegister itemRegistrar, ConfigLoader configLoader) {
+    LootyCommandExecutor(ConfigItemRegister itemRegistrar,
+                         ConfigLoader configLoader,
+                         CooldownManager cooldownManager,
+                         Plugin plugin) {
         this.itemRegistrar = itemRegistrar;
         this.configLoader = configLoader;
+        this.cooldownManager = cooldownManager;
+        this.plugin = plugin;
     }
 
     // TODO should allow /looties from non player senders
@@ -44,6 +54,31 @@ class LootyCommandExecutor implements TabExecutor {
             sender.sendMessage("Reloading...");
             configLoader.reload();
             sender.sendMessage("Reloaded");
+            return true;
+        }
+
+        if (command.getName().equals("indicator")) {
+            if (args.length == 0) {
+                return false;
+            }
+
+            switch (args[0].toLowerCase()) {
+                case "score":
+                    cooldownManager.setCooldownIndicatorSupplier(ScoreboardIndicator::new);
+                    break;
+                case "vert":
+                    cooldownManager.setCooldownIndicatorSupplier(VerticalMessageIndicator::new);
+                    break;
+                case "horiz":
+                    cooldownManager.setCooldownIndicatorSupplier(HorizontalMessageIndicator::new);
+                    break;
+                case "boss":
+                    cooldownManager.setCooldownIndicatorSupplier(() -> new BossBarIndicator(new NamespacedKey(plugin, "bossbar")));
+                    break;
+                default:
+                    return false;
+            }
+
             return true;
         }
 
