@@ -15,7 +15,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO this is very hacky right now and needs work.
+/**
+ * Gradle task that takes all protobuf components and wraps them in a libgdx component.
+ * TODO(GH-26): prevent regenerating sources when the protos don't change
+ */
 public class ComponentGenerationTask extends DefaultTask {
     @TaskAction
     public void run() throws IOException {
@@ -44,7 +47,6 @@ public class ComponentGenerationTask extends DefaultTask {
             }
         }
 
-
         CodeBlock.Builder setBuilder = CodeBlock.builder();
         setBuilder.add("$T.<$T<? extends $T>, $T<? extends $T>>builder()", ImmutableMap.class, Class.class, Message.class, Class.class, Component.class);
         compNameMap.forEach((wrapperName, componentName) -> setBuilder.add("\t\n.put($T.class, $T.class)", wrapperName, componentName));
@@ -54,13 +56,8 @@ public class ComponentGenerationTask extends DefaultTask {
 
         supplierBuilder.addField(allComponents.build());
 
-//        ClassName componentRegisterClassName = ClassName.get("com.derongan.minecraft.looty.registration", "ComponentRegister");
-//        FieldSpec fieldSpec = FieldSpec.builder(componentRegisterClassName, "componentRegister", Modifier.PRIVATE, Modifier.FINAL).build();
-//        supplierBuilder.addField(fieldSpec);
         MethodSpec constructor = MethodSpec.constructorBuilder()
                 .addAnnotation(Inject.class)
-//                .addParameter(componentRegisterClassName, "componentRegister")
-//                .addStatement("this.componentRegister = componentRegister")
                 .build();
 
         MethodSpec getMethod = MethodSpec.methodBuilder("get")
@@ -80,19 +77,12 @@ public class ComponentGenerationTask extends DefaultTask {
 
 
     private ClassName generateWrapper(ClassName protoClassName) throws IOException {
-        //TODO make final after fixing Linger/Other config components that expect mutation
-        FieldSpec fieldSpec = FieldSpec.builder(protoClassName, "info", Modifier.PRIVATE).build();
+        FieldSpec fieldSpec = FieldSpec.builder(protoClassName, "info", Modifier.PRIVATE, Modifier.FINAL).build();
 
         MethodSpec getInfo = MethodSpec.methodBuilder("getInfo")
                 .addStatement("return info")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(protoClassName)
-                .build();
-
-        MethodSpec setInfo = MethodSpec.methodBuilder("setInfo")
-                .addParameter(protoClassName, "info")
-                .addStatement("this.info = info")
-                .addModifiers(Modifier.PUBLIC)
                 .build();
 
         MethodSpec constructor = MethodSpec.constructorBuilder()
@@ -115,7 +105,6 @@ public class ComponentGenerationTask extends DefaultTask {
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addField(fieldSpec)
                 .addMethod(getInfo)
-                .addMethod(setInfo)
                 .addMethod(constructor)
                 .addMethod(fromProto)
                 .build();

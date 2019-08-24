@@ -143,6 +143,7 @@ public class LootyCommandExecutor implements TabExecutor {
         return item;
     }
 
+    //TODO(GH-19): Autocomplete based on whole arg
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
                                                 @NotNull Command command,
