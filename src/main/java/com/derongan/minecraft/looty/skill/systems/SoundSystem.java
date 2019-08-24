@@ -27,11 +27,11 @@ public class SoundSystem extends AbstractDelayAwareIteratingSystem {
         SoundInfo info = sound.getInfo();
         switch (info.getLocationReference()) {
             case ORIGIN:
-                location = originComponentMapper.get(entity).dynamicLocation.getLocation();
+                location = actionAttributesComponentMapper.get(entity).initiatorLocation.getLocation();
                 break;
             case TARGET:
             default:
-                location = headComponentMapper.get(entity).location;
+                location = actionAttributesComponentMapper.get(entity).impactLocation.getLocation();
                 break;
         }
 

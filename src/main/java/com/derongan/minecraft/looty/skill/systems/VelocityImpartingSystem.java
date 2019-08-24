@@ -6,7 +6,6 @@ import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.Velocity;
 import com.derongan.minecraft.looty.skill.component.components.ActionAttributes;
 import com.derongan.minecraft.looty.skill.component.components.EntityTargets;
-import com.derongan.minecraft.looty.skill.component.proto.LocationReference;
 import com.derongan.minecraft.looty.skill.component.proto.VelocityInfo;
 import org.bukkit.util.Vector;
 
@@ -40,7 +39,7 @@ public class VelocityImpartingSystem extends AbstractDelayAwareIteratingSystem {
 
                 vector = vector.multiply(velocity.getMagnitude());
 
-                if(velocity.getAdd()){
+                if (velocity.getAdd()) {
                     vector = vector.add(a.getVelocity());
                 }
 
@@ -53,8 +52,8 @@ public class VelocityImpartingSystem extends AbstractDelayAwareIteratingSystem {
     private Vector applyVelocityBetween(Entity entity,
                                         VelocityInfo.Between between,
                                         org.bukkit.entity.Entity mob) {
-        Vector from = getVectorForReference(between.getFrom(), entity, mob);
-        Vector to = getVectorForReference(between.getTo(), entity, mob);
+        Vector from = targetComponentMapper.get(entity).getTarget(between.getFrom()).get().getLocation().toVector();
+        Vector to = targetComponentMapper.get(entity).getTarget(between.getTo()).get().getLocation().toVector();
 
         if (!from.subtract(to).equals(new Vector())) {
             return to.subtract(from).normalize();
@@ -62,20 +61,6 @@ public class VelocityImpartingSystem extends AbstractDelayAwareIteratingSystem {
             return new Vector();
         }
 
-    }
-
-    private Vector getVectorForReference(LocationReference locationReference,
-                                         Entity entity,
-                                         org.bukkit.entity.Entity mob) {
-        switch (locationReference) {
-            case TARGET:
-                return targetComponentMapper.get(entity).dynamicLocation.getLocation().toVector();
-            case ENTITY_TARGETS:
-                return mob.getLocation().toVector();
-            case ORIGIN:
-            default:
-                return originComponentMapper.get(entity).dynamicLocation.getLocation().toVector();
-        }
     }
 
     private Vector applyVelocityDirection(org.bukkit.entity.Entity entity,

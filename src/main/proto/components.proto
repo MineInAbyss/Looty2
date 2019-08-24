@@ -26,10 +26,12 @@ message Vector {
 }
 
 enum LocationReferenceType {
-    //The initiator of the action. Usually a player.
+    // The location the effect started at. Will be OWNER on primary effects.
     INITIATOR = 0;
-    //Where the action was targeted. This could be a struck block, or a button that was activated.
+    // Hit location. In the case of a secondary effect is equivilant to Initiator.
     IMPACT = 1;
+    // The entity that initiated the skill.
+    OWNER = 2;
 }
 
 enum DirectionType {
@@ -56,16 +58,14 @@ message Offset {
     Vector modifier_vector = 4;
     // True if the offset should be relative to the current location of the entity it is attached to
     bool sticky = 5;
+    // True if the initial reference should be grounded before computation
+    bool grounded = 6;
 }
 
-message OriginChooserInfo {
-    Offset offset = 1;
-}
-
-message TargetChooserInfo {
+message TargetingInfo {
     option (visual.display_as).uuid = "9f955e4c-901e-492f-9bbe-8c8cf79ae86a";
     option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ4ZTFlYmM4M2YwZjU2NjI4MjFiYzY2MDA5ODFlMTdmM2NlMjZiMjU3NGVkZjY3ZGUyMjhjNzQ5NDgxZjIzMCJ9fX0=";
-    Offset offset = 1;
+    map<string, Offset> offset = 1;
 }
 
 message DamageInfo {
@@ -80,45 +80,101 @@ message IgniteInfo {
     int64 strength = 1;
 }
 
+
+message VolumeInfo {
+    message SphereSpec {
+        double radius = 1;
+    }
+
+    // TO is always Target
+    message CylinderSpec {
+        double radius = 1;
+        string from = 2;
+    }
+
+    oneof volume {
+        SphereSpec sphere = 1;
+        CylinderSpec cylinder = 2;
+    }
+}
+
 message RadiusInfo {
     double radius = 1;
 }
 
 
 message MovementInfo {
-    double head_speed = 1;
-    double tail_speed = 2;
-    int64 tail_wait = 3;
+    message MovementData {
+        oneof velocity_spec {
+            DestinationSpec velocity_destination = 1;
+            DirectionSpec velocity_direction = 2;
+        }
+
+        oneof acceleration_spec {
+            DestinationSpec acceleration_destination = 3;
+            DirectionSpec acceleration_direction = 4;
+        }
+
+        double speed = 5;
+        double acceleration = 6;
+        string node = 7;
+    }
+
+    message DestinationSpec {
+        string node = 1;
+    }
+
+    message DirectionSpec {
+        string from = 1;
+        string to = 2;
+    }
+
+    repeated MovementData movement = 1;
 }
 
+
 message ParticleInfo {
+    message ParticleData {
+        // Draws particles along a path between all of the nodes. Each node corresponds to a key in the targeting.
+        message PathSpec {
+            repeated string nodes = 1;
+        }
+
+        // Draws particles in a sphere centered at the node, which corresponds to a key in the targeting.
+        message SphereSpec {
+            string node = 1;
+            double radius = 2;
+            bool filled = 3;
+        }
+
+        message PointSpec {
+            string node = 1;
+        }
+
+        message CylinderSpec {
+            string from = 1;
+            string to = 2;
+            double radius = 3;
+        }
+
+        string particle_name = 1;
+
+        oneof particle_spec {
+            PathSpec path_spec = 2;
+            SphereSpec sphere_spec = 3;
+            PointSpec point_spec = 4;
+            CylinderSpec cylinder_spec = 5;
+        }
+    }
+
     option (visual.display_as).uuid = "ba8525b3-8722-43a5-aca3-b8b94558052d";
     option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGQwYjA4OTkwYTQzMTRjYTRmMGFlODhjNDA5YTA1OGM0MTAzMDg2YjY2YTU4YjY3YmEzNzdlNDAzN2JiZGRkZCJ9fX0=";
 
-    enum FillStyle {
-        INITIATOR = 0;
-        ORIGIN = 1;
-        TARGET = 2;
-        PATH = 3;
-        OUTLINE = 4;
-        SPIRAL = 5;
-        DOUBLE_SPIRAL = 6;
-        RANDOM = 7;
-        ENTITIES = 8;
-    }
-
-    FillStyle fill_style = 1;
-    // TODO think about how to do this
-    string particle_name = 2;
+    repeated ParticleData particles = 1;
 }
 
 message EntityTargetLimitInfo {
     int64 limit = 1;
-}
-
-message GroundedInfo {
-    option (visual.display_as).uuid = "dba0d5d8-1359-492e-a2fd-3500240168cd";
-    option (visual.display_as).texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE5ZTM2YTg3YmFmMGFjNzYzMTQzNTJmNTlhN2Y2M2JkYjNmNGM4NmJkOWJiYTY5Mjc3NzJjMDFkNGQxIn19fQ==";
 }
 
 message LightningInfo {
@@ -149,8 +205,8 @@ message SoundInfo {
 
 message VelocityInfo {
     message Between {
-        LocationReference from = 1;
-        LocationReference to = 2;
+        string from = 1;
+        string to = 2;
     }
 
     message Direction {
