@@ -8,7 +8,10 @@ import com.derongan.minecraft.looty.skill.component.EntityTargetLimit;
 import com.derongan.minecraft.looty.skill.component.Movement;
 import com.derongan.minecraft.looty.skill.component.Targeting;
 import com.derongan.minecraft.looty.skill.component.Volume;
-import com.derongan.minecraft.looty.skill.component.components.*;
+import com.derongan.minecraft.looty.skill.component.components.ActionAttributes;
+import com.derongan.minecraft.looty.skill.component.components.EntityTargets;
+import com.derongan.minecraft.looty.skill.component.components.LingerInternal;
+import com.derongan.minecraft.looty.skill.component.components.Targets;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,8 +23,6 @@ public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem 
     protected ComponentMapper<Targeting> targetingComponentMapper = ComponentMapper.getFor(Targeting.class);
     protected ComponentMapper<ActionAttributes> actionAttributesComponentMapper = ComponentMapper.getFor(ActionAttributes.class);
     protected ComponentMapper<Targets> targetComponentMapper = ComponentMapper.getFor(Targets.class);
-    protected ComponentMapper<Head> headComponentMapper = ComponentMapper.getFor(Head.class);
-    protected ComponentMapper<Tail> tailComponentMapper = ComponentMapper.getFor(Tail.class);
     protected ComponentMapper<Movement> movementComponentMapper = ComponentMapper.getFor(Movement.class);
     protected ComponentMapper<EntityTargets> entityTargetsComponentMapper = ComponentMapper.getFor(EntityTargets.class);
     protected ComponentMapper<Volume> volumeComponentMapper = ComponentMapper.getFor(Volume.class);
@@ -52,9 +53,4 @@ public abstract class AbstractDelayAwareIteratingSystem extends IteratingSystem 
     }
 
     protected abstract void processFilteredEntity(Entity entity, float deltaTime);
-
-    // TODO move out to a proper subclass
-    protected boolean hasPath(Entity entity) {
-        return headComponentMapper.has(entity) && tailComponentMapper.has(entity);
-    }
 }
