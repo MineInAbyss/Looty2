@@ -2,6 +2,7 @@ package com.derongan.minecraft.looty.skill.cooldown;
 
 import com.derongan.minecraft.looty.skill.proto.Skill;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -49,6 +50,10 @@ public class ScoreboardIndicator implements CooldownIndicator {
 
     @Override
     public void remove() {
-        players.forEach(a -> Bukkit.getPlayer(a).setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard()));
+        players.stream()
+                .map(Bukkit::getOfflinePlayer)
+                .filter(OfflinePlayer::isOnline)
+                .map(OfflinePlayer::getPlayer)
+                .forEach(player -> player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard()));
     }
 }

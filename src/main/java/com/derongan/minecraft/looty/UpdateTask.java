@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.derongan.minecraft.looty.item.CompoundSkillHolderExtractor;
 import com.derongan.minecraft.looty.item.SkillHolder;
+import com.derongan.minecraft.looty.location.DynamicLocationImpl;
 import com.derongan.minecraft.looty.skill.SkillUseAggregator;
 import com.derongan.minecraft.looty.skill.component.components.ActionAttributes;
 import com.derongan.minecraft.looty.skill.cooldown.CooldownManager;
@@ -97,7 +98,7 @@ public class UpdateTask extends BukkitRunnable {
 
                                 ActionAttributes actionAttributes = new ActionAttributes();
 
-                                actionAttributes.initiatorLocation = new DynamicLocationImpl(player.getEyeLocation(), player);
+                                actionAttributes.initiatorLocation = new DynamicLocationImpl(player.getEyeLocation());
                                 actionAttributes.initiatorEntity = player;
                                 actionAttributes.referenceHeading = player.getEyeLocation().getDirection();
 
@@ -105,7 +106,7 @@ public class UpdateTask extends BukkitRunnable {
                                     didHitEntity = true;
                                     actionAttributes.impactEntity = rayTraceResult.getHitEntity();
                                     actionAttributes.impactLocation = new DynamicLocationImpl(actionAttributes.impactEntity
-                                            .getLocation(), actionAttributes.impactEntity);
+                                            .getLocation());
                                 } else if (rayTraceResult.getHitBlock() != null) {
                                     didHitSolidBlock = true;
 

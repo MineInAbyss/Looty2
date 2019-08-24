@@ -5,16 +5,18 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.Self;
 import com.derongan.minecraft.looty.skill.component.components.EntityTargets;
+import com.derongan.minecraft.looty.skill.component.proto.VolumeInfo;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import com.google.common.collect.ImmutableSet;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+
+import static com.derongan.minecraft.looty.skill.systems.targeting.ReferenceLocationTargetingSystem.DEFAULT_TARGET;
 
 public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
-    ComponentMapper<Self> selfComponentMapper = ComponentMapper.getFor(Self.class);
+    private ComponentMapper<Self> selfComponentMapper = ComponentMapper.getFor(Self.class);
 
     @Inject
     public EntityTargetingSystem(Logger logger) {
@@ -36,32 +38,28 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
             }
         }
 
-        if (headComponentMapper.has(entity) && !tailComponentMapper.has(entity)) {
-            if (radiusComponentMapper.has(entity)) {
-                SphereEntityFilter sphereEntityFilter = new SphereEntityFilter(headComponentMapper.get(entity).location, radiusComponentMapper
-                        .get(entity).getInfo().getRadius());
-                entityTargets.affectedEntities = sphereEntityFilter.getTargets();
-            } else if (actionAttributesComponentMapper.get(entity).impactEntity != null) {
-                entityTargets.affectedEntities = ImmutableSet.of(actionAttributesComponentMapper.get(entity).impactEntity);
+        org.bukkit.entity.Entity impactEntity = actionAttributesComponentMapper.get(entity).impactEntity;
+        EntityTargetFilter entityTargetFilter = impactEntity == null ? ImmutableSet::of : () -> ImmutableSet.of(impactEntity);
+        if (volumeComponentMapper.has(entity)) {
+
+            VolumeInfo volumeInfo = volumeComponentMapper
+                    .get(entity).getInfo();
+            switch (volumeInfo.getVolumeCase()) {
+                case SPHERE:
+                    entityTargetFilter = new SphereEntityFilter(targetComponentMapper.get(entity)
+                            .getTarget(DEFAULT_TARGET).get().getLocation(), volumeInfo.getSphere().getRadius());
+                    break;
+                case CYLINDER:
+                    entityTargetFilter = new BeamEntityFilter(targetComponentMapper.get(entity)
+                            .getTarget(volumeInfo.getCylinder().getFrom())
+                            .get()
+                            .getLocation(), targetComponentMapper.get(entity)
+                            .getTarget(DEFAULT_TARGET)
+                            .get()
+                            .getLocation(), volumeInfo.getCylinder().getRadius());
+                    break;
             }
-        } else if (headComponentMapper.has(entity) && tailComponentMapper.has(entity)) {
-            double radius = .1;
-            if (radiusComponentMapper.has(entity)) {
-                radius = radiusComponentMapper.get(entity).getInfo().getRadius();
-            }
-
-            BeamEntityFilter beamEntityFilter = new BeamEntityFilter(headComponentMapper.get(entity).location, tailComponentMapper
-                    .get(entity).location, radius);
-
-            entityTargets.affectedEntities = beamEntityFilter.getTargets();
-        } else if (actionAttributesComponentMapper.get(entity).impactEntity != null) {
-            entityTargets.affectedEntities = ImmutableSet.of(actionAttributesComponentMapper.get(entity).impactEntity);
         }
-
-        if (entityTargetLimitComponentMapper.has(entity)) {
-            entityTargets.affectedEntities = entityTargets.affectedEntities.stream()
-                    .limit(entityTargetLimitComponentMapper.get(entity).getInfo().getLimit())
-                    .collect(Collectors.toSet());
-        }
+        entityTargets.affectedEntities = entityTargetFilter.getTargets();
     }
 }

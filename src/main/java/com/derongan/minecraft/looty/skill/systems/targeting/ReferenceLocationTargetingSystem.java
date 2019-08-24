@@ -2,14 +2,9 @@ package com.derongan.minecraft.looty.skill.systems.targeting;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.derongan.minecraft.looty.DynamicLocation;
-import com.derongan.minecraft.looty.GroundingDynamicLocation;
-import com.derongan.minecraft.looty.OffsetDynamicLocation;
-import com.derongan.minecraft.looty.skill.component.OriginChooser;
-import com.derongan.minecraft.looty.skill.component.TargetChooser;
+import com.derongan.minecraft.looty.location.*;
 import com.derongan.minecraft.looty.skill.component.components.ActionAttributes;
-import com.derongan.minecraft.looty.skill.component.components.Origin;
-import com.derongan.minecraft.looty.skill.component.components.Target;
+import com.derongan.minecraft.looty.skill.component.components.Targets;
 import com.derongan.minecraft.looty.skill.component.proto.DirectionType;
 import com.derongan.minecraft.looty.skill.component.proto.LocationReferenceType;
 import com.derongan.minecraft.looty.skill.component.proto.Offset;
@@ -23,52 +18,52 @@ import java.util.logging.Logger;
  * Targeting system that is in charge of preparing reference points.
  */
 public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratingSystem {
+
+    public static final String DEFAULT_TARGET = "target";
+
     @Inject
     public ReferenceLocationTargetingSystem(Logger logger) {
-        super(logger, Family.one(TargetChooser.class, OriginChooser.class).exclude(Target.class, Origin.class).get());
+        super(logger, Family.all().exclude(Targets.class).get());
     }
 
     @Override
     protected void processFilteredEntity(Entity entity, float v) {
         ActionAttributes actionAttributes = actionAttributesComponentMapper.get(entity);
-        boolean grounded = groundedComponentMapper.has(entity);
 
-        if (originChooserComponentMapper.has(entity)) {
-            setupOrigin(entity, actionAttributes, grounded);
+        Targets targets = new Targets();
+
+        if (targetingComponentMapper.has(entity)) {
+            targetingComponentMapper.get(entity)
+                    .getInfo()
+                    .getOffsetMap()
+                    .forEach((name, offset) -> targets.addTarget(name, createTarget(offset, actionAttributes)));
         }
 
-        if (targetChooserComponentMapper.has(entity)) {
-            setupTarget(entity, actionAttributes, grounded);
+        if (!targets.getTarget(DEFAULT_TARGET).isPresent()) {
+            targets.addTarget(DEFAULT_TARGET, new MovingDynamicLocation(actionAttributes.impactLocation));
         }
+
+        entity.add(targets);
     }
 
-    private void setupOrigin(Entity entity, ActionAttributes actionAttributes, boolean grounded) {
-        OriginChooser originChooser = originChooserComponentMapper.get(entity);
-        Origin origin = new Origin();
-        origin.dynamicLocation = getOffsetLocation(actionAttributes, originChooser.getInfo().getOffset(), grounded);
-        entity.add(origin);
-    }
-
-    private void setupTarget(Entity entity, ActionAttributes actionAttributes, boolean grounded) {
-        TargetChooser targetChooser = targetChooserComponentMapper.get(entity);
-        Target target = new Target();
-        target.dynamicLocation = getOffsetLocation(actionAttributes, targetChooser.getInfo().getOffset(), grounded);
-        entity.add(target);
+    private MovingDynamicLocation createTarget(Offset offset, ActionAttributes actionAttributes) {
+        return new MovingDynamicLocation(getOffsetLocation(actionAttributes, offset, offset.getGrounded()));
     }
 
     private DynamicLocation getReferenceLocation(ActionAttributes actionAttributes,
-                                                 LocationReferenceType locationReferenceType) {
+                                                 LocationReferenceType locationReferenceType, boolean sticky) {
         switch (locationReferenceType) {
             case INITIATOR:
-                return actionAttributes.initiatorLocation;
+            case OWNER:
+                return sticky && actionAttributes.initiatorEntity != null ? new StickyDynamicLocation(actionAttributes.initiatorEntity) : actionAttributes.initiatorLocation;
             case IMPACT:
-                return actionAttributes.impactLocation;
+                return sticky && actionAttributes.impactEntity != null ? new StickyDynamicLocation(actionAttributes.impactEntity) : actionAttributes.impactLocation;
             default:
-                throw new IllegalStateException("LocationReferenceType must be INITIATOR or IMPACT");
+                throw new IllegalStateException("LocationReferenceType must be INITIATOR, IMPACT or ORIGIN");
         }
     }
 
-    private Vector getReferenceDirection(DirectionType directionType, Vector referenceHeading) {
+    private Vector getReferenceVector(DirectionType directionType, Vector referenceHeading) {
         switch (directionType) {
             case UP:
                 return new Vector(0, 1, 0);
@@ -91,15 +86,25 @@ public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratin
     private DynamicLocation getOffsetLocation(ActionAttributes actionAttributes,
                                               Offset offset,
                                               boolean grounded) {
-        DynamicLocation referenceDynamicLocation = getReferenceLocation(actionAttributes, offset.getLocationReferenceType());
-        Vector referenceDirection = getReferenceDirection(offset.getDirectionType(), actionAttributes.referenceHeading)
+        DynamicLocation referenceDynamicLocation = getReferenceLocation(actionAttributes, offset.getLocationReferenceType(), offset
+                .getSticky());
+        Vector referenceVector = getReferenceVector(offset.getDirectionType(), actionAttributes.referenceHeading)
                 .normalize();
 
         if (grounded) {
             referenceDynamicLocation = new GroundingDynamicLocation(referenceDynamicLocation);
         }
 
-        return new OffsetDynamicLocation(referenceDynamicLocation, referenceDirection.clone()
-                .multiply(offset.getMagnitude()));
+        com.derongan.minecraft.looty.skill.component.proto.Vector modifierProtoVector = offset.getModifierVector();
+
+        Vector modifierVector = new Vector(modifierProtoVector.getX(), modifierProtoVector.getY(), modifierProtoVector.getZ());
+
+        //TODO the math here is bad
+        double offsetAngleFromX = referenceVector.clone().setY(0).angle(new Vector(1, 0, 0));
+
+        modifierVector.rotateAroundY(offsetAngleFromX);
+
+        return new OffsetDynamicLocation(referenceDynamicLocation, referenceVector.clone()
+                .multiply(offset.getMagnitude()), modifierVector);
     }
 }
