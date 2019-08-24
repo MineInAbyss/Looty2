@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.derongan.minecraft.looty.skill.component.Self;
 import com.derongan.minecraft.looty.skill.component.components.EntityTargets;
+import com.derongan.minecraft.looty.skill.component.components.Targets;
 import com.derongan.minecraft.looty.skill.component.proto.VolumeInfo;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import com.google.common.collect.ImmutableSet;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 import java.util.logging.Logger;
 
 import static com.derongan.minecraft.looty.skill.systems.targeting.ReferenceLocationTargetingSystem.DEFAULT_TARGET;
+import static com.derongan.minecraft.looty.skill.systems.targeting.TargetingUtils.getTargetOrThrow;
 
 public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
@@ -44,19 +46,17 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
             VolumeInfo volumeInfo = volumeComponentMapper
                     .get(entity).getInfo();
+            Targets targets = targetComponentMapper.get(entity);
             switch (volumeInfo.getVolumeCase()) {
                 case SPHERE:
-                    entityTargetFilter = new SphereEntityFilter(targetComponentMapper.get(entity)
-                            .getTarget(DEFAULT_TARGET).get().getLocation(), volumeInfo.getSphere().getRadius());
+                    entityTargetFilter = new SphereEntityFilter(getTargetOrThrow(targets, DEFAULT_TARGET).getLocation(), volumeInfo
+                            .getSphere()
+                            .getRadius());
                     break;
                 case CYLINDER:
-                    entityTargetFilter = new BeamEntityFilter(targetComponentMapper.get(entity)
-                            .getTarget(volumeInfo.getCylinder().getFrom())
-                            .get()
-                            .getLocation(), targetComponentMapper.get(entity)
-                            .getTarget(DEFAULT_TARGET)
-                            .get()
-                            .getLocation(), volumeInfo.getCylinder().getRadius());
+                    VolumeInfo.CylinderSpec cylinder = volumeInfo.getCylinder();
+                    entityTargetFilter = new BeamEntityFilter(getTargetOrThrow(targets, cylinder.getFrom()).getLocation(), getTargetOrThrow(targets, DEFAULT_TARGET)
+                            .getLocation(), cylinder.getRadius());
                     break;
             }
         }

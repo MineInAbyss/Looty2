@@ -9,11 +9,11 @@ import com.derongan.minecraft.looty.skill.component.proto.MovementInfo;
 import com.derongan.minecraft.looty.skill.systems.AbstractDelayAwareIteratingSystem;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
-import java.util.Optional;
 import java.util.logging.Logger;
+
+import static com.derongan.minecraft.looty.skill.systems.targeting.TargetingUtils.getTargetOrThrow;
 
 /**
  * Targeting system that is in charge of creating and moving the target locations
@@ -34,8 +34,7 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
     private void updateTarget(MovementInfo.MovementData movementData, Entity entity) {
         Targets targets = targetComponentMapper.get(entity);
 
-        Optional<MovingDynamicLocation> target = targets.getTarget(movementData.getNode());
-        MovingDynamicLocation movingDynamicLocation = target.get();
+        MovingDynamicLocation movingDynamicLocation = getTargetOrThrow(targets, movementData.getNode());
 
         switch (movementData.getVelocitySpecCase()) {
             case VELOCITY_DIRECTION:
@@ -58,13 +57,12 @@ public class MovementTargetingSystem extends AbstractDelayAwareIteratingSystem {
         movingDynamicLocation.update();
     }
 
-    @Nullable
     private Vector getVectorForDirection(double magnitude, MovementInfo.DirectionSpec directionSpec, Targets targets) {
         String from = directionSpec.getFrom();
         String to = directionSpec.getTo();
 
-        Location fromLoc = targets.getTarget(from).get().getLocation();
-        Location toLoc = targets.getTarget(to).get().getLocation();
+        Location fromLoc = getTargetOrThrow(targets, from).getLocation();
+        Location toLoc = getTargetOrThrow(targets, to).getLocation();
 
         Vector direction = toLoc.toVector().subtract(fromLoc.toVector());
 
