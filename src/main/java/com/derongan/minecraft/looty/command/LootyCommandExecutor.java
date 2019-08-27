@@ -143,17 +143,17 @@ public class LootyCommandExecutor implements TabExecutor {
         return item;
     }
 
-    //TODO(GH-19): Autocomplete based on whole arg
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
                                                 @NotNull Command command,
                                                 @NotNull String alias,
                                                 @NotNull String[] args) {
-        if (command.getName().equals("looty")) {
+        if (command.getName().equals("looty") && args.length == 1) {
             return itemRegistrar.getAllTypes()
                     .stream()
                     .map(ItemType::getName)
                     .map(name -> name.replace(" ", "_"))
+                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
         }
 
