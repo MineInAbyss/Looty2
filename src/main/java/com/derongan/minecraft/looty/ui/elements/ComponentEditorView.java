@@ -94,7 +94,7 @@ public class ComponentEditorView implements Element {
 
                 messageBuilder.mergeFrom(protoBytes);
 
-                ProtobufInput protobufInput = new ProtobufInput(messageBuilder.build(), converters);
+                ProtobufInput protobufInput = new ProtobufInput(messageBuilder.build(), converters, plugin);
 
 
                 Layout protoEditContainer = new Layout();

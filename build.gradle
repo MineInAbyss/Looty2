@@ -27,10 +27,10 @@ repositories {
         name = 'dre-repo'
         url = 'https://erethon.de/repo/'
     }
-//    maven {
-//        name = 'jitpack'
-//        url = "https://jitpack.io"
-//    }
+    maven {
+        name = 'jitpack'
+        url = "https://jitpack.io"
+    }
 }
 
 dependencies {
@@ -42,6 +42,8 @@ dependencies {
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.8.0'
     compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.8.0'
     compile group: 'de.erethon', name: 'headlib', version: '3.0.1'
+    implementation 'com.github.WesJD.AnvilGUI:anvilgui:-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.13.2-R0.1-SNAPSHOT'
     compile 'com.google.guava:guava:27.1-jre'
 //    implementation group: 'com.github.MineInAbyss', name: 'guiy', version: "master-SNAPSHOT"
     implementation group: 'com.derongan.minecraft', name: 'guiy', version: '0.1.0-SNAPSHOT'
