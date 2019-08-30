@@ -68,7 +68,11 @@ public class CooldownManager {
         CooldownIndicator cooldownIndicator = indicatorMap.computeIfAbsent(uuid, uuid1 -> cooldownIndicatorSupplier.get());
         cooldownIndicator.update(cooldownsBySkill);
         cooldownsBySkill.values().removeIf(integer -> integer == 0);
-        cooldownIndicator.show(Bukkit.getPlayer(uuid));
+        Player player = Bukkit.getPlayer(uuid);
+
+        if (player != null) {
+            cooldownIndicator.show(player);
+        }
     }
 
     private CooldownIndicator getNewIndicator() {

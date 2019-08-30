@@ -102,6 +102,8 @@ public class ReferenceLocationTargetingSystem extends AbstractDelayAwareIteratin
         //TODO the math here is bad
         double offsetAngleFromX = referenceVector.clone().setY(0).angle(new Vector(1, 0, 0));
 
+        offsetAngleFromX = Double.isNaN(offsetAngleFromX) ? 0 : offsetAngleFromX;
+
         modifierVector.rotateAroundY(offsetAngleFromX);
 
         return new OffsetDynamicLocation(referenceDynamicLocation, referenceVector.clone()
