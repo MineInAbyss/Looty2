@@ -34,6 +34,8 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
 
         EntityTargets entityTargets = entityTargetsComponentMapper.get(entity);
 
+        entityTargets.affectedEntities.clear();
+
         if (selfComponentMapper.has(entity)) {
             if (selfComponentMapper.get(entity).getInfo().getAlwaysInclude()) {
                 entityTargets.affectedEntities.add(actionAttributesComponentMapper.get(entity).initiatorEntity);
@@ -60,6 +62,6 @@ public class EntityTargetingSystem extends AbstractDelayAwareIteratingSystem {
                     break;
             }
         }
-        entityTargets.affectedEntities = entityTargetFilter.getTargets();
+        entityTargets.affectedEntities.addAll(entityTargetFilter.getTargets());
     }
 }
