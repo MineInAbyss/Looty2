@@ -14,8 +14,7 @@ import dagger.Provides;
 import javax.inject.Singleton;
 
 @Module
-public
-class EngineModule {
+public class EngineModule {
 
     // TODO there must be a better way of injecting these
     @Provides

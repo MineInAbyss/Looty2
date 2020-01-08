@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public abstract class ConfigItemIdentifier {
     public abstract Material getMaterial();
 
-    public abstract int getDurability();
+    public abstract int getModel();
 
     public static Builder builder() {
         return new AutoValue_ConfigItemIdentifier.Builder();
@@ -25,23 +25,23 @@ public abstract class ConfigItemIdentifier {
     public abstract static class Builder {
         public abstract Builder setMaterial(Material newMaterial);
 
-        public abstract Builder setDurability(int newDurability);
+        public abstract Builder setModel(int newModel);
 
         public abstract ConfigItemIdentifier build();
     }
 
     public static ConfigItemIdentifier fromItemType(ItemType itemType) {
         return ConfigItemIdentifier.builder()
-                .setDurability(itemType.getDurability())
+                .setModel(itemType.getModel())
                 .setMaterial(Material.valueOf(itemType.getMaterial()))
                 .build();
     }
 
     public static ConfigItemIdentifier fromItemStack(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();
-        short durability = (meta == null) ? 0 : (short) ((Damageable) meta).getDamage();
+        int model = meta.getCustomModelData();
         return ConfigItemIdentifier.builder()
-                .setDurability(durability)
+                .setModel(model)
                 .setMaterial(itemStack.getType())
                 .build();
     }

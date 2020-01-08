@@ -5,19 +5,4 @@ api-version: '1.13'
 commands:
   looty:
     description: Main looty command
-    usage: /looty <command> <options>
-  looties:
-    description: List items
-    usage: /looties
-  lootyreload:
-    description: Reloads the items from config files
-    usage: /lootyreload
-  createskill:
-    description: Create a skill block
-    usage: /createskill
-  createaction:
-    description: Create an action block
-    usage: /createaction
-  indicator:
-    description: lol
-    usage: lol
+    usage: /looty <subcommand> <options>

@@ -8,11 +8,10 @@ option java_multiple_files = true;
 
 
 message ItemType {
+    reserved 4;
     string name = 1;
     repeated string lore = 2;
-
     string material = 3;
-    int32 durability = 4;
-
     repeated Skill skill = 5;
+    int32 model = 6;
 }

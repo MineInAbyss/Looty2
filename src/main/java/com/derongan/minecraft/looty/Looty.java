@@ -1,12 +1,9 @@
 package com.derongan.minecraft.looty;
 
-import com.derongan.minecraft.guiy.GuiListener;
 import com.derongan.minecraft.looty.command.LootyCommandExecutor;
 import com.derongan.minecraft.looty.config.ConfigLoader;
 import com.derongan.minecraft.looty.skill.SkillListener;
 import com.derongan.minecraft.looty.skill.cooldown.CooldownManager;
-import com.derongan.minecraft.looty.ui.LootyEditorCommandExecutor;
-import com.derongan.minecraft.looty.ui.LootyEditorListener;
 import org.bukkit.Server;
 
 import javax.inject.Inject;
@@ -17,11 +14,7 @@ import java.util.logging.Logger;
 public
 class Looty {
     private final LootyCommandExecutor lootyCommandExecutor;
-    private final LootyEditorCommandExecutor LootyEditorCommandExecutor;
-    private final TestListener testListener;
-    private final LootyEditorListener lootyEditorListener;
     private final LootyPlugin lootyPlugin;
-    private final GuiListener guiListener;
     private final CooldownManager cooldownManager;
     private final Server server;
     private final ConfigLoader configLoader;
@@ -31,22 +24,14 @@ class Looty {
 
     @Inject
     public Looty(LootyCommandExecutor lootyCommandExecutor,
-                 LootyEditorCommandExecutor LootyEditorCommandExecutor,
-                 TestListener testListener,
-                 LootyEditorListener lootyEditorListener,
                  LootyPlugin lootyPlugin,
-                 GuiListener guiListener,
                  CooldownManager cooldownManager,
                  Server server,
                  ConfigLoader configLoader,
                  UpdateTask updateRunnable,
                  Logger logger, SkillListener skillListener) {
         this.lootyCommandExecutor = lootyCommandExecutor;
-        this.LootyEditorCommandExecutor = LootyEditorCommandExecutor;
-        this.testListener = testListener;
-        this.lootyEditorListener = lootyEditorListener;
         this.lootyPlugin = lootyPlugin;
-        this.guiListener = guiListener;
         this.cooldownManager = cooldownManager;
         this.server = server;
         this.configLoader = configLoader;
@@ -56,10 +41,7 @@ class Looty {
     }
 
     void onEnable() {
-        server.getPluginManager().registerEvents(lootyEditorListener, lootyPlugin);
-//        server.getPluginManager().registerEvents(testListener, lootyPlugin);
         server.getPluginManager().registerEvents(skillListener, lootyPlugin);
-        server.getPluginManager().registerEvents(guiListener, lootyPlugin);
 
         configLoader.reload();
 
@@ -68,11 +50,6 @@ class Looty {
         cooldownManager.start();
 
         lootyPlugin.getCommand("looty").setExecutor(lootyCommandExecutor);
-        lootyPlugin.getCommand("looties").setExecutor(lootyCommandExecutor);
-        lootyPlugin.getCommand("lootyreload").setExecutor(lootyCommandExecutor);
-        lootyPlugin.getCommand("createskill").setExecutor(LootyEditorCommandExecutor);
-        lootyPlugin.getCommand("createaction").setExecutor(LootyEditorCommandExecutor);
-        lootyPlugin.getCommand("indicator").setExecutor(lootyCommandExecutor);
         logger.info("Loaded Looty");
     }
 

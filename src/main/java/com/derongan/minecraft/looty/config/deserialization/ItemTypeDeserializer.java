@@ -25,7 +25,7 @@ public class ItemTypeDeserializer implements JsonDeserializer<ItemType> {
 
         String name = jsonObject.get("name").getAsString();
         String material = jsonObject.get("material").getAsString();
-        int durability = jsonObject.get("durability").getAsInt();
+        int model = jsonObject.get("model").getAsInt();
 
         ItemType.Builder itemTypeBuilder = ItemType.newBuilder();
 
@@ -40,7 +40,7 @@ public class ItemTypeDeserializer implements JsonDeserializer<ItemType> {
         itemTypeBuilder
                 .setName(name)
                 .setMaterial(material)
-                .setDurability(durability);
+                .setModel(model);
 
         jsonObject.get("skills").getAsJsonArray().forEach(skillJson -> {
             itemTypeBuilder.addSkill((Skill) context.deserialize(skillJson, Skill.class));

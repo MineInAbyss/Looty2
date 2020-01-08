@@ -1,45 +1,105 @@
 package com.derongan.minecraft.looty.command;
 
-import com.derongan.minecraft.looty.item.ConfigItemRegister;
-import com.derongan.minecraft.looty.skill.proto.ItemType;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
 
 public class LootyCommandExecutorTest {
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    private CommandSender commandSender;
+    @Mock
+    private Command command;
+
     @Test
-    public void onTabComplete() {
-        ConfigItemRegister configItemRegister = mock(ConfigItemRegister.class);
-        when(configItemRegister.getAllTypes()).thenReturn(ImmutableList.of(ItemType.newBuilder()
-                .setName("Itam")
-                .build(), ItemType.newBuilder()
-                .setName("iTems")
-                .build()));
-        LootyCommandExecutor lootyCommandExecutor = new LootyCommandExecutor(configItemRegister, null, null, null);
-        String[] partialArgs = {"it"};
-        String[] partialArgs2 = {"ita"};
-        String[] partialArgs3 = {"itam otherarg"};
+    public void onTabCompleteNoSubCommand() {
+        String hi = "hi";
+        String hello = "hello";
+        SubCommandExecutor helloCommand = new FakeSubCommandExecutor(ImmutableList.of(hello));
+        SubCommandExecutor hiCommand = new FakeSubCommandExecutor(ImmutableList.of(hi));
+        ImmutableMap<String, SubCommandExecutor> subCommands = ImmutableMap.of(hello, helloCommand, hi, hiCommand);
+        LootyCommandExecutor lootyCommandExecutor = new LootyCommandExecutor(subCommands);
 
-        List<String> results = lootyCommandExecutor.onTabComplete(mock(CommandSender.class), createCommand("looty"), "", partialArgs);
-        List<String> results2 = lootyCommandExecutor.onTabComplete(mock(CommandSender.class), createCommand("looty"), "", partialArgs2);
-        List<String> results3 = lootyCommandExecutor.onTabComplete(mock(CommandSender.class), createCommand("looty"), "", partialArgs3);
+        List<String> results = lootyCommandExecutor.onTabComplete(commandSender, command, "", createArgs("h"));
 
-        assertThat(results).containsExactly("Itam", "iTems");
-        assertThat(results2).containsExactly("Itam");
-        assertThat(results3).isEmpty();
+        assertThat(results).containsExactly(hello, hi);
     }
 
-    private Command createCommand(String commandName) {
-        Command command = mock(Command.class);
-        when(command.getName()).thenReturn(commandName);
+    @Test
+    public void onTabCompleteSubCommand() {
+        String hi = "hi";
+        String hello = "hello";
+        SubCommandExecutor helloCommand = new FakeSubCommandExecutor(ImmutableList.of(hello));
+        SubCommandExecutor hiCommand = new FakeSubCommandExecutor(ImmutableList.of(hi));
+        ImmutableMap<String, SubCommandExecutor> subCommands = ImmutableMap.of(hello, helloCommand, hi, hiCommand);
+        LootyCommandExecutor lootyCommandExecutor = new LootyCommandExecutor(subCommands);
 
-        return command;
+        List<String> results = lootyCommandExecutor.onTabComplete(commandSender, command, "", createArgs(hi, ""));
+
+        assertThat(results).containsExactly(hi);
+    }
+
+    @Test
+    public void onCommandDelegatesToSucceedingSubCommand() {
+        String success = "success";
+        String failure = "failure";
+        SubCommandExecutor successSubCommandExecutor = new FakeSubCommandExecutor(ImmutableList.of(success));
+        SubCommandExecutor failingSubCommandExecutor = new SubCommandExecutor.FailingSubCommandExecutor();
+        ImmutableMap<String, SubCommandExecutor> subCommands = ImmutableMap.of(success, successSubCommandExecutor, failure, failingSubCommandExecutor);
+        LootyCommandExecutor lootyCommandExecutor = new LootyCommandExecutor(subCommands);
+
+        boolean result = lootyCommandExecutor.onCommand(commandSender, this.command, "", createArgs(success));
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void onCommandDelegatesToFailingSubCommand() {
+        String success = "success";
+        String failure = "failure";
+        SubCommandExecutor successSubCommandExecutor = new FakeSubCommandExecutor(ImmutableList.of(success));
+        SubCommandExecutor failingSubCommandExecutor = new SubCommandExecutor.FailingSubCommandExecutor();
+        ImmutableMap<String, SubCommandExecutor> subCommands = ImmutableMap.of(success, successSubCommandExecutor, failure, failingSubCommandExecutor);
+        LootyCommandExecutor lootyCommandExecutor = new LootyCommandExecutor(subCommands);
+
+        boolean result = lootyCommandExecutor.onCommand(commandSender, this.command, "", createArgs(failure));
+
+        assertThat(result).isFalse();
+    }
+
+    private String[] createArgs(String... args) {
+        return args;
+    }
+
+    static class FakeSubCommandExecutor implements SubCommandExecutor {
+
+        private final List<String> completions;
+
+        FakeSubCommandExecutor(List<String> completions) {
+            this.completions = completions;
+        }
+
+        @Override
+        public boolean execute(CommandSender sender, List<String> args) {
+            return true;
+        }
+
+        @Override
+        public List<String> complete(CommandSender sender, List<String> args) {
+            return completions;
+        }
     }
 }
